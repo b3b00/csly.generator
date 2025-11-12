@@ -15,7 +15,7 @@ public partial class Program
     public static void Main(string[] args)
     {
         Generate();
-        Run();
+        //Run();
         /*GoStatic();
         Run();*/
     }
@@ -61,8 +61,8 @@ public partial class Program
         return runResult;
     }
 
-    
-    
+
+
     private static void Run()
     {
         while (true)
@@ -72,11 +72,10 @@ public partial class Program
             {
                 Environment.Exit(0);
             }
+            ExpressionGenerator parser = new ExpressionGenerator();
             
-            StaticExpressionParser expressionist = new StaticExpressionParser();
-            
-            
-            
+
+
         }
     }
 }

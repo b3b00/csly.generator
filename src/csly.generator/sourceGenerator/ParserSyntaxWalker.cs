@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using csly.generator.model.parser.attributes;
 using csly.generator.model.parser.grammar;
@@ -89,9 +90,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                 if (IsOperand(node))
                 {
                     var rule = GetAttributeArgs(attribute, withLeadingComma: false);
-                    Builder.AppendLine($".Operand({rule},");
-                    AddProductionVisitor(node);
-                    Builder.AppendLine(")");
+                    // STATIC : todo later when base will be working
                 }
                 else
                 {

@@ -33,10 +33,13 @@ public class ParserBuilderGenerator
     
     public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax)
     {
-        StaticParserBuilder staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
-        
         string name = classDeclarationSyntax.Identifier.ToString();
-       
+        StaticParserBuilder staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
+        StringBuilder builder = new StringBuilder();
+        ParserSyntaxWalker walker = new(builder, name, _lexerName, _outputType, staticParserBuilder);
+
+        walker.Visit(classDeclarationSyntax);
+
         var staticParser = GenerateStaticParser(staticParserBuilder.Model);
         
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);

@@ -3,3 +3,6 @@
 **/obj/*
 **/Obj/*
 .idea/*
+.vs/*
+*.swp
+*.user

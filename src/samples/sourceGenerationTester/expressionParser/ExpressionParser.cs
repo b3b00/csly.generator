@@ -12,8 +12,8 @@ namespace sourceGenerationTester.expressionParser
         }
 
         [NodeName("group")]
-        [Production("primary: LPAREN [d] expression RPAREN [d]")]
-        public int Group(int groupValue)
+        [Production("primary: LPAREN  expression RPAREN ")]
+        public int Group(Token<ExpressionToken> l, int groupValue, Token<ExpressionToken> r)
         {
             return groupValue;
         }
