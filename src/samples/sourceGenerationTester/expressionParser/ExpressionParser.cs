@@ -1,16 +1,8 @@
 ﻿using csly.generator.model.lexer;
 using csly.generator.model.parser.attributes;
-using csly.generator.sourceGenerator;
 
 namespace sourceGenerationTester.expressionParser
 {
-
-    [ParserGenerator]
-    public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionToken, ExpressionParser, int>
-    {
-        
-    } 
-    
     public class ExpressionParser
     {
         [Production("primary: INT")]

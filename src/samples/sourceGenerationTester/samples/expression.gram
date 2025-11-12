@@ -54,8 +54,8 @@ public enum ExpressionToken
             }
     
             [NodeName("group")]
-            [Production("primary: LPAREN [d] expression RPAREN [d]")]
-            public int Group(int groupValue)
+            [Production("primary: LPAREN  expression RPAREN ")]
+            public int Group(Token<ExpressionToken> leftParen, int groupValue, Token<ExpressionToken> rightParen)
             {
                 return groupValue;
             }

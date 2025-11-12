@@ -10,7 +10,7 @@ using sly.parser;
 using sly.parser.syntax.grammar;
 using sly.parser.syntax.tree;
 
-public class StaticParser 
+public partial class Static<#PARSER#> : AbstractParserGenerator<<#LEXER#>, <#PARSER#>, <#OUTPUT#>> 
 {
     public Dictionary<<#LEXER#>, Dictionary<string, string>> LexemeLabels { get; set; }
     

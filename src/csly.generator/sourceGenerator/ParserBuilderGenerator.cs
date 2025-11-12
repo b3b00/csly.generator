@@ -14,15 +14,15 @@ public class ParserBuilderGenerator
     private readonly List<string> _lexerGeneratorTokens;
     private readonly TemplateEngine  _templateEngine;
 
-    private Dictionary<string, TerminalClause> _terminalParsers = new Dictionary<string, TerminalClause>();
-    private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new Dictionary<string,  NonTerminalClause>();
-    private Dictionary<string, List<Rule>> _ruleParsers = new Dictionary<string, List<Rule>>();
+    private Dictionary<string, TerminalClause> _terminalParsers = new();
+    private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
+    private Dictionary<string, List<Rule>> _ruleParsers = new();
     
     
-    public ParserBuilderGenerator(string lexerName, string outputType, List<string> lexerGeneratorTokens)
+    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, List<string> lexerGeneratorTokens)
     {
         _lexerName = lexerName;
-        _parserName = lexerName;
+        _parserName = parserName;
         _outputType = outputType;
         _lexerGeneratorTokens = lexerGeneratorTokens;
         _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType);
@@ -79,7 +79,7 @@ public class ParserBuilderGenerator
         
         System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/",$"static{name}.cs"),root.ToString());
         
-        return builder.ToString();
+        return root.ToString();
         
         
     }

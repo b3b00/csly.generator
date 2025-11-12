@@ -169,7 +169,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
                         declarationsByName);
                     ParserBuilderGenerator parserBuilderGenerator =
-                        new ParserBuilderGenerator(lexerName, outputType, lexerGenerator.Tokens);
+                        new ParserBuilderGenerator(lexerName, parserType, outputType, lexerGenerator.Tokens);
                     string code = $@"
 
 {string.Join(Environment.NewLine, usings)}

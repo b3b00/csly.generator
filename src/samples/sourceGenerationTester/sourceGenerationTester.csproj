@@ -8,7 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" />
+      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyser" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="samples\expression.gram" />
     </ItemGroup>
 
 </Project>

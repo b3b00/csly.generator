@@ -33,17 +33,7 @@ public class TemplateEngine
             return template;
         }
 
-        return "";
-        return "GOODBYE";
-                 Assembly assembly = GetType().Assembly;
-        using (var stream = assembly.GetManifestResourceStream($"sly.sourceGenerator.TemplateEngine.{name}"))
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                var content = reader.ReadToEnd();
-                return content;
-            }
-        }
+        return $"!!!!!!!!!!!!!!!!!!!!!! unable to find template >{name}< !!!!!!!!!!!!!!!!!!!!";
     }
 
     private Dictionary<string, string> Templates = new Dictionary<string, string>()
