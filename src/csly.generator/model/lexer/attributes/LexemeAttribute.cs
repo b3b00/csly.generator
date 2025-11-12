@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace csly.generator.model.lexer.attributes
 {

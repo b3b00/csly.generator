@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using csly.generator.model.lexer.attributes;
+using System;
 
 namespace csly.generator.model.lexer
 

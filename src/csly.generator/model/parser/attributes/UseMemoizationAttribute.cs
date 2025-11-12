@@ -1,3 +1,5 @@
+using System;
+
 namespace csly.generator.model.parser.attributes;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]

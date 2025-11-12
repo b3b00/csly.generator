@@ -1,4 +1,6 @@
-﻿namespace csly.generator.model.lexer.attributes
+﻿using System;
+
+namespace csly.generator.model.lexer.attributes
 {
     [AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
     public class CallBacksAttribute : Attribute

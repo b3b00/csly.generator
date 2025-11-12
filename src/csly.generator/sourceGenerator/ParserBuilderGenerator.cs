@@ -1,4 +1,6 @@
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using csly.generator.model.parser.grammar;
 using Microsoft.CodeAnalysis.CSharp;
@@ -34,44 +36,7 @@ public class ParserBuilderGenerator
         StaticParserBuilder staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
         
         string name = classDeclarationSyntax.Identifier.ToString();
-        StringBuilder builder = new();
-
-        var rootRule = GetRootRule(classDeclarationSyntax);
-        if (!string.IsNullOrEmpty(rootRule))
-        {
-            builder.AppendLine($@"public BuildResult<Parser<{_lexerName},{_outputType}>>GetParser() 
-{{
-    var builder = GetParserBuilder();
-    var parserResult = builder.BuildParser();
-    return parserResult;
-}}");
-        }
-        else
-        {
-            builder.AppendLine($@"public BuildResult<Parser<{_lexerName},{_outputType}>>GetParser(string rootRule) 
-{{
-    var builder = GetParserBuilder(rootRule);
-    var parserResult = builder.BuildParser();
-    return parserResult;
-}}");
-        }
-
-
-        builder.AppendLine($"private IFluentEbnfParserBuilder<{_lexerName},{_outputType}> GetParserBuilder({(rootRule == null ? "string rootRule": "")}) {{");
-        ParserSyntaxWalker walker = new(builder, name,_lexerName, _outputType,staticParserBuilder);
-        if (rootRule != null)
-        {
-            builder.AppendLine($"string rootRule = {rootRule};");
-        }
-        builder.AppendLine($"{name} instance = new {name}();");
-        builder.AppendLine($"var builder = FluentEBNFParserBuilder<{_lexerName}, {_outputType}>");
-        builder.AppendLine($@".NewBuilder(instance, rootRule, ""en"");");
-        walker.Visit(classDeclarationSyntax);
-        builder.AppendLine(";");
-        builder.AppendLine("return builder;");
-        builder.AppendLine("}");
-
-
+       
         var staticParser = GenerateStaticParser(staticParserBuilder.Model);
         
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);

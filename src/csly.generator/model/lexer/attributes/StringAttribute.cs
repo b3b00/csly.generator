@@ -1,10 +1,11 @@
-namespace csly.generator.model.lexer.attributes
+using System;
+
+namespace csly.generator.model.lexer.attributes;
+
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+public class StringAttribute : LexemeAttribute
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class StringAttribute : LexemeAttribute
-    {
-        public StringAttribute(string delimiterChar = "\"", string escapeChar = "\\", bool doEscape = true, int channel = Channels.Main) : base(GenericToken.String, channel, delimiterChar, escapeChar, doEscape.ToString())
-        {   
-        } 
-    }
+    public StringAttribute(string delimiterChar = "\"", string escapeChar = "\\", bool doEscape = true, int channel = Channels.Main) : base(GenericToken.String, channel, delimiterChar, escapeChar, doEscape.ToString())
+    {   
+    } 
 }

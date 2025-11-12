@@ -1,73 +1,75 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace csly.generator.model.lexer
+namespace csly.generator.model.lexer;
+
+public class TokenChannel<IN>  where IN : struct, Enum
 {
-    public class TokenChannel<IN>  where IN : struct, Enum
+    public readonly List<Token<IN>> Tokens;
+
+    private List<Token<IN>> _notNullOrEosTokens;
+    public List<Token<IN>> NotNullOrEosTokens => _notNullOrEosTokens; 
+    
+    public int ChannelId;
+    public int Count => Tokens.Count;
+
+    public TokenChannel(List<Token<IN>> tokens, int channelId)
     {
-        public readonly List<Token<IN>> Tokens;
+        Tokens = tokens;
+        _notNullOrEosTokens = tokens.Where(x => x != null && !x.IsEOS).ToList();
+        ChannelId = channelId;
+    }
 
-        private List<Token<IN>> _notNullOrEosTokens;
-        public List<Token<IN>> NotNullOrEosTokens => _notNullOrEosTokens; 
+    public TokenChannel(int channelId) : this(new List<Token<IN>>(), channelId)
+    {
         
-        public int ChannelId;
-        public int Count => Tokens.Count;
+    }
 
-        public TokenChannel(List<Token<IN>> tokens, int channelId)
+    private Token<IN> GetToken(int i)
+    {
+        return Tokens[i];
+    }
+    
+    private void SetToken(int i, Token<IN> token)
+    {
+        if (i >= Tokens.Count)
         {
-            Tokens = tokens;
-            _notNullOrEosTokens = tokens.Where(x => x != null && !x.IsEOS).ToList();
-            ChannelId = channelId;
-        }
-
-        public TokenChannel(int channelId) : this(new List<Token<IN>>(), channelId)
-        {
-            
-        }
-
-        private Token<IN> GetToken(int i)
-        {
-            return Tokens[i];
-        }
-        
-        private void SetToken(int i, Token<IN> token)
-        {
-            if (i >= Tokens.Count)
+            for (int j = Tokens.Count; j <= i; j++)
             {
-                for (int j = Tokens.Count; j <= i; j++)
-                {
-                    Tokens.Add(null);
-                }
+                Tokens.Add(null);
             }
-            Tokens[i] = token;
         }
-        
-        public Token<IN> this[int key]
-        {
-            get => GetToken(key);
-            set => SetToken(key,value);
-        }
+        Tokens[i] = token;
+    }
+    
+    public Token<IN> this[int key]
+    {
+        get => GetToken(key);
+        set => SetToken(key,value);
+    }
 
-        public void Shift()
-        {
-            Tokens.Add(null);
-        }
+    public void Shift()
+    {
+        Tokens.Add(null);
+    }
 
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
+    [ExcludeFromCodeCoverage]
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        builder.Append("#").Append(ChannelId).Append(" ");
+        foreach (var token in Tokens.Where(token => token != null))
         {
-            var builder = new StringBuilder();
-            builder.Append("#").Append(ChannelId).Append(" ");
-            foreach (var token in Tokens.Where(token => token != null))
-            {
-                builder.Append(token).Append(" > ");
-            }
-            return builder.ToString();
+            builder.Append(token).Append(" > ");
         }
+        return builder.ToString();
+    }
 
-        public void PreCompute()
-        {
-            _notNullOrEosTokens = Tokens.Where(x => x != null && !x.IsEOS).ToList();
-        }
+    public void PreCompute()
+    {
+        _notNullOrEosTokens = Tokens.Where(x => x != null && !x.IsEOS).ToList();
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace csly.generator.model.parser.attributes
+﻿using System;
+namespace csly.generator.model.parser.attributes;
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public class OperandAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class OperandAttribute : Attribute
-    {
-    }
 }

@@ -5,6 +5,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
 using sourceGenerationTester.expressionParser;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace sourceGenerationTester;
 public partial class Program
@@ -12,6 +15,7 @@ public partial class Program
     public static void Main(string[] args)
     {
         Generate();
+        Run();
         /*GoStatic();
         Run();*/
     }
@@ -69,7 +73,7 @@ public partial class Program
                 Environment.Exit(0);
             }
             
-            ExpressionGenerator expressionist = new ExpressionGenerator();
+            StaticExpressionParser expressionist = new StaticExpressionParser();
             
             
             

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace csly.generator.model.lexer;
 
 public class LexerIndentation

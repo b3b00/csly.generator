@@ -1,10 +1,11 @@
-namespace csly.generator.model.lexer.attributes
+using System;
+
+namespace csly.generator.model.lexer.attributes;
+
+[AttributeUsage(AttributeTargets.Field)]
+public class PopAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    public class PopAttribute : Attribute
+    public PopAttribute()
     {
-        public PopAttribute()
-        {
-        }
     }
 }

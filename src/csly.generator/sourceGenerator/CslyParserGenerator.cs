@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -170,6 +173,9 @@ public class CslyParserGenerator : IIncrementalGenerator
                         declarationsByName);
                     ParserBuilderGenerator parserBuilderGenerator =
                         new ParserBuilderGenerator(lexerName, parserType, outputType, lexerGenerator.Tokens);
+
+                    var staticParser = parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax);
+                    
                     string code = $@"
 
 {string.Join(Environment.NewLine, usings)}
@@ -177,15 +183,12 @@ public class CslyParserGenerator : IIncrementalGenerator
 
 
 namespace {ns};
-{modifiers} class {className} : AbstractParserGenerator<{lexerName},{parserType}, {outputType}> {{
-    
-    {lexer}
 
-    {parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax)}
+    {staticParser}
 
 }}";
 
-                    context.AddSource($"{className}.g.cs", SourceText.From(code, Encoding.UTF8));
+                    context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
                 }
             }
         }

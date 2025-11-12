@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace csly.generator.model.parser.grammar;
 
 public class Rule
