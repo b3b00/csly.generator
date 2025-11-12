@@ -5,7 +5,7 @@ public class TerminalClauseTemplate
     public const string Template = @"
 // parse terminal <#NAME#>
 var r<#INDEX#> = ParseTerminal_<#NAME#>(tokens,position);
-if (r1.IsError)
+if (r<#INDEX#>.IsError)
 {
     return r<#INDEX#>;
 }

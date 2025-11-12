@@ -18,7 +18,7 @@ public class NonTerminalParserTemplate
     }";
 
     public const string RuleCallTemplate = @"
-        var r1Leadings = new[]
+        var r<#INDEX#>Leadings = new LeadingToken<<#LEXER#>>[]
         {
             <#LEADINGS#>
         };

@@ -2,13 +2,16 @@ namespace csly.generator.sourceGenerator.staticParserTemplates;
 
 public class ParserTemplate 
 {
-    public const string Template = @"using System;
+    public const string Template = @"
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using sly.lexer;
-using sly.parser;
-using sly.parser.syntax.grammar;
-using sly.parser.syntax.tree;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.tree;
+using csly.generator.sourceGenerator;
+using csly.generator.model.parser;
+
+namespace <#NAMESPACE#>;
 
 public partial class Static<#PARSER#> : AbstractParserGenerator<<#LEXER#>, <#PARSER#>, <#OUTPUT#>> 
 {

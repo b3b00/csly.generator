@@ -4,7 +4,7 @@ public class HelpersTemplate
 {
 
     public const string Template =
-        @"public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminal(List<Token<<#LEXER#>>> tokens, Tok expected, int position,
+        @"public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminal(List<Token<<#LEXER#>>> tokens, <#LEXER#> expected, int position,
         bool discarded = false)
     {
         var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
@@ -35,7 +35,7 @@ public class HelpersTemplate
 
         result.EndingPosition = !result.IsError ? position + 1 : position;
 
-        var leading = new LeadingToken<Tok>(default(<#LEXER#>), expected);
+        var leading = new LeadingToken<<#LEXER#>>(default(<#LEXER#>), expected);
 
         result.IsError = !leading.Match(tokens[position]);
         var token = tokens[position];

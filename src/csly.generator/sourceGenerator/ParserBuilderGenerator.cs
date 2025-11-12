@@ -14,6 +14,7 @@ public class ParserBuilderGenerator
     private readonly string _parserName;
     private readonly string _outputType;
     private readonly List<string> _lexerGeneratorTokens;
+    private readonly string _namespace;
     private readonly TemplateEngine  _templateEngine;
 
     private Dictionary<string, TerminalClause> _terminalParsers = new();
@@ -21,11 +22,12 @@ public class ParserBuilderGenerator
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     
     
-    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, List<string> lexerGeneratorTokens)
+    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, string ns,  List<string> lexerGeneratorTokens)
     {
         _lexerName = lexerName;
         _parserName = parserName;
         _outputType = outputType;
+        _namespace = ns;
         _lexerGeneratorTokens = lexerGeneratorTokens;
         _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType);
     }
@@ -95,7 +97,8 @@ public class ParserBuilderGenerator
             additional: new Dictionary<string, string>()
             {
                 { "<#HELPERS#>", helpers },
-                { "<#PARSERS#>", parsers.ToString() }
+                { "<#PARSERS#>", parsers.ToString() },
+                { "<#NAMESPACE#>", _namespace }
             });
     
         return parser;
@@ -162,7 +165,7 @@ public class ParserBuilderGenerator
                 children += ", ";
             }
     
-            children += $"r{i}";
+            children += $"r{i}.Root";
             var clause = rule.Clauses[i];
             
             if (clause != null)

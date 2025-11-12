@@ -163,8 +163,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     usings.Add($"using {parserDecl.GetNameSpace()};");
                     usings.AddRange(new[]
                     {
-                        "using System;", "using sly.lexer;", "using  sly.lexer.fluent;", "using sly.parser;",
-                        "using sly.buildresult;", "using sly.sourceGenerator;", "using sly.parser.generator;"
+                        "using System;", "using csly.generator.model.lexer;", "using csly.generator.model.parser.tree;"                        
                     }); 
                     usings = usings.Distinct().ToList();
 
@@ -172,7 +171,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
                         declarationsByName);
                     ParserBuilderGenerator parserBuilderGenerator =
-                        new ParserBuilderGenerator(lexerName, parserType, outputType, lexerGenerator.Tokens);
+                        new ParserBuilderGenerator(lexerName, parserType, outputType, ns, lexerGenerator.Tokens);
 
                     var staticParser = parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax);
                     

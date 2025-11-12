@@ -72,10 +72,9 @@ public partial class Program
             {
                 Environment.Exit(0);
             }
-            ExpressionGenerator parser = new ExpressionGenerator();
+            //ExpressionGenerator parser = new ExpressionGenerator();
+            var parser = new StaticExpressionParser();
             
-
-
         }
     }
 }
