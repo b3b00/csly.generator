@@ -1,0 +1,24 @@
+﻿namespace csly.generator.model.lexer.attributes
+{
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    public class CommentAttribute : Attribute
+    {
+        public string MultiLineCommentEnd;
+
+        public string MultiLineCommentStart;
+
+        public string SingleLineCommentStart;
+
+
+        public int Channel = 1;
+
+        public CommentAttribute(string singleLineStart, string multiLineStart, string multiLineEnd,
+            bool doNotIgnore = false, int channel = Channels.Comments)
+        {
+            SingleLineCommentStart = singleLineStart;
+            MultiLineCommentStart = multiLineStart;
+            MultiLineCommentEnd = multiLineEnd;
+            Channel = channel;
+        }
+    }
+}
