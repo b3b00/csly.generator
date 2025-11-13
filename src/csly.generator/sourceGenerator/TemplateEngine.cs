@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using csly.generator.sourceGenerator.staticParserTemplates;
+using System.Text.RegularExpressions;
 
 namespace csly.generator.sourceGenerator;
 
@@ -26,29 +29,32 @@ public class TemplateEngine
         _outputType = outputType;
         //_resourceFileSystem =  new EmbeddedResourceFileSystem(typeof(TemplateEngine).Assembly);
     }
+
     
+    private const string regex = @"^csly\.generator\.sourceGenerator\.staticParserTemplates\.(lexer|parser)\.(.*)\.cs$";
+    private ImmutableDictionary<string, string> FullyQualifiedTypeNamesToResourceNames = ImmutableDictionary.CreateRange(
+    from string resource in typeof(TemplateEngine).Assembly.GetManifestResourceNames()
+    select new KeyValuePair<string, string>(Regex.Match(resource, regex).Groups[2].Value, resource));
+
     public string GetTemplate(string name)
     {
-        if (Templates.TryGetValue(name, out var template))
+        
+        string resourceName = FullyQualifiedTypeNamesToResourceNames[name];
+
+        using Stream stream = typeof(TemplateEngine).Assembly.GetManifestResourceStream(resourceName);
+        if (stream != null)
         {
-            return template;
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                var content = reader.ReadToEnd();
+                return content;
+            }
         }
+
 
         return $"!!!!!!!!!!!!!!!!!!!!!! unable to find template >{name}< !!!!!!!!!!!!!!!!!!!!";
     }
 
-    private Dictionary<string, string> Templates = new Dictionary<string, string>()
-    {
-        { "helpers.txt", HelpersTemplate.Template },
-        {"explicitterminalParser.txt", ExplicitTerminalParserTemplate.Template},
-        {"nonTerminalClause.txt", NonTerminalClauseTemplate.Template},
-        {"nonTerminalParser.txt", NonTerminalParserTemplate.MainTemplate},
-        {"ruleCall.txt", NonTerminalParserTemplate.RuleCallTemplate},
-        {"parser.txt", ParserTemplate.Template},
-        {"ruleParser.txt", RuleParserTemplate.Template},
-        {"terminalClause.txt", TerminalClauseTemplate.Template},
-        {"terminalParser.txt", TerminalParserTemplate.Template}
-    };
 
     public string ApplyTemplate(string templateName, string name = null, bool substitute = true, Dictionary<string, string> additional = null)
     {

@@ -1,8 +1,4 @@
-namespace csly.generator.sourceGenerator.staticParserTemplates;
 
-public class ParserTemplate 
-{
-    public const string Template = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +18,4 @@ public partial class Static<#PARSER#> : AbstractParserGenerator<<#LEXER#>, <#PAR
     <#HELPERS#>
     
     <#PARSERS#>
-}";
 }

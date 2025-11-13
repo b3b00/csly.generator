@@ -93,7 +93,7 @@ public class ParserBuilderGenerator
             GenerateNonTerminal(nonTerminalParser.Value,parsers);
         }
     
-        var parser = _templateEngine.ApplyTemplate("parser.txt",
+        var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ParserTemplate),
             additional: new Dictionary<string, string>()
             {
                 { "<#HELPERS#>", helpers },
@@ -107,7 +107,7 @@ public class ParserBuilderGenerator
     private string GenerateHelpers()
     {
         // STATIC : read resource
-        var content = _templateEngine.ApplyTemplate("helpers.txt");
+        var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.HelpersTemplate));
         return content;
     }
     
@@ -119,11 +119,11 @@ public class ParserBuilderGenerator
             if (terminalClause.IsExplicit)
             {
                 // STATIC : beware non alphanumeric chars in terminalClause.Name
-              content = _templateEngine.ApplyTemplate("explicitTerminalParser.txt",terminalClause.Name);   
+              content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExplicitTerminalParserTemplate),terminalClause.Name);   
             }
             else
             {
-                content = _templateEngine.ApplyTemplate("terminalParser.txt", terminalClause.Name);
+                content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalParserTemplate), terminalClause.Name);
             }
         }
     
@@ -144,7 +144,7 @@ public class ParserBuilderGenerator
                 ;
             }            
             var leaders = string.Join(", ",rule.Leaders.Distinct().Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})"));
-            string callTemplate = _templateEngine.ApplyTemplate("ruleCall.txt",nonTerminalClause.Name,
+            string callTemplate = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleCallTemplate),nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
             {
                 {"<#LEADINGS#>",leaders}, // static : compute leadings for rule
@@ -153,7 +153,7 @@ public class ParserBuilderGenerator
             calls.AppendLine(callTemplate);
         }
         
-        string content = _templateEngine.ApplyTemplate("nonTerminalParser.txt",nonTerminalClause.Name,
+        string content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalParserTemplate),nonTerminalClause.Name,
             additional: new Dictionary<string, string>()
             {
                 {"<#CALLS#>", calls.ToString()}
@@ -182,7 +182,7 @@ public class ParserBuilderGenerator
                 if (clause is TerminalClause terminalClause)
                 {
                     // STATIC : later , manage discarded tokens
-                    call = _templateEngine.ApplyTemplate("terminalClause.txt", terminalClause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
                         additional:new Dictionary<string,string>()
                         {
                             {"<#INDEX#>",i.ToString()}
@@ -192,7 +192,7 @@ public class ParserBuilderGenerator
     
                 if (clause is NonTerminalClause nonTerminalClause)
                 {
-                    call = _templateEngine.ApplyTemplate("nonTerminalClause.txt", nonTerminalClause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), nonTerminalClause.Name,
                         additional:new Dictionary<string,string>() {{"<#INDEX#>",i.ToString()}});
                     AddClause(nonTerminalClause);
                 }
@@ -200,7 +200,7 @@ public class ParserBuilderGenerator
             }
         }
 
-        var content = _templateEngine.ApplyTemplate("ruleParser.txt", rule.Name,
+        var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleParserTemplate), rule.Name,
             additional: new Dictionary<string, string>()
             {
                 { "<#CLAUSES#>", clausesBuilder.ToString() },

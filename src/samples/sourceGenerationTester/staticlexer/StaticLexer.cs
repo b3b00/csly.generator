@@ -67,6 +67,18 @@ namespace sourceGenerationTester.staticlexer
                         position.Index++;
                         previous = position.Clone();
                     }
+                    else if (currentChar == '(')
+                    {
+                        tokens.Add(new Token<ExpressionToken>(ExpressionToken.LPAREN, "(", position));
+                        position.Index++;
+                        previous = position.Clone();
+                    }
+                    else if (currentChar == ')')
+                    {
+                        tokens.Add(new Token<ExpressionToken>(ExpressionToken.RPAREN, ")", position));
+                        position.Index++;
+                        previous = position.Clone();
+                    }
                     else if (char.IsDigit(currentChar))
                     {
                         state = LexerStates.InInt;
@@ -74,6 +86,10 @@ namespace sourceGenerationTester.staticlexer
                         position.Index++;
                     }
                     else if (char.IsWhiteSpace(currentChar))
+                    {
+                        position.Index++;
+                    }
+                    else if (currentChar == (char)0)
                     {
                         position.Index++;
                     }

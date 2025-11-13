@@ -1,8 +1,4 @@
-namespace csly.generator.sourceGenerator.staticParserTemplates;
 
-public class TerminalClauseTemplate
-{
-    public const string Template = @"
 // parse terminal <#NAME#>
 var r<#INDEX#> = ParseTerminal_<#NAME#>(tokens,position);
 if (r<#INDEX#>.IsError)
@@ -11,5 +7,3 @@ if (r<#INDEX#>.IsError)
 }
 position = r<#INDEX#>.EndingPosition;
 
-";
-}

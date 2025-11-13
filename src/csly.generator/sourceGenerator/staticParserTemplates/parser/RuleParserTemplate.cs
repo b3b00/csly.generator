@@ -1,9 +1,4 @@
-namespace csly.generator.sourceGenerator.staticParserTemplates;
 
-public class RuleParserTemplate
-{
-    public const string Template =
-        @"
 ///////////////////////////////////////
 // RULE <#RULESTRING#>
 ///////////////////////////////////////
@@ -13,11 +8,10 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
      
      <#CLAUSES#>
      
-     var tree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>(""<#HEAD#>"", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { <#CHILDREN#> },
+     var tree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { <#CHILDREN#> },
          null);
      result.Root = tree;
      result.IsError = false;
      result.EndingPosition = r<#RULE_COUNT#>.EndingPosition;
      return result;
-}";
 }

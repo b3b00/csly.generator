@@ -13,11 +13,25 @@ using System.IO;
 using System.Linq;
 
 namespace sourceGenerationTester;
+
+
+using csly.generator.model.lexer;
+using csly.generator.model.parser;
+using csly.generator.model.parser.tree;
+using csly.generator.sourceGenerator;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Numerics;
+
+
+
 public partial class Program
 {
     public static void Main(string[] args)
     {
-        //Generate();
+        Generate();
         Run();
         /*GoStatic();
         Run();*/
@@ -78,7 +92,7 @@ public partial class Program
                 Environment.Exit(0);
             }
 
-            
+
 
             //var tok = (ExpressionToken id, string value, int position) => new Token<ExpressionToken>(id, value, new LexerPosition(position,0,position));
 
@@ -87,15 +101,15 @@ public partial class Program
 
 
 
-            var lexerResult =  lexer.Scan(choice.AsSpan());
+            var lexerResult = lexer.Scan(choice.AsSpan());
             if (lexerResult.IsError)
             {
                 Console.WriteLine($"Lexing failed: {lexerResult.Error}");
                 return;
-                
+
             }
 
-            var result = parser.ParseNonTerminal_expression(lexerResult.Tokens,0);
+            var result = parser.ParseNonTerminal_expression(lexerResult.Tokens, 0);
             if (result.IsOk)
             {
                 Console.WriteLine("Parse succeeded");

@@ -24,7 +24,7 @@ public class LexerResult<T> where T:struct, Enum
         var result = new LexerResult<T>()
         {
             Error = error,
-            _isOk = true
+            _isOk = false
         };
         return result;
     }
