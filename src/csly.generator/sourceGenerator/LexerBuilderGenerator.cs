@@ -6,21 +6,21 @@ using System;
 
 namespace csly.generator.sourceGenerator;
 
-public class LexerBuilderGenerator
+internal class LexerBuilderGenerator
 {
 
     public List<string> Tokens { get; set; } = new List<string>();
     
     public string GenerateLexer(EnumDeclarationSyntax enumDeclarationSyntax, string outputType,
-        Dictionary<string, SyntaxNode> declarationsByName)
+        Dictionary<string, SyntaxNode> declarationsByName, StaticLexerBuilder staticLexerBuilder)
     {
         string name = enumDeclarationSyntax.Identifier.ToString();
         StringBuilder builder = new();
         builder.AppendLine($"public IFluentLexerBuilder<{name}> GetLexer() {{");
 
         builder.AppendLine($"var builder = FluentLexerBuilder<{name}>.NewBuilder()");
-        
-        LexerSyntaxWalker walker = new(builder, name, declarationsByName, this);
+
+        LexerSyntaxWalker walker = new(builder, name, declarationsByName, this, staticLexerBuilder);
         walker.Visit(enumDeclarationSyntax);
         
 

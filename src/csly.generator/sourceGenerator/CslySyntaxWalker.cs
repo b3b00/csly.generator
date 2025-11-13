@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace csly.generator.sourceGenerator;
@@ -11,20 +12,11 @@ public class CslySyntaxWalker : CSharpSyntaxWalker
 
         if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
         {
-            var args = attribute.ArgumentList.Arguments.Skip(skip).Select(x =>
-            {
-                var value = x.Expression.ToString();
-                if (x.NameColon != null && x.NameColon.Name.Identifier.Text != "")
-                {
-                    return $"{x.NameColon.Name.Identifier.Text} :{value}";
-                }
-
-                return value;
-            }).ToList();
+            System.Collections.Generic.List<string> args = GetAttributeArgsArray(attribute, skip);
             if (args.Count > 0)
             {
                 var strargs = string.Join(", ", args);
-               
+
                 if (withLeadingComma)
                 {
                     return ", " + strargs;
@@ -37,5 +29,23 @@ public class CslySyntaxWalker : CSharpSyntaxWalker
         return string.Empty;
     }
 
-  
+    public static System.Collections.Generic.List<string> GetAttributeArgsArray(AttributeSyntax attribute, int skip = 0)
+    {
+        if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Any())
+        {
+            return attribute.ArgumentList.Arguments.Skip(skip).Select(x =>
+            {
+                var value = x.Expression.ToString();
+                if (x.NameColon != null && x.NameColon.Name.Identifier.Text != "")
+                {
+                    return $"{x.NameColon.Name.Identifier.Text} :{value}";
+                }
+
+                return value;
+            }).ToList();
+        }
+        return new List<string>();
+
+    }
+
 }

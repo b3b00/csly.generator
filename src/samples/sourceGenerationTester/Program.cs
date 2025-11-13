@@ -91,22 +91,15 @@ public partial class Program
             {
                 Environment.Exit(0);
             }
+            StaticExpressionToken scanner = new StaticExpressionToken();
+            var lexerResult = scanner.Scan(choice.AsSpan());
 
 
-
-            //var tok = (ExpressionToken id, string value, int position) => new Token<ExpressionToken>(id, value, new LexerPosition(position,0,position));
-
-
-            //var tokens = new List<Token<ExpressionToken>>() { tok(ExpressionToken.INT,"2",0), tok(ExpressionToken.PLUS, "+", 1), tok(ExpressionToken.INT, "2", 2), new Token<ExpressionToken>() { IsEOS = true } };
-
-
-
-            var lexerResult = lexer.Scan(choice.AsSpan());
+            //var lexerResult = lexer.Scan(choice.AsSpan());
             if (lexerResult.IsError)
             {
                 Console.WriteLine($"Lexing failed: {lexerResult.Error}");
                 return;
-
             }
 
             var result = parser.ParseNonTerminal_expression(lexerResult.Tokens, 0);

@@ -1,5 +1,6 @@
 ﻿using csly.generator.model.lexer;
 using csly.generator.model.parser.attributes;
+using System;
 
 namespace sourceGenerationTester.expressionParser
 {
@@ -8,9 +9,15 @@ namespace sourceGenerationTester.expressionParser
     public class ExpressionParser
     {
         [Production("primary: INT")]
-        public int Primary(Token<ExpressionToken> intToken)
+        public int PrimaryInt(Token<ExpressionToken> intToken)
         {
             return intToken.IntValue;
+        }
+
+        [Production("primary: IDENTIFIER")]
+        public int PrimaryIdentifier(Token<ExpressionToken> intToken)
+        {
+            return 42;
         }
 
         [NodeName("group")]

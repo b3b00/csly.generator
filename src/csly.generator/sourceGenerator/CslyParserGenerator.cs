@@ -1,12 +1,13 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+using System.Xml.Linq;
 
 namespace csly.generator.sourceGenerator;
 
@@ -163,13 +164,32 @@ public class CslyParserGenerator : IIncrementalGenerator
                     usings.Add($"using {parserDecl.GetNameSpace()};");
                     usings.AddRange(new[]
                     {
-                        "using System;", "using csly.generator.model.lexer;", "using csly.generator.model.parser.tree;"                        
+                        "using System;", "using csly.generator.model.lexer;", "using csly.generator.model.parser.tree;",
+                        "using System.Collections.Generic;"
                     }); 
                     usings = usings.Distinct().ToList();
 
                     LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator();
+                    StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName);
                     var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
-                        declarationsByName);
+                        declarationsByName, staticLexerBuilder);
+                    StaticLexerGenerator staticLexerGenerator =
+                        new StaticLexerGenerator(staticLexerBuilder);
+                    var t = staticLexerGenerator.Generate();
+
+                    var staticLexer = @$"
+{string.Join(Environment.NewLine, usings)}
+
+
+
+namespace {ns};
+
+   {t}
+";
+
+                    context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
+                    System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"static{lexerName}.cs"), staticLexer);
+
                     ParserBuilderGenerator parserBuilderGenerator =
                         new ParserBuilderGenerator(lexerName, parserType, outputType, ns, lexerGenerator.Tokens);
 

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace csly.generator.sourceGenerator
+namespace csly.generator.sourceGenerator;
+
+internal enum ParserTemplates
 {
-    internal enum ParserTemplates
-    {
-        ExplicitTerminalParserTemplate,
-        HelpersTemplate,
-        NonTerminalClauseTemplate,
-        NonTerminalParserTemplate,
-        ParserTemplate,
-        RuleCallTemplate,
-        RuleParserTemplate,
-        TerminalClauseTemplate,
-        TerminalParserTemplate
-    }
+    ExplicitTerminalParserTemplate,
+    HelpersTemplate,
+    NonTerminalClauseTemplate,
+    NonTerminalParserTemplate,
+    ParserTemplate,
+    RuleCallTemplate,
+    RuleParserTemplate,
+    TerminalClauseTemplate,
+    TerminalParserTemplate
 }

@@ -73,7 +73,7 @@ public class TemplateEngine
             {
                 foreach (var pair in additional)
                 {
-                    template = Substitute(template, pair.Key, pair.Value);
+                    template = Substitute(template, $"<#{pair.Key}#>", pair.Value);
                 }
             }
         }

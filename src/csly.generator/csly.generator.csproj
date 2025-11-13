@@ -53,8 +53,4 @@
     <Compile Remove="sourceGenerator\staticParserTemplates\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="sourceGenerator\staticParserTemplates\lexer\" />
-  </ItemGroup>
-
 </Project>

@@ -96,9 +96,9 @@ public class ParserBuilderGenerator
         var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ParserTemplate),
             additional: new Dictionary<string, string>()
             {
-                { "<#HELPERS#>", helpers },
-                { "<#PARSERS#>", parsers.ToString() },
-                { "<#NAMESPACE#>", _namespace }
+                { "HELPERS", helpers },
+                { "PARSERS", parsers.ToString() },
+                { "NAMESPACE", _namespace }
             });
     
         return parser;
@@ -147,8 +147,8 @@ public class ParserBuilderGenerator
             string callTemplate = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleCallTemplate),nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
             {
-                {"<#LEADINGS#>",leaders}, // static : compute leadings for rule
-                {"<#INDEX#>",i.ToString()}
+                {"LEADINGS",leaders}, // static : compute leadings for rule
+                {"INDEX",i.ToString()}
             });
             calls.AppendLine(callTemplate);
         }
@@ -156,7 +156,7 @@ public class ParserBuilderGenerator
         string content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalParserTemplate),nonTerminalClause.Name,
             additional: new Dictionary<string, string>()
             {
-                {"<#CALLS#>", calls.ToString()}
+                {"CALLS", calls.ToString()}
             });
         builder.AppendLine(content).AppendLine();
     }
@@ -185,7 +185,7 @@ public class ParserBuilderGenerator
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
                         additional:new Dictionary<string,string>()
                         {
-                            {"<#INDEX#>",i.ToString()}
+                            {"INDEX",i.ToString()}
                         });
                     AddClause(terminalClause);
                 }
@@ -193,7 +193,7 @@ public class ParserBuilderGenerator
                 if (clause is NonTerminalClause nonTerminalClause)
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), nonTerminalClause.Name,
-                        additional:new Dictionary<string,string>() {{"<#INDEX#>",i.ToString()}});
+                        additional:new Dictionary<string,string>() {{"INDEX",i.ToString()}});
                     AddClause(nonTerminalClause);
                 }
                 clausesBuilder.AppendLine(call).AppendLine();
@@ -203,12 +203,12 @@ public class ParserBuilderGenerator
         var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleParserTemplate), rule.Name,
             additional: new Dictionary<string, string>()
             {
-                { "<#CLAUSES#>", clausesBuilder.ToString() },
-                { "<#RULE_COUNT#>", (rule.Clauses.Count - 1).ToString() },
-                { "<#CHILDREN#>", string.Join(", ", children) },
-                { "<#HEAD#>", rule.Head },
-                { "<#INDEX#>", index.ToString() },
-                { "<#RULESTRING#>", $"{rule.Head} : {string.Join(" ", Enumerable.Select<IClause, string>(rule.Clauses, x => x.Name))}" },
+                { "CLAUSES", clausesBuilder.ToString() },
+                { "RULE_COUNT", (rule.Clauses.Count - 1).ToString() },
+                { "CHILDREN", string.Join(", ", children) },
+                { "HEAD", rule.Head },
+                { "INDEX", index.ToString() },
+                { "RULESTRING", $"{rule.Head} : {string.Join(" ", Enumerable.Select<IClause, string>(rule.Clauses, x => x.Name))}" },
             });
         builder.AppendLine(content);
     }

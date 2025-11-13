@@ -8,16 +8,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.generator.sourceGenerator;
 
-public class LexerSyntaxWalker : CslySyntaxWalker
+internal class LexerSyntaxWalker : CslySyntaxWalker
 {
     StringBuilder _builder = new();
 
     private string _lexerName = "";
     private readonly Dictionary<string, SyntaxNode> _declarationsByName;
     private readonly LexerBuilderGenerator _generator;
+    private readonly StaticLexerBuilder _staticLexerBuilder;
 
-    public LexerSyntaxWalker(StringBuilder builder, string lexerName, Dictionary<string, SyntaxNode> declarationsByName, LexerBuilderGenerator generator)
+    public LexerSyntaxWalker(StringBuilder builder, string lexerName, Dictionary<string, SyntaxNode> declarationsByName, LexerBuilderGenerator generator, StaticLexerBuilder staticLexerBuilder)
     {
+        _staticLexerBuilder = staticLexerBuilder;
         _builder = builder;
         _lexerName = lexerName;
         _declarationsByName = declarationsByName;
@@ -40,15 +42,15 @@ public class LexerSyntaxWalker : CslySyntaxWalker
         }
 
         return null;
-    } 
-    
+    }
+
     protected string GetAttributeArgsForLexemekeyWord(AttributeSyntax attribute, int skip = 0, bool withLeadingComma = true)
     {
-         
+
         if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
         {
             var arguments = attribute.ArgumentList.Arguments.Skip(skip).ToList();
-            
+
             var firstArg = arguments[0];
             bool isFirstArgChannel = false;
             string firstArgColonName = firstArg?.NameColon?.Name?.ToString();
@@ -68,7 +70,7 @@ public class LexerSyntaxWalker : CslySyntaxWalker
 
             if (tokenArgs.Count > 1)
             {
-                tokens = "new [] { "+string.Join(",", tokenArgs.Select(t => t.ToString()).ToList())+ " }";
+                tokens = "new [] { " + string.Join(",", tokenArgs.Select(t => t.ToString()).ToList()) + " }";
             }
 
             string args = $", {tokens} ";
@@ -80,62 +82,62 @@ public class LexerSyntaxWalker : CslySyntaxWalker
         }
         return string.Empty;
     }
-    
+
 
     private string GetMethodForIdentifier(MemberAccessExpressionSyntax identifier)
     {
         var name = identifier.Name.Identifier.Text;
-        switch (name) 
+        switch (name)
         {
-            case nameof(IdentifierType.AlphaNumericDash) : return "AlphaNumDashId";
-            case nameof(IdentifierType.Alpha) : return "AlphaId";
-            case nameof(IdentifierType.AlphaNumeric) : return "AlphaNumId";
-            case nameof(IdentifierType.Custom) : return "CustomId";
+            case nameof(IdentifierType.AlphaNumericDash): return "AlphaNumDashId";
+            case nameof(IdentifierType.Alpha): return "AlphaId";
+            case nameof(IdentifierType.AlphaNumeric): return "AlphaNumId";
+            case nameof(IdentifierType.Custom): return "CustomId";
         }
 
         return null;
     }
-    
+
     private (string methodName, int skip) GetMethodForGenericLexeme(MemberAccessExpressionSyntax member,
         SeparatedSyntaxList<AttributeArgumentSyntax> argumentListArguments)
     {
         var name = member.Name.Identifier.Text;
         switch (name)
         {
-            case nameof(GenericToken.KeyWord):return ("Keyword",1); 
-            case nameof(GenericToken.SugarToken) : return ("Sugar",1);
+            case nameof(GenericToken.KeyWord): return ("Keyword", 1);
+            case nameof(GenericToken.SugarToken): return ("Sugar", 1);
             case nameof(GenericToken.Identifier):
-            {
-                if (argumentListArguments.Count > 1)
                 {
-                    var identierType = argumentListArguments[1].Expression as MemberAccessExpressionSyntax;
-                    if (identierType != null)
+                    if (argumentListArguments.Count > 1)
                     {
-                        var method = GetMethodForIdentifier(identierType);
-                        return (method, 2);
+                        var identierType = argumentListArguments[1].Expression as MemberAccessExpressionSyntax;
+                        if (identierType != null)
+                        {
+                            var method = GetMethodForIdentifier(identierType);
+                            return (method, 2);
+                        }
                     }
-                }
 
-                return ("AlphaId", 1);
-            }
-            case nameof(GenericToken.Int): return ("Integer",1);
-            case nameof(GenericToken.Double): return ("Double",1);
-            case nameof(GenericToken.Date): return ("Date",1);
-            case nameof(GenericToken.Char): return ("Character",1);
-            case nameof(GenericToken.Extension): return ("Extension",1);
-            case nameof(GenericToken.Hexa): return ("Hexa",1);
-            case nameof(GenericToken.String): return ("String",1);
-            case nameof(GenericToken.Comment): return ("Comment",1);
-            case nameof(GenericToken.UpTo): return ("UpTo",1);
+                    return ("AlphaId", 1);
+                }
+            case nameof(GenericToken.Int): return ("Integer", 1);
+            case nameof(GenericToken.Double): return ("Double", 1);
+            case nameof(GenericToken.Date): return ("Date", 1);
+            case nameof(GenericToken.Char): return ("Character", 1);
+            case nameof(GenericToken.Extension): return ("Extension", 1);
+            case nameof(GenericToken.Hexa): return ("Hexa", 1);
+            case nameof(GenericToken.String): return ("String", 1);
+            case nameof(GenericToken.Comment): return ("Comment", 1);
+            case nameof(GenericToken.UpTo): return ("UpTo", 1);
         }
-        return (null,0);
+        return (null, 0);
     }
 
     private List<string> GetModes(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
     {
         var all = enumMemberDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).ToList();
         var modes = all.Where(x => x.Name.ToString() == "Mode").ToList();
-        
+
         return modes.SelectMany(x =>
         {
             if (x.ArgumentList != null)
@@ -145,18 +147,18 @@ public class LexerSyntaxWalker : CslySyntaxWalker
             return new List<string>();
         }).ToList();
     }
-    
+
     private List<(string lang, string label)> GetLabels(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
     {
         var all = enumMemberDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).ToList();
         var labels = all.Where(x => x.Name.ToString() == "LexemeLabel").ToList();
-        
-         return labels
-             .Where(x => x.ArgumentList != null && x.ArgumentList.Arguments.Count == 2)
-             .Select(x =>
-        {
-                return (x.ArgumentList.Arguments[0].ToString(),x.ArgumentList.Arguments[1].ToString());
-        }).ToList();
+
+        return labels
+            .Where(x => x.ArgumentList != null && x.ArgumentList.Arguments.Count == 2)
+            .Select(x =>
+       {
+           return (x.ArgumentList.Arguments[0].ToString(), x.ArgumentList.Arguments[1].ToString());
+       }).ToList();
     }
 
     private static string[] ShortLexemes = new[]
@@ -164,43 +166,88 @@ public class LexerSyntaxWalker : CslySyntaxWalker
         "Double", "Int", "Integer", "Sugar", "AlphaId", "AlphaNumId", "AlphaNumDashId",
         "MultiLineComment", "SingleLineComment", "Extension", "String", "Keyword", "KeyWord", "UpTo"
     };
-    
+
+    private static Dictionary<string, GenericToken> ShortLexemesToGenericType = new Dictionary<string, GenericToken>()
+    {
+        { "Double", GenericToken.Double},
+        { "Int", GenericToken.Int},
+        { "Integer", GenericToken.Int},
+        { "Sugar", GenericToken.SugarToken},
+        { "AlphaId", GenericToken.Identifier},
+        { "AlphaNumId", GenericToken.Identifier},
+        { "AlphaNumDashId", GenericToken.Identifier},
+        { "MultiLineComment", GenericToken.Comment},
+        { "SingleLineComment", GenericToken.Comment},
+        { "Extension", GenericToken.Extension},
+        { "String", GenericToken.String},
+        { "Keyword", GenericToken.KeyWord},
+        { "KeyWord", GenericToken.KeyWord},
+        { "UpTo", GenericToken.UpTo}
+    };
+
     public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
     {
         var name = node.Identifier.ToString();
         _generator.Tokens.Add(name);
         var modes = GetModes(node);
         var labels = GetLabels(node);
-        
+
         if (node.AttributeLists.Any())
         {
             foreach (AttributeListSyntax attributeListSyntax in node.AttributeLists)
             {
-                foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes.Where(x => x.Name.ToString() != "mode" && x.Name.ToString() != "LexemeLabel" ))
+                foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes.Where(x => x.Name.ToString() != "mode" && x.Name.ToString() != "LexemeLabel"))
                 {
 
                     string attributeName = attributeSyntax.Name.ToString();
+                    
 
                     if (ShortLexemes.Contains(attributeName))
                     {
+                        var type = ShortLexemesToGenericType[attributeName];
+
+                        var args = GetAttributeArgs(attributeSyntax);
+                        var arguments = GetAttributeArgsArray(attributeSyntax, 0);
+                        if (type == GenericToken.Identifier)
+                        {
+                            arguments.Insert(0, attributeName); 
+                            if (attributeName == "AlphaId")
+                            {
+                                arguments.Add("a-zA-Z");
+                                arguments.Add("a-zA-Z");
+                            }
+                            else if (attributeName == "AlphaNumId")
+                            {
+                                arguments.Add("a-zA-Z");
+                                arguments.Add("a-zA-Z0-9");
+                            }
+                            else if (attributeName == "AlphaNumDashId")
+                            {
+                                arguments.Add("_A-Za-z");
+                                arguments.Add("-_0-9A-Za-z");
+                            }
+                        }
+
+                        _staticLexerBuilder.Add(type, name, arguments.ToArray());
+
                         _builder.AppendLine($@".{attributeName}({_lexerName}.{name} {GetAttributeArgs(attributeSyntax)})");
                         var channel = GetChannelArg(attributeSyntax);
                         AddChannel(attributeSyntax);
                     }
-                    else if (attributeName == "Lexeme")
-                    {
-                        VisitLexemeAttribute(attributeSyntax, name);
-                    }
-                    else if (attributeName == "Push")
-                    {
-                        _builder.AppendLine(
-                            $".PushToMode({GetAttributeArgs(attributeSyntax, withLeadingComma: false)})");
-                    }
-                    else if (attributeName == "Pop")
-                    {
-                        _builder.AppendLine(
-                            $".PopMode()");
-                    }
+                    //else if (attributeName == "Lexeme")
+                    //{
+                    //    VisitLexemeAttribute(attributeSyntax, name);
+                    //}
+                    //else if (attributeName == "Push")
+                    //{
+                    //    _builder.AppendLine(
+                    //        $".PushToMode({GetAttributeArgs(attributeSyntax, withLeadingComma: false)})");
+                    //}
+                    //else if (attributeName == "Pop")
+                    //{
+                    //    _builder.AppendLine(
+                    //        $".PopMode()");
+                    //}
 
                     AddLabels(labels);
 
@@ -300,35 +347,35 @@ public class LexerSyntaxWalker : CslySyntaxWalker
                             switch (argumentName)
                             {
                                 case "IgnoreWS":
-                                {
-                                    _builder.AppendLine($".IgnoreWhiteSpace({argument.Expression.ToString()})");
-                                    break;
-                                }
+                                    {
+                                        _builder.AppendLine($".IgnoreWhiteSpace({argument.Expression.ToString()})");
+                                        break;
+                                    }
                                 case "IgnoreEOL":
-                                {
-                                    _builder.AppendLine($".IgnoreEol({argument.Expression.ToString()})");
-                                    break;
-                                }
+                                    {
+                                        _builder.AppendLine($".IgnoreEol({argument.Expression.ToString()})");
+                                        break;
+                                    }
                                 case "WhiteSpace":
-                                {
-                                    _builder.AppendLine($".UseWhiteSpaces({argument.Expression.ToString()})");
-                                    break;
-                                }
+                                    {
+                                        _builder.AppendLine($".UseWhiteSpaces({argument.Expression.ToString()})");
+                                        break;
+                                    }
                                 case "KeyWordIgnoreCase":
-                                {
-                                    _builder.AppendLine($".IgnoreKeywordCase({argument.Expression.ToString()})");
-                                    break;
-                                }
+                                    {
+                                        _builder.AppendLine($".IgnoreKeywordCase({argument.Expression.ToString()})");
+                                        break;
+                                    }
                                 case "IndentationAWare":
-                                {
-                                    _builder.AppendLine($".IsIndentationAware({argument.Expression.ToString()})");
-                                    break;
-                                }
+                                    {
+                                        _builder.AppendLine($".IsIndentationAware({argument.Expression.ToString()})");
+                                        break;
+                                    }
                                 case "Indentation":
-                                {
-                                    _builder.AppendLine($".UseIndentations({argument.Expression.ToString()})");
-                                    break;
-                                }
+                                    {
+                                        _builder.AppendLine($".UseIndentations({argument.Expression.ToString()})");
+                                        break;
+                                    }
                             }
 
                         }
