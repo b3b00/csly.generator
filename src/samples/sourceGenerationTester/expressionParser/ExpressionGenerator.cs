@@ -2,7 +2,7 @@
 
 namespace sourceGenerationTester.expressionParser;
 
-//[ParserGenerator]
+[ParserGenerator]
 public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionToken, ExpressionParser, int>
 {
         

@@ -89,7 +89,7 @@ public class ParserOPtions {
         {
             ComputeLeaderForRule(rule, leadersForNTs);
         }
-
+        leadersForNTs[nonTerminal] = rules.SelectMany(r => r.Leaders).Distinct().ToList();
 
 
     }

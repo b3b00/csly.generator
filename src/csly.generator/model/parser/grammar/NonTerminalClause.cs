@@ -8,4 +8,9 @@ public class NonTerminalClause : AbstractClause
     {
         Name = name;
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

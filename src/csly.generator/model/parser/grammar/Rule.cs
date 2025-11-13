@@ -21,6 +21,13 @@ public class Rule
         this.Clauses = clauses;
         _name = head;
     }
-    
-     
+
+    public override string ToString()
+    {
+        return $"{Head} -> {string.Join(" ", Clauses)}";
+    }
+
+
+
+
 }

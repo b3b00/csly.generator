@@ -3,6 +3,8 @@ using csly.generator.model.parser.attributes;
 
 namespace sourceGenerationTester.expressionParser
 {
+
+    [ParserRoot("expression")]
     public class ExpressionParser
     {
         [Production("primary: INT")]

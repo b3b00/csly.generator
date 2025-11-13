@@ -1,11 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using csly.generator.model.lexer;
 using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
 using sourceGenerationTester.expressionParser;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -14,8 +16,8 @@ public partial class Program
 {
     public static void Main(string[] args)
     {
-        Generate();
-        //Run();
+        //Generate();
+        Run();
         /*GoStatic();
         Run();*/
     }
@@ -65,15 +67,35 @@ public partial class Program
 
     private static void Run()
     {
-        while (true)
-        {
-            var choice = Console.ReadLine();
-            if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-            {
-                Environment.Exit(0);
-            }            
-            //var parser = new StaticExpressionParser();
+        //while (true)
+        //{
+            //var choice = Console.ReadLine();
+            //if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
+            //{
+            //    Environment.Exit(0);
+            //}            
             
-        }
+            var parser = new StaticExpressionParser();
+
+            var tok = (ExpressionToken id, string value, int position) => new Token<ExpressionToken>(id, value, new LexerPosition(position,0,position));
+
+
+            var tokens = new List<Token<ExpressionToken>>() { tok(ExpressionToken.INT,"2",0), tok(ExpressionToken.PLUS, "+", 1), tok(ExpressionToken.INT, "2", 2), new Token<ExpressionToken>() { IsEOS = true } };
+
+            var result = parser.ParseNonTerminal_expression(tokens,0);
+            if (result.IsOk)
+            {
+                Console.WriteLine("Parse succeeded");
+                Console.WriteLine(result.Root.Dump("  "));
+            }
+            else
+            {
+                Console.WriteLine("Parse failed");
+                foreach (var err in result.Errors)
+                {
+                    Console.WriteLine(err.ErrorMessage);
+                }
+            }
+        //}
     }
 }

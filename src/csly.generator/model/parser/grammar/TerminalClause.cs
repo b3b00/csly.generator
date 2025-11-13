@@ -15,6 +15,11 @@ public class TerminalClause : AbstractClause
             Name = Name.Substring(1, Name.Length - 2);
         }
     }
-    
-    
+
+    public override string ToString()
+    {
+        return _isExplicit ? $"'{Name}'" : Name;
+    }
+
+
 }

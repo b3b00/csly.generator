@@ -143,7 +143,7 @@ public class ParserBuilderGenerator
             {
                 ;
             }            
-            var leaders = string.Join(", ",rule.Leaders.Distinct().Select(x => $"new LeadingToken({_lexerName}.{x})"));
+            var leaders = string.Join(", ",rule.Leaders.Distinct().Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})"));
             string callTemplate = _templateEngine.ApplyTemplate("ruleCall.txt",nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
             {
