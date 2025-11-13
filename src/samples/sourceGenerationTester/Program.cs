@@ -71,9 +71,8 @@ public partial class Program
             if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
             {
                 Environment.Exit(0);
-            }
-            //ExpressionGenerator parser = new ExpressionGenerator();
-            var parser = new StaticExpressionParser();
+            }            
+            //var parser = new StaticExpressionParser();
             
         }
     }

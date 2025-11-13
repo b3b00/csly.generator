@@ -1,3 +1,4 @@
+using csly.generator.model.lexer;
 using System.Collections.Generic;
 
 namespace csly.generator.model.parser.grammar;
@@ -7,6 +8,8 @@ public class Rule
     public string Head { get; set; }
     
     public List<IClause> Clauses { get; set; }
+
+    public List<string> Leaders { get; set; } = new List<string>();
 
     public string Name => _name;
     

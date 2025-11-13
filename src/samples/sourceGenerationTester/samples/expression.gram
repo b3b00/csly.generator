@@ -50,9 +50,16 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
 
 
 
-
+    [ParserRoot("expression")]
     public class ExpressionParser
     {
+
+        //[Production("root : expression")] 
+        //public int Root(int exprValue)
+        //{
+        //    return exprValue;
+        //}
+
         [Production("primary: INT")]
         public int Primary(Token<ExpressionToken> intToken)
         {

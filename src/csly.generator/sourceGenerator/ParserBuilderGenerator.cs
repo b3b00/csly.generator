@@ -37,8 +37,8 @@ public class ParserBuilderGenerator
     {
         string name = classDeclarationSyntax.Identifier.ToString();
         StaticParserBuilder staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
-        StringBuilder builder = new StringBuilder();
-        ParserSyntaxWalker walker = new(builder, name, _lexerName, _outputType, staticParserBuilder);
+        
+        ParserSyntaxWalker walker = new(name, _lexerName, _outputType, staticParserBuilder);
 
         walker.Visit(classDeclarationSyntax);
 
@@ -136,10 +136,18 @@ public class ParserBuilderGenerator
         StringBuilder calls = new();
         for (int i = 0; i < rules.Count(); i++)
         {
+
+
+            var rule = rules[i];
+            if (rule.Leaders.Count != 0)
+            {
+                ;
+            }            
+            var leaders = string.Join(", ",rule.Leaders.Distinct().Select(x => $"new LeadingToken({_lexerName}.{x})"));
             string callTemplate = _templateEngine.ApplyTemplate("ruleCall.txt",nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
             {
-                {"<#LEADINGS#>",""}, // static : compute leadings for rule
+                {"<#LEADINGS#>",leaders}, // static : compute leadings for rule
                 {"<#INDEX#>",i.ToString()}
             });
             calls.AppendLine(callTemplate);
