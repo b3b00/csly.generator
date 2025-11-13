@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
 using sourceGenerationTester.expressionParser;
+using sourceGenerationTester.staticlexer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -67,22 +68,34 @@ public partial class Program
 
     private static void Run()
     {
-        //while (true)
-        //{
-            //var choice = Console.ReadLine();
-            //if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-            //{
-            //    Environment.Exit(0);
-            //}            
+        var parser = new StaticExpressionParser();
+        var lexer = new StaticLexer();
+        while (true)
+        {
+            var choice = Console.ReadLine();
+            if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
+            {
+                Environment.Exit(0);
+            }
+
             
-            var parser = new StaticExpressionParser();
 
-            var tok = (ExpressionToken id, string value, int position) => new Token<ExpressionToken>(id, value, new LexerPosition(position,0,position));
+            //var tok = (ExpressionToken id, string value, int position) => new Token<ExpressionToken>(id, value, new LexerPosition(position,0,position));
 
 
-            var tokens = new List<Token<ExpressionToken>>() { tok(ExpressionToken.INT,"2",0), tok(ExpressionToken.PLUS, "+", 1), tok(ExpressionToken.INT, "2", 2), new Token<ExpressionToken>() { IsEOS = true } };
+            //var tokens = new List<Token<ExpressionToken>>() { tok(ExpressionToken.INT,"2",0), tok(ExpressionToken.PLUS, "+", 1), tok(ExpressionToken.INT, "2", 2), new Token<ExpressionToken>() { IsEOS = true } };
 
-            var result = parser.ParseNonTerminal_expression(tokens,0);
+
+
+            var lexerResult =  lexer.Scan(choice.AsSpan());
+            if (lexerResult.IsError)
+            {
+                Console.WriteLine($"Lexing failed: {lexerResult.Error}");
+                return;
+                
+            }
+
+            var result = parser.ParseNonTerminal_expression(lexerResult.Tokens,0);
             if (result.IsOk)
             {
                 Console.WriteLine("Parse succeeded");
@@ -96,6 +109,6 @@ public partial class Program
                     Console.WriteLine(err.ErrorMessage);
                 }
             }
-        //}
+        }
     }
 }
