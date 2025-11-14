@@ -9,7 +9,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
      <#CLAUSES#>
      
      var tree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { <#CHILDREN#> },
-         null);
+         "<#NAME#>_<#INDEX#>");
      result.Root = tree;
      result.IsError = false;
      result.EndingPosition = r<#RULE_COUNT#>.EndingPosition;

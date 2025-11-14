@@ -102,7 +102,7 @@ namespace sourceGenerationTester.expressionParser
 
         [NodeName("negate")]
         [Production("factor : MINUS factor")]
-        public int Factor(Token<ExpressionToken> discardedMinus, int factorValue)
+        public int MinusFactor(Token<ExpressionToken> discardedMinus, int factorValue)
         {
             return -factorValue;
         }

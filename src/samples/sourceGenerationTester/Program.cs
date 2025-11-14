@@ -6,7 +6,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
 using sourceGenerationTester.expressionParser;
+using sourceGenerationTester.visitor;
 using System;
+using csly.models;
 using System.IO;
 using System.Linq;
 
@@ -97,6 +99,14 @@ public partial class Program
             {
                 Console.WriteLine("Parse succeeded");
                 Console.WriteLine(result.Root.Dump("  "));
+                StaticVisitor visitor = new StaticVisitor(new ExpressionParser());
+                if (result.Root is SyntaxNode<ExpressionToken, int> root)
+                {
+                    var value = visitor.VisitExpression(root);
+                    Console.WriteLine($"{choice} = {value}");
+
+                }
+                
             }
             else
             {

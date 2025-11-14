@@ -10,7 +10,7 @@ namespace <#NS#>;
 public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
 {
     
-    public SyntaxNode(string name, List<ISyntaxNode<IN, OUT>> children = null, MethodInfo visitor = null)
+    public SyntaxNode(string name, List<ISyntaxNode<IN, OUT>> children = null, string visitor = null)
     {
         _isEpsilon = children == null || !children.Any() || (children.Count == 1 && children[0].IsEpsilon);
         Name = name;
@@ -24,10 +24,8 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
     public List<ISyntaxNode<IN, OUT>> Children { get; }
 
     [JsonIgnore]
-    public MethodInfo Visitor { get; set; }
+    public string Visitor { get; set; }    
     
-    [JsonIgnore]
-    public Func<object[],OUT> LambdaVisitor { get; set; }
 
     public bool IsByPassNode { get; set; } = false;
 
@@ -129,7 +127,7 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
             expressionSuffix = $">{expressionSuffix}<";
         }
         
-        builder.AppendLine($"{tab}+ {Name} {(IsByPassNode ? "===":"")}");
+        builder.AppendLine($"{tab}+ {Name}>>{Visitor}<< {(IsByPassNode ? "===":"")}");
         
         foreach (var child in Children)
         {

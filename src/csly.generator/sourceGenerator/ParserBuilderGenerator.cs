@@ -69,15 +69,17 @@ public class ParserBuilderGenerator
     private string GenerateStaticParser(List<Rule> rules)
     {
         StringBuilder builder = new();
-    
+    StringBuilder visitors = new StringBuilder();
         var helpers = GenerateHelpers();
     
         StringBuilder parsers = new StringBuilder();
         foreach (var rulesByHead in rules.GroupBy(x => x.Head))
         {
+            var name = rulesByHead.Key;
             var ruleForHead = rulesByHead.ToList();
             for (int i = 0; i < ruleForHead.Count(); i++)
             {
+                visitors.Append(name).Append("_").Append(i).AppendLine(",");
                 GenerateRule(ruleForHead[i],parsers,i);    
             }
                
@@ -98,7 +100,8 @@ public class ParserBuilderGenerator
             {
                 { "HELPERS", helpers },
                 { "PARSERS", parsers.ToString() },
-                { "NAMESPACE", _namespace }
+                { "NAMESPACE", _namespace },
+                { "VISITORS", visitors.ToString()}
             });
     
         return parser;
