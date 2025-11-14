@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 using csly.generator.model.lexer;
 
@@ -101,7 +102,7 @@ namespace csly.generator.model.parser
             }
         }
 
-        [ExcludeFromCodeCoverage] public override string ErrorMessage => "TODO ";
+        [ExcludeFromCodeCoverage] public override string ErrorMessage => $"unepected {UnexpectedToken.ToString()}. Expecting {string.Join(", ",ExpectedTokens.Select(x => x.ToString()))}.";
         
 
         private string GetMessageForExpectedToken(LeadingToken<T> expected)

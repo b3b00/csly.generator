@@ -134,9 +134,15 @@ public class ParserBuilderGenerator
     {
         var rules = _ruleParsers[nonTerminalClause.Name];
         StringBuilder calls = new();
+
+        var allLeaders = rules.SelectMany(r => r.Leaders)
+                .Distinct().ToList()
+                .Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})");
+        var expecting = string.Join(", ", allLeaders);
+
         for (int i = 0; i < rules.Count(); i++)
         {
-
+            
 
             var rule = rules[i];
             if (rule.Leaders.Count != 0)
@@ -156,7 +162,8 @@ public class ParserBuilderGenerator
         string content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalParserTemplate),nonTerminalClause.Name,
             additional: new Dictionary<string, string>()
             {
-                {"CALLS", calls.ToString()}
+                {"CALLS", calls.ToString()},
+                {"EXPECTEDTOKENS",expecting }
             });
         builder.AppendLine(content).AppendLine();
     }
