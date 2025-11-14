@@ -73,6 +73,13 @@ public class CslyParserGenerator : IIncrementalGenerator
             return "";
         };
         
+        TemplateEngine templateEngine = new TemplateEngine("", "", "");
+        var models = templateEngine.GetAllTemplateNamesForFolder("model");
+        foreach (var model in models)
+        {
+            var content = templateEngine.ApplyTemplate(model, additional: new Dictionary<string, string>() { { "NS", "csly.models"} });
+            context.AddSource($"{model}.g.cs", SourceText.From(content, Encoding.UTF8));
+        }
 
 
         Dictionary<string, SyntaxNode> declarationsByName = declarations.ToDictionary(x => getName(x));
@@ -164,7 +171,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     usings.Add($"using {parserDecl.GetNameSpace()};");
                     usings.AddRange(new[]
                     {
-                        "using System;", "using csly.generator.model.lexer;", "using csly.generator.model.parser.tree;",
+                        "using System;", "using csly.models;",
                         "using System.Collections.Generic;"
                     }); 
                     usings = usings.Distinct().ToList();

@@ -1,5 +1,5 @@
-﻿using csly.generator.model.lexer;
-using csly.generator.model.parser.attributes;
+﻿//using csly.generator.model.lexer;
+using csly.models;
 using System;
 
 namespace sourceGenerationTester.expressionParser

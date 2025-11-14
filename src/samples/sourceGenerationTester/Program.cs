@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using csly.generator.model.lexer;
+
 using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,18 +12,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+
 namespace sourceGenerationTester;
 
 
-using csly.generator.model.lexer;
-using csly.generator.model.parser;
-using csly.generator.model.parser.tree;
-using csly.generator.sourceGenerator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Numerics;
+
 
 
 
@@ -40,6 +33,7 @@ public partial class Program
 
     private static void Generate()
     {
+        
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
         var parser = fs.ReadAllText("/samples/expression.gram");
         
@@ -83,7 +77,7 @@ public partial class Program
     private static void Run()
     {
         var parser = new StaticExpressionParser();
-        var lexer = new StaticLexer();
+        
         while (true)
         {
             var choice = Console.ReadLine();
@@ -93,9 +87,7 @@ public partial class Program
             }
             StaticExpressionToken scanner = new StaticExpressionToken();
             var lexerResult = scanner.Scan(choice.AsSpan());
-
-
-            //var lexerResult = lexer.Scan(choice.AsSpan());
+                        
             if (lexerResult.IsError)
             {
                 Console.WriteLine($"Lexing failed: {lexerResult.Error}");

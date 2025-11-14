@@ -1,4 +1,4 @@
-﻿using csly.generator.model.lexer.attributes;
+﻿using csly.models;
 
 namespace sourceGenerationTester.expressionParser
 {

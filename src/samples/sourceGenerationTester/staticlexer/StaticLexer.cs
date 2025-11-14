@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using sourceGenerationTester.expressionParser;
-
+    
 namespace sourceGenerationTester.staticlexer
 {
 

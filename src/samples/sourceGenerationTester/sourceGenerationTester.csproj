@@ -7,11 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
+      <!--<ProjectReference Include="..\..\csly.generator\csly.generator.csproj" 
+                        OutputItemType="Analyzer" 
+                        ReferenceOutputAssembly="false"
+                        />-->
+
+      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj"
+                        OutputItemType="Analyzer"                        
+                        />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Include="samples\expression.gram" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.0" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0" />
+      <PackageReference Include="SharpCoreFileSystem" Version="1.1.6" />
     </ItemGroup>
 
 </Project>

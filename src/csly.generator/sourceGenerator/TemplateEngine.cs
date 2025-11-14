@@ -31,10 +31,16 @@ public class TemplateEngine
     }
 
     
-    private const string regex = @"^csly\.generator\.sourceGenerator\.staticParserTemplates\.(lexer|parser)\.(.*)\.cs$";
+    private const string regex = @"^csly\.generator\.sourceGenerator\.staticParserTemplates\.(lexer|parser|model)\.(.*)\.cs$";
     private ImmutableDictionary<string, string> FullyQualifiedTypeNamesToResourceNames = ImmutableDictionary.CreateRange(
     from string resource in typeof(TemplateEngine).Assembly.GetManifestResourceNames()
     select new KeyValuePair<string, string>(Regex.Match(resource, regex).Groups[2].Value, resource));
+
+
+    public List<string> GetAllTemplateNamesForFolder(string folder)
+    {        
+        return FullyQualifiedTypeNamesToResourceNames.Where(kvp => kvp.Value.Contains("."+folder + ".")).Select(x => x.Key).ToList();     
+    }
 
     public string GetTemplate(string name)
     {

@@ -44,13 +44,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
+    <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs"/>
     <Compile Remove="sourceGenerator\staticParserTemplates\**\*.cs" />
   </ItemGroup>
+
+  
+    
+
+  
 
 </Project>
