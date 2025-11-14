@@ -12,11 +12,8 @@ We need a minimal set of shared model classes for :
 How to include these types ?
 - namespace :
     - static (e.g sly.model.generated)
-    - by parser (e.g while.sly.model.generated)
+    - ~~by parser (e.g while.sly.model.generated)~~
 
-Static namespace may produces conflicts at build if consuming assembly defines many parser. Using parser specific namespaces may produces too many classes.
-
-Is this a real issue ? how many assembly will define many parser and such a number that it could be a real issue ?
 
 ## Memoization
 
