@@ -226,10 +226,10 @@ namespace {ns};
 
 namespace {ns};
 
-    {staticParser}
+    {staticVisitor}
 
 }}";
-                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(staticParser, Encoding.UTF8));
+                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(staticVisitor, Encoding.UTF8));
                     System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"staticVisitor{className}.cs"), staticVisitor);
                 }
             }
