@@ -215,6 +215,22 @@ namespace {ns};
 }}";
 
                     context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
+
+                    var staticVisitor = parserBuilderGenerator.GenerateStaticVisitor();
+
+                    code = $@"
+
+{string.Join(Environment.NewLine, usings)}
+
+
+
+namespace {ns};
+
+    {staticParser}
+
+}}";
+                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(staticParser, Encoding.UTF8));
+                    System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"staticVisitor{className}.cs"), staticVisitor);
                 }
             }
         }

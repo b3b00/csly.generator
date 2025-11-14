@@ -16,3 +16,13 @@ internal enum ParserTemplates
     TerminalClauseTemplate,
     TerminalParserTemplate
 }
+
+internal enum VisitorTemplates
+{
+    CallVisitNonTerminalTemplate,
+    CallVisitTerminalTemplate,
+    CallVisitRuleTemplate,
+    NonTerminalVisitorTemplate,
+    RuleVisitorTemplate,
+    VisitorTemplate
+}   

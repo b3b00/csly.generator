@@ -1,0 +1,1 @@
+﻿var arg<#INDEX#> = Visit<#NAME#>((SyntaxNode<<#LEXER#>, <#OUTPUT#>>)node.Children[<#INDEX#>]);

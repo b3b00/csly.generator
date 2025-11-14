@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs"/>
+    <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs" />
     <Compile Remove="sourceGenerator\staticParserTemplates\**\*.cs" />
   </ItemGroup>
 

@@ -20,8 +20,10 @@ public class ParserBuilderGenerator
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
-    
-    
+
+    private List<Rule> _rules = new();
+
+
     public ParserBuilderGenerator(string lexerName, string parserName, string outputType, string ns,  List<string> lexerGeneratorTokens)
     {
         _lexerName = lexerName;
@@ -41,7 +43,7 @@ public class ParserBuilderGenerator
         ParserSyntaxWalker walker = new(name, _lexerName, _outputType, staticParserBuilder);
 
         walker.Visit(classDeclarationSyntax);
-
+        _rules = staticParserBuilder.Model;
         var staticParser = GenerateStaticParser(staticParserBuilder.Model);
         
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
@@ -249,4 +251,103 @@ public class ParserBuilderGenerator
             _nonTerminalParsers[nonTerminalClause.Name] = nonTerminalClause;
         }
     }
+
+
+    public string GenerateStaticVisitor()
+    {
+        
+        StringBuilder builder = new();
+        StringBuilder visitors = new StringBuilder();
+        
+        foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
+        {
+               var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count());
+            for (int i = 0; i < rulesByHead.Count(); i++)
+           {
+                var rule = rulesByHead.ToList()[i];
+                var ruleVisitor = GenerateRuleVisitor(rule, i);
+                visitors.AppendLine(ruleVisitor);
+            }
+
+        }
+
+        var parser = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.VisitorTemplate),
+            additional: new Dictionary<string, string>()
+            {                
+                { "VISITORS", visitors.ToString() },
+                { "NAMESPACE", _namespace }                
+            });
+
+        return parser;
+    }
+
+    private string GenerateNonTerminalVisitor(string name, int count)
+    {
+        StringBuilder cases = new StringBuilder();
+        for (int i = 0; i < count; i++)
+        {
+            var caseTemplate = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitRuleTemplate),
+                additional: new Dictionary<string, string>()
+                {
+                    {"NAME",name },
+                    {"INDEX",i.ToString() }
+                });
+            cases.AppendLine(caseTemplate);
+        }
+
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalVisitorTemplate), name,
+            additional: new Dictionary<string, string>() {
+            {"VISITORS", cases.ToString()}
+            }); 
+
+        return content;
+    }
+
+    private string GenerateRuleVisitor(Rule rule, int index)
+    {
+        StringBuilder visitors = new StringBuilder();
+        for (int i = 0; i < rule.Clauses.Count; i++)
+        {
+            var clause = rule.Clauses[i];
+            var clauseVisitor = "";
+            if (clause is TerminalClause terminalClause)
+            {
+                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
+                    additional: new Dictionary<string, string>()
+                    {
+                        {"INDEX",i.ToString()}
+                    });
+            }
+            if (clause is NonTerminalClause nonTerminalClause)
+            {
+                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
+                    additional: new Dictionary<string, string>()
+                    {
+                        {"INDEX",i.ToString()}
+                    });
+            }
+            visitors.AppendLine(clauseVisitor);
+        }
+        var args = "";
+        for (int i = 0; i < rule.Clauses.Count; i++)
+        {
+            if (i != 0)
+            {
+                args += ", ";
+            }
+            args += $"args{i}";
+        }
+
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.RuleVisitorTemplate), rule.Name,
+            additional: new Dictionary<string, string>()
+            {
+                {"INDEX",index.ToString() },
+                {"VISITORS", visitors.ToString() },
+                {"VISITOR", rule.MethodName },
+                {"ARGS", args }
+            });
+
+        return content;
+    }
+
 }

@@ -24,8 +24,11 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
     public List<ISyntaxNode<IN, OUT>> Children { get; }
 
     [JsonIgnore]
-    public string Visitor { get; set; }    
-    
+    public string Visitor { get; set; }
+
+    [JsonIgnore]
+    public string VisitorMethodName { get; set; }
+
 
     public bool IsByPassNode { get; set; } = false;
 
