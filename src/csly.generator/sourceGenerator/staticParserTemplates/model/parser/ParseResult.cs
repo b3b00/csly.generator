@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace <#NS#>;
 
@@ -34,7 +35,7 @@ public class ParseResult<IN, OUT> where IN : struct, Enum
     public ParseResult(string error)
     {        
         Errors = new List<ParseError>();
-        Errors.Add(new ParseError() { ErrorMessage = error });
+        Errors.Add(new LexicalError(0,0,'x',"TODO"));
         IsError = true;
     }
 

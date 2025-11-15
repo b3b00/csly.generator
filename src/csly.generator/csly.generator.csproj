@@ -47,6 +47,7 @@
     <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs" />
     <Compile Remove="sourceGenerator\staticParserTemplates\**\*.cs" />
   </ItemGroup>
+  
 
   
     

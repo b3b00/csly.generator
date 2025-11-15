@@ -5,14 +5,14 @@ using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
-using sourceGenerationTester.expressionParser;
-using sourceGenerationTester.visitor;
+//using sourceGenerationTester.expressionParser;
+//using sourceGenerationTester.visitor;
 using System;
 using csly.models;
 using System.IO;
 using System.Linq;
-using csly.generator.sourceGenerator;
-using sourceGenerationTester.visitor;
+//using csly.generator.sourceGenerator;
+//using sourceGenerationTester.visitor;
 
 
 
@@ -79,46 +79,49 @@ public partial class Program
 
     private static void Run()
     {
-        var parser = new StaticExpressionParser();
+        
+        //expressionParser.Main entryPoint = new expressionParser.Main();
 
-        while (true)
-        {
-            var choice = Console.ReadLine();
-            if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-            {
-                Environment.Exit(0);
-            }
-            StaticExpressionToken scanner = new StaticExpressionToken();
-            var lexerResult = scanner.Scan(choice.AsSpan());
+        //var parser = new StaticExpressionParser();
 
-            if (lexerResult.IsError)
-            {
-                Console.WriteLine($"Lexing failed: {lexerResult.Error}");
-                return;
-            }
+        //while (true)
+        //{
+        //    var choice = Console.ReadLine();
+        //    if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
+        //    {
+        //        Environment.Exit(0);
+        //    }
+        //    StaticExpressionToken scanner = new StaticExpressionToken();
+        //    var lexerResult = scanner.Scan(choice.AsSpan());
 
-            var result = parser.ParseNonTerminal_expression(lexerResult.Tokens, 0);
-            if (result.IsOk)
-            {
-                Console.WriteLine("Parse succeeded");
-                Console.WriteLine(result.Root.Dump("  "));
-                ExpressionParserVisitor visitor = new ExpressionParserVisitor(new expressionParser.ExpressionParser());
-                if (result.Root is SyntaxNode<ExpressionToken, int> root)
-                {
-                    var value = visitor.Visitexpression(root);
-                    Console.WriteLine($"{choice} = {value}");
+        //    if (lexerResult.IsError)
+        //    {
+        //        Console.WriteLine($"Lexing failed: {lexerResult.Error}");
+        //        return;
+        //    }
 
-                }
+        //    var result = parser.ParseNonTerminal_expression(lexerResult.Tokens, 0);
+        //    if (result.IsOk)
+        //    {
+        //        Console.WriteLine("Parse succeeded");
+        //        Console.WriteLine(result.Root.Dump("  "));
+        //        ExpressionParserVisitor visitor = new ExpressionParserVisitor(new expressionParser.ExpressionParser());
+        //        if (result.Root is SyntaxNode<ExpressionToken, int> root)
+        //        {
+        //            var value = visitor.Visitexpression(root);
+        //            Console.WriteLine($"{choice} = {value}");
 
-            }
-            else
-            {
-                Console.WriteLine("Parse failed");
-                foreach (var err in result.Errors)
-                {
-                    Console.WriteLine(err.ErrorMessage);
-                }
-            }
-        }
+        //        }
+
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Parse failed");
+        //        foreach (var err in result.Errors)
+        //        {
+        //            Console.WriteLine(err.ErrorMessage);
+        //        }
+        //    }
+        //}
     }
 }
