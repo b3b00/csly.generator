@@ -15,9 +15,6 @@ namespace csly.generator.sourceGenerator;
 public class CslyParserGenerator : IIncrementalGenerator
 {
     
-    private const string Namespace = "sly.Generators";
-    private const string AttributeName = "ParserGeneratorAttribute";
-    
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
 
@@ -222,15 +219,11 @@ namespace {ns};
 
 {string.Join(Environment.NewLine, usings)}
 
-
-
-namespace {ns};
-
     {staticVisitor}
 
-}}";
-                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(staticVisitor, Encoding.UTF8));
-                    System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"staticVisitor{className}.cs"), staticVisitor);
+";
+                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(code, Encoding.UTF8));
+                    System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"staticVisitor{className}.cs"), code);
                 }
             }
         }

@@ -6,7 +6,7 @@ internal class <#PARSER#>Visitor
 {
     private readonly <#PARSER#> _instance;
 
-    public <<#PARSER#>    {
+    public <#PARSER#>Visitor(<#PARSER#> instance)    {
         _instance = instance;
     }
 

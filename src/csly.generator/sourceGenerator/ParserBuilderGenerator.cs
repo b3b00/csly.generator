@@ -262,6 +262,7 @@ public class ParserBuilderGenerator
         foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
         {
                var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count());
+            visitors.AppendLine(nonTerminalVisitor);
             for (int i = 0; i < rulesByHead.Count(); i++)
            {
                 var rule = rulesByHead.ToList()[i];
@@ -335,7 +336,7 @@ public class ParserBuilderGenerator
             {
                 args += ", ";
             }
-            args += $"args{i}";
+            args += $"arg{i}";
         }
 
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.RuleVisitorTemplate), rule.Name,
