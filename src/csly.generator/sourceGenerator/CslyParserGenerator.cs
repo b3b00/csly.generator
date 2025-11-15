@@ -224,6 +224,20 @@ namespace {ns};
 ";
                     context.AddSource($"{className}Visitor.g.cs", SourceText.From(code, Encoding.UTF8));
                     System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"staticVisitor{className}.cs"), code);
+
+                    // ***********
+                    // entry point
+                    var main = parserBuilderGenerator.GenerateEntryPoint();
+                    code = $@"
+
+{string.Join(Environment.NewLine, usings)}
+
+    {main}
+
+";
+                    context.AddSource($"Main{className}.g.cs", SourceText.From(code, Encoding.UTF8));
+                    System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"Main{className}.cs"), code);
+
                 }
             }
         }

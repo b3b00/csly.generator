@@ -351,4 +351,13 @@ public class ParserBuilderGenerator
         return content;
     }
 
+    public string GenerateEntryPoint()
+    {
+        var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional:new Dictionary<string, string>()
+        {
+            {"ROOT","expression" } //TODO
+        });
+        return content;
+    }
+
 }

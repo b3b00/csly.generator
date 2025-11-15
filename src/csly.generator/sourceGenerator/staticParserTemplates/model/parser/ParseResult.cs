@@ -17,6 +17,27 @@ public class ParseResult<IN, OUT> where IN : struct, Enum
 
     public List<ParseError> Errors { get; set; }
 
+    public ParseResult(OUT result, ISyntaxNode<IN, OUT> syntaxTree)
+    {
+        Result = result;
+        SyntaxTree = syntaxTree;
+        IsError = false;
+        Errors = new List<ParseError>();
+    }
+
+    public ParseResult(List<ParseError> errors)
+    {
+        Errors = errors;
+        IsError = true;
+    }
+
+    public ParseResult(string error)
+    {        
+        Errors = new List<ParseError>();
+        Errors.Add(new ParseError() { ErrorMessage = error });
+        IsError = true;
+    }
+
     [ExcludeFromCodeCoverage]
     public override string ToString()
     {
