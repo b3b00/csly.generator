@@ -1,4 +1,5 @@
-﻿
+﻿using System.Linq;
+
 namespace <#NAMESPACE#>;
 
 public class <#PARSER#>Main
@@ -23,7 +24,7 @@ public class <#PARSER#>Main
             }
             else
             {
-                return new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.Errors);
+                return new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.Errors.Cast<ParseError>().ToList());
             }
 }   
 
