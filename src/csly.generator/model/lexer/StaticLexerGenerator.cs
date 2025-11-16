@@ -27,7 +27,7 @@ internal class StaticLexerGenerator {
     public StaticLexerGenerator(StaticLexerBuilder lexerBuilder)
     {
         _lexerBuilder = lexerBuilder;
-        _templateEngine = new TemplateEngine(_lexerBuilder.LexerName, "", "");
+        _templateEngine = new TemplateEngine(_lexerBuilder.LexerName, "", "", _lexerBuilder.NameSpace);
     }
 
     public string Generate()

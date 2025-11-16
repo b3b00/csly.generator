@@ -31,7 +31,7 @@ public class ParserBuilderGenerator
         _outputType = outputType;
         _namespace = ns;
         _lexerGeneratorTokens = lexerGeneratorTokens;
-        _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType);
+        _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns);
     }
     
     
@@ -48,8 +48,6 @@ public class ParserBuilderGenerator
         
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
-        
-        System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/",$"static{name}.cs"),root.ToString());
         
         return root.ToString();
         

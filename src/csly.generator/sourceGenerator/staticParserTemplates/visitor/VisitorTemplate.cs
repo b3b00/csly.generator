@@ -1,6 +1,6 @@
 ﻿using csly.models;
 
-namespace sourceGenerationTester.visitor;
+namespace <#NAMESPACE#>;
 
 internal class <#PARSER#>Visitor
 {

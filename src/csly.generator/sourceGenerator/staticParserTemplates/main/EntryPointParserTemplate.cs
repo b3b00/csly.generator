@@ -1,5 +1,5 @@
 ﻿
-namespace sourceGenerationTester.visitor;
+namespace <#NAMESPACE#>;
 
 public class <#PARSER#>Main
     {
@@ -18,12 +18,12 @@ public class <#PARSER#>Main
                                if (result.IsOk)
             {
                 var visitor = new <#PARSER#>Visitor(parser);
-                var output = visitor.Visit<#ROOT#>(result.Root);
-                return new ParseResult<<#OUTPUT#>>(output);
+                var output = visitor.Visit<#ROOT#>(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+                return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);
             }
             else
             {
-                return new ParseResult<<#OUTPUT#>>(result.Error);
+                return new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.Errors);
             }
 }   
 

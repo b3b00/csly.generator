@@ -1,13 +1,6 @@
-﻿//using csly.generator.model.lexer;
-//using System;
-//using System.Collections.Generic;
-//using sourceGenerationTester.expressionParser;
+﻿
+namespace <#NAMESPACE#>;
 
-//namespace sourceGenerationTester.staticlexer;
-
-
-
-using System.Net.Mime;
 
 public enum LexerStates
 {

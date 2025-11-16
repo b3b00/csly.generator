@@ -12,9 +12,14 @@ internal class StaticLexerBuilder
 
     public List<Lexeme> Lexemes => _lexemes;
 
-    public StaticLexerBuilder(string lexerName)
+
+    private readonly string _nameSpace;
+    public string NameSpace => _nameSpace;
+
+    public StaticLexerBuilder(string lexerName, string nameSpace)
     {
         _lexerName = lexerName;
+        _nameSpace = nameSpace;
     }
 
 

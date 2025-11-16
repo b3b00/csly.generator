@@ -27,8 +27,8 @@ public partial class Program
 {
     public static void Main(string[] args)
     {
-        //Generate();
-        Run();
+        Generate();
+        //Run();
         /*GoStatic();
         Run();*/
     }
@@ -45,9 +45,35 @@ public partial class Program
         var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
+        string path = "c:/tmp/generation/";
+
         foreach (var file in contents)
         {
-            File.WriteAllText(Path.Combine("c:/tmp/generation/", "SimpleParser.cs"), file.Value);
+            FileInfo fileInfo = new FileInfo(file.Key);
+
+            string fileName = Path.Combine(path, fileInfo.Name);
+
+            if (fileInfo.Name.StartsWith("lexer."))
+            {
+                fileName = Path.Combine(path, "models", "lexer" + fileInfo.Name);
+            }
+            if (fileInfo.Name.StartsWith("parser."))
+            {
+                fileName = Path.Combine(path, "models", "parser" + fileInfo.Name);
+            }
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            FileInfo fi = new FileInfo(fileName);
+            if (fi.Directory != null && !fi.Directory.Exists)
+            {
+                Directory.CreateDirectory(fi.DirectoryName);                    
+            }
+
+            File.WriteAllText(fileName, file.Value);
         }
 
     }
