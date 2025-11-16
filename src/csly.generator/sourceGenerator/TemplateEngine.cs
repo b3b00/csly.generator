@@ -17,21 +17,25 @@ public class TemplateEngine
     
     private readonly string _outputType;
 
+    private readonly string _namespace;
+
     private const string LEXER_PLACEHOLDER = "<#LEXER#>";
     private const string PARSER_PLACEHOLDER = "<#PARSER#>";
     private const string OUTPUT_PLACEHOLDER = "<#OUTPUT#>";
     private const string NAME_PLACEHOLDER = "<#NAME#>";
-    
-    public TemplateEngine(string lexerName, string parserName, string outputType)
+    private const string NAMESPACE_PLACEHOLDER = "<#NAMESPACE#>";
+
+    public TemplateEngine(string lexerName, string parserName, string outputType, string nameSpace)
     {
         _lexerName = lexerName;
         _parserName = parserName;
         _outputType = outputType;
-        //_resourceFileSystem =  new EmbeddedResourceFileSystem(typeof(TemplateEngine).Assembly);
-    }
+        _namespace = nameSpace;
+//_resourceFileSystem =  new EmbeddedResourceFileSystem(typeof(TemplateEngine).Assembly);
+}
 
     
-    private const string regex = @"^csly\.generator\.sourceGenerator\.staticParserTemplates\.(lexer|parser|model)\.(.*)\.cs$";
+    private const string regex = @"^csly\.generator\.sourceGenerator\.staticParserTemplates\.(lexer|parser|model|visitor|main)\.(.*)\.cs$";
     private ImmutableDictionary<string, string> FullyQualifiedTypeNamesToResourceNames = ImmutableDictionary.CreateRange(
     from string resource in typeof(TemplateEngine).Assembly.GetManifestResourceNames()
     select new KeyValuePair<string, string>(Regex.Match(resource, regex).Groups[2].Value, resource));
@@ -64,12 +68,13 @@ public class TemplateEngine
 
     public string ApplyTemplate(string templateName, string name = null, bool substitute = true, Dictionary<string, string> additional = null)
     {
-        var template = GetTemplate(templateName);
+         var template = GetTemplate(templateName);
         if (substitute)
         {
             template = Substitute(template, LEXER_PLACEHOLDER, _lexerName);
             template = Substitute(template, PARSER_PLACEHOLDER, _parserName);
             template = Substitute(template, OUTPUT_PLACEHOLDER, _outputType);
+            template = Substitute(template, NAMESPACE_PLACEHOLDER, _namespace);
             if (name != null)
             {
                 template = Substitute(template, NAME_PLACEHOLDER, name);

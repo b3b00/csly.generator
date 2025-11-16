@@ -1,14 +1,19 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-//using csly.generator.sourceGenerator;
+using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
-using sourceGenerationTester.expressionParser;
+//using sourceGenerationTester.expressionParser;
+//using sourceGenerationTester.visitor;
 using System;
+using csly.models;
 using System.IO;
 using System.Linq;
+//using csly.generator.sourceGenerator;
+//using sourceGenerationTester.visitor;
+
 
 
 namespace sourceGenerationTester;
@@ -22,60 +27,88 @@ public partial class Program
 {
     public static void Main(string[] args)
     {
-        //Generate();
+        Generate();
         Run();
         /*GoStatic();
         Run();*/
     }
 
 
-    //private static void Generate()
-    //{
-        
-    //    EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-    //    var parser = fs.ReadAllText("/samples/expression.gram");
-        
-    //    var result = GenerateSource(parser, "SimpleParser");
-        
-    //    var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath,x => x.ToString());
-    //    var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
+    private static void Generate()
+    {
 
-    //    foreach (var file in contents)
-    //    {
-    //        File.WriteAllText(Path.Combine("c:/tmp/generation/","SimpleParser.cs"), file.Value);
-    //    }
-        
-    //}
-    
-    //private static GeneratorDriverRunResult GenerateSource(string source, string className)
-    //{
-    //    // Create an instance of the source generator.
-    //    var generator = new CslyParserGenerator();
+        EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
+        var parser = fs.ReadAllText("/samples/expression.gram");
 
-    //    // Source generators should be tested using 'GeneratorDriver'.
-    //    var driver = CSharpGeneratorDriver.Create(new[] { generator });
+        var result = GenerateSource(parser, "SimpleParser");
 
-    //    // To run generators, we can use an empty compilation.
-    //    var compilation = CSharpCompilation.Create(className,
-    //        new[] { CSharpSyntaxTree.ParseText(source) },
-    //        new[]
-    //        {
-    //            // To support 'System.Attribute' inheritance, add reference to 'System.Private.CoreLib'.
-    //            MetadataReference.CreateFromFile(typeof(object).Assembly.Location)
-    //        });
+        var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
+        var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
-    //    // Run generators. Don't forget to use the new compilation rather than the previous one.
-    //    var runResult = driver.RunGenerators(compilation).GetRunResult();
+        string path = "c:/tmp/generation/";
 
-    //    return runResult;
-    //}
+        foreach (var file in contents)
+        {
+            FileInfo fileInfo = new FileInfo(file.Key);
+
+            string fileName = Path.Combine(path, fileInfo.Name);
+
+            if (fileInfo.Name.StartsWith("lexer."))
+            {
+                fileName = Path.Combine(path, "models", "lexer" + fileInfo.Name);
+            }
+            if (fileInfo.Name.StartsWith("parser."))
+            {
+                fileName = Path.Combine(path, "models", "parser" + fileInfo.Name);
+            }
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            FileInfo fi = new FileInfo(fileName);
+            if (fi.Directory != null && !fi.Directory.Exists)
+            {
+                Directory.CreateDirectory(fi.DirectoryName);                    
+            }
+
+            File.WriteAllText(fileName, file.Value);
+        }
+
+    }
+
+    private static GeneratorDriverRunResult GenerateSource(string source, string className)
+    {
+        // Create an instance of the source generator.
+        var generator = new CslyParserGenerator();
+
+        // Source generators should be tested using 'GeneratorDriver'.
+        var driver = CSharpGeneratorDriver.Create(new[] { generator });
+
+        // To run generators, we can use an empty compilation.
+        var compilation = CSharpCompilation.Create(className,
+            new[] { CSharpSyntaxTree.ParseText(source) },
+            new[]
+            {
+                // To support 'System.Attribute' inheritance, add reference to 'System.Private.CoreLib'.
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location)
+            });
+
+        // Run generators. Don't forget to use the new compilation rather than the previous one.
+        var runResult = driver.RunGenerators(compilation).GetRunResult();
+
+        return runResult;
+    }
 
 
 
     private static void Run()
     {
-        var parser = new StaticExpressionParser();
+        var parser = new expressionParser.ExpressionParser();
         
+        var entryPoint = new expressionParser.ExpressionParserMain(parser);
+
         while (true)
         {
             var choice = Console.ReadLine();
@@ -83,29 +116,20 @@ public partial class Program
             {
                 Environment.Exit(0);
             }
-            StaticExpressionToken scanner = new StaticExpressionToken();
-            var lexerResult = scanner.Scan(choice.AsSpan());
-                        
-            if (lexerResult.IsError)
+            var r = entryPoint.Parse(choice);
+            if (r.IsOk)
             {
-                Console.WriteLine($"Lexing failed: {lexerResult.Error}");
-                return;
-            }
-
-            var result = parser.ParseNonTerminal_expression(lexerResult.Tokens, 0);
-            if (result.IsOk)
-            {
-                Console.WriteLine("Parse succeeded");
-                Console.WriteLine(result.Root.Dump("  "));
+                Console.WriteLine($"{choice} = {r.Result}");
+                Console.WriteLine(r.SyntaxTree.Dump("  "));
             }
             else
             {
                 Console.WriteLine("Parse failed");
-                foreach (var err in result.Errors)
+                foreach (var err in r.Errors)
                 {
                     Console.WriteLine(err.ErrorMessage);
                 }
-            }
+            }            
         }
     }
 }

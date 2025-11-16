@@ -39,21 +39,21 @@ namespace sourceGenerationTester.expressionParser
             switch (operatorToken.TokenID)
             {
                 case ExpressionToken.PLUS:
-                {
-                    result = left + right;
-                    break;
-                }
+                    {
+                        result = left + right;
+                        break;
+                    }
                 case ExpressionToken.MINUS:
-                {
-                    result = left - right;
-                    break;
-                }
+                    {
+                        result = left - right;
+                        break;
+                    }
             }
 
             return result;
         }
 
-        
+
         [NodeName("expression")]
         [Production("expression : term")]
         public int Expression_Term(int termValue)
@@ -72,15 +72,15 @@ namespace sourceGenerationTester.expressionParser
             switch (operatorToken.TokenID)
             {
                 case ExpressionToken.TIMES:
-                {
-                    result = left * right;
-                    break;
-                }
+                    {
+                        result = left * right;
+                        break;
+                    }
                 case ExpressionToken.DIVIDE:
-                {
-                    result = left / right;
-                    break;
-                }
+                    {
+                        result = left / right;
+                        break;
+                    }
             }
 
             return result;
@@ -102,7 +102,7 @@ namespace sourceGenerationTester.expressionParser
 
         [NodeName("negate")]
         [Production("factor : MINUS factor")]
-        public int Factor(Token<ExpressionToken> discardedMinus, int factorValue)
+        public int MinusFactor(Token<ExpressionToken> discardedMinus, int factorValue)
         {
             return -factorValue;
         }

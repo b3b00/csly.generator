@@ -6,6 +6,12 @@ using csly.models;
 
 namespace <#NAMESPACE#>;
 
+
+public enum  Visitors
+{
+    <#VISITORS#>
+}
+
 public partial class Static<#PARSER#> : AbstractParserGenerator<<#LEXER#>, <#PARSER#>, <#OUTPUT#>> 
 {
     public Dictionary<<#LEXER#>, Dictionary<string, string>> LexemeLabels { get; set; }

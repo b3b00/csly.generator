@@ -14,12 +14,17 @@ public class Rule
     public string Name => _name;
     
     private readonly string _name;
-    
-    public Rule(string head, List<IClause> clauses)
+
+    private readonly string _methodName;
+
+    public string MethodName => _methodName;
+
+    public Rule(string head, List<IClause> clauses, string methodName)
     {
         this.Head = head;
         this.Clauses = clauses;
         _name = head;
+        _methodName = methodName;
     }
 
     public override string ToString()

@@ -31,7 +31,7 @@ public class ParserOPtions {
     }
 
 
-    public Rule Parse(string ruleString)
+    public Rule Parse(string ruleString, string methodName)
     {
             (string head, string[] clauses) result = (null,null);
             if (ruleString != null)
@@ -49,7 +49,7 @@ public class ParserOPtions {
                     x => _tokens.Contains(x) ? 
                         (IClause)new TerminalClause(x) :
                         (IClause)new NonTerminalClause(x)).ToList();
-                var rule = new Rule(head, clauses);
+                var rule = new Rule(head, clauses,methodName);
                 Model.Add(rule);
                 return rule;
             }

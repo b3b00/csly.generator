@@ -15,9 +15,6 @@ namespace csly.generator.sourceGenerator;
 public class CslyParserGenerator : IIncrementalGenerator
 {
     
-    private const string Namespace = "sly.Generators";
-    private const string AttributeName = "ParserGeneratorAttribute";
-    
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
 
@@ -73,7 +70,7 @@ public class CslyParserGenerator : IIncrementalGenerator
             return "";
         };
         
-        TemplateEngine templateEngine = new TemplateEngine("", "", "");
+        TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
         var models = templateEngine.GetAllTemplateNamesForFolder("model");
         foreach (var model in models)
         {
@@ -177,7 +174,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     usings = usings.Distinct().ToList();
 
                     LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator();
-                    StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName);
+                    StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
                     var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
                         declarationsByName, staticLexerBuilder);
                     StaticLexerGenerator staticLexerGenerator =
@@ -188,14 +185,10 @@ public class CslyParserGenerator : IIncrementalGenerator
 {string.Join(Environment.NewLine, usings)}
 
 
-
-namespace {ns};
-
    {t}
 ";
 
                     context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
-                    System.IO.File.WriteAllText(System.IO.Path.Combine("c:/tmp/generation/", $"static{lexerName}.cs"), staticLexer);
 
                     ParserBuilderGenerator parserBuilderGenerator =
                         new ParserBuilderGenerator(lexerName, parserType, outputType, ns, lexerGenerator.Tokens);
@@ -207,14 +200,33 @@ namespace {ns};
 {string.Join(Environment.NewLine, usings)}
 
 
-
-namespace {ns};
-
     {staticParser}
 
 }}";
 
                     context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
+
+                    var staticVisitor = parserBuilderGenerator.GenerateStaticVisitor();
+
+                    code = $@"
+
+{string.Join(Environment.NewLine, usings)}
+
+    {staticVisitor}
+
+";
+                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(code, Encoding.UTF8));
+
+                    // ***********
+                    // entry point
+                    var main = parserBuilderGenerator.GenerateEntryPoint();
+                    code = $@"
+
+{string.Join(Environment.NewLine, usings)}
+
+    {main}
+";
+                    context.AddSource($"Main{className}.g.cs", SourceText.From(code, Encoding.UTF8));
                 }
             }
         }
