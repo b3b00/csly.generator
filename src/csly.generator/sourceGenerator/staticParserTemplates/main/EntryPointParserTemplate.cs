@@ -5,6 +5,13 @@ namespace <#NAMESPACE#>;
 public class <#PARSER#>Main
     {
 
+    private readonly <#PARSER#> _instance;
+
+    public <#PARSER#>Main(<#PARSER#> instance)
+        {
+        _instance = instance;
+        }
+
     public ParseResult<<#LEXER#>, <#OUTPUT#>> Parse(string source)
         {
             Static<#LEXER#> scanner = new Static<#LEXER#>();
@@ -18,7 +25,7 @@ public class <#PARSER#>Main
     var result = parser.ParseNonTerminal_<#ROOT#>(lexerResult.Tokens, 0);
                                if (result.IsOk)
             {
-                var visitor = new <#PARSER#>Visitor(parser);
+                var visitor = new <#PARSER#>Visitor(_instance);
                 var output = visitor.Visit<#ROOT#>(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
                 return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);
             }

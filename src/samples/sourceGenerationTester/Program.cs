@@ -28,7 +28,7 @@ public partial class Program
     public static void Main(string[] args)
     {
         Generate();
-        //Run();
+        Run();
         /*GoStatic();
         Run();*/
     }
@@ -105,49 +105,31 @@ public partial class Program
 
     private static void Run()
     {
+        var parser = new expressionParser.ExpressionParser();
         
-        //expressionParser.Main entryPoint = new expressionParser.Main();
+        var entryPoint = new expressionParser.ExpressionParserMain(parser);
 
-        //var parser = new StaticExpressionParser();
-
-        //while (true)
-        //{
-        //    var choice = Console.ReadLine();
-        //    if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-        //    {
-        //        Environment.Exit(0);
-        //    }
-        //    StaticExpressionToken scanner = new StaticExpressionToken();
-        //    var lexerResult = scanner.Scan(choice.AsSpan());
-
-        //    if (lexerResult.IsError)
-        //    {
-        //        Console.WriteLine($"Lexing failed: {lexerResult.Error}");
-        //        return;
-        //    }
-
-        //    var result = parser.ParseNonTerminal_expression(lexerResult.Tokens, 0);
-        //    if (result.IsOk)
-        //    {
-        //        Console.WriteLine("Parse succeeded");
-        //        Console.WriteLine(result.Root.Dump("  "));
-        //        ExpressionParserVisitor visitor = new ExpressionParserVisitor(new expressionParser.ExpressionParser());
-        //        if (result.Root is SyntaxNode<ExpressionToken, int> root)
-        //        {
-        //            var value = visitor.Visitexpression(root);
-        //            Console.WriteLine($"{choice} = {value}");
-
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Parse failed");
-        //        foreach (var err in result.Errors)
-        //        {
-        //            Console.WriteLine(err.ErrorMessage);
-        //        }
-        //    }
-        //}
+        while (true)
+        {
+            var choice = Console.ReadLine();
+            if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
+            {
+                Environment.Exit(0);
+            }
+            var r = entryPoint.Parse(choice);
+            if (r.IsOk)
+            {
+                Console.WriteLine($"{choice} = {r.Result}");
+                Console.WriteLine(r.SyntaxTree.Dump("  "));
+            }
+            else
+            {
+                Console.WriteLine("Parse failed");
+                foreach (var err in r.Errors)
+                {
+                    Console.WriteLine(err.ErrorMessage);
+                }
+            }            
+        }
     }
 }
