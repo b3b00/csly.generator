@@ -28,7 +28,7 @@ public partial class Program
     public static void Main(string[] args)
     {
         Generate();
-        Run();
+       // Run();
         /*GoStatic();
         Run();*/
     }
@@ -38,7 +38,7 @@ public partial class Program
     {
 
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-        var parser = fs.ReadAllText("/samples/expression.gram");
+        var parser = fs.ReadAllText("/samples/ebnf.gram");
 
         var result = GenerateSource(parser, "SimpleParser");
 
@@ -103,7 +103,7 @@ public partial class Program
 
 
 
-    private static void Run()
+    /*private static void Run()
     {
         var parser = new expressionParser.ExpressionParser();
         
@@ -131,5 +131,5 @@ public partial class Program
                 }
             }            
         }
-    }
+    }*/
 }

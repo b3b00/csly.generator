@@ -14,17 +14,22 @@ public class <#PARSER#>Main
 
     public ParseResult<<#LEXER#>, <#OUTPUT#>> Parse(string source)
         {
+            // lexing
             Static<#LEXER#> scanner = new Static<#LEXER#>();
-    var lexerResult = scanner.Scan(source.AsSpan());
-
+            var lexerResult = scanner.Scan(source.AsSpan());
+            
             if (lexerResult.IsError)
             {        
                 return new ParseResult<<#LEXER#>, <#OUTPUT#>>(lexerResult.Error);
             }
-    var parser = new Static<#PARSER#>();
-    var result = parser.ParseNonTerminal_<#ROOT#>(lexerResult.Tokens, 0);
-                               if (result.IsOk)
+
+            // parsing
+            var parser = new Static<#PARSER#>();
+            var result = parser.ParseNonTerminal_<#ROOT#>(lexerResult.Tokens, 0);
+            if (result.IsOk)
             {
+
+                // visiting
                 var visitor = new <#PARSER#>Visitor(_instance);
                 var output = visitor.Visit<#ROOT#>(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
                 return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);

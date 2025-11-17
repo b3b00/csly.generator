@@ -9,12 +9,11 @@
     <ItemGroup>
       <!--<ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
 
-      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj"
-                        OutputItemType="Analyzer"                        
-                        />
+      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="samples\ebnf.gram" />
       <EmbeddedResource Include="samples\expression.gram" />
     </ItemGroup>
 

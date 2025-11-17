@@ -90,10 +90,23 @@ public class ParserBuilderGenerator
         {
             GenerateTerminal(terminalParser.Value,parsers);
         }
-    
+
+        var missings = rules.Select(x => new NonTerminalClause(x.Head)).ToList();
+                    
+
         foreach (var nonTerminalParser in _nonTerminalParsers)
         {
             GenerateNonTerminal(nonTerminalParser.Value,parsers);
+            missings = missings.Where(x => x.Name != nonTerminalParser.Key).ToList();
+        }
+
+        // generate parser for non terminals that are not used in rules ( ex : root non terminal )
+        if (missings.Count > 0)
+        {
+            foreach (var missing in missings)
+            {
+                GenerateNonTerminal(missing,parsers);
+            }
         }
     
         var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ParserTemplate),
