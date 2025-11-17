@@ -32,12 +32,9 @@ namespace sourceGenerationTester.expressionParser
 
         [Sugar("!")] FACTORIAL = 13,
 
+        [Keyword("hello")] PI = 15,
 
-        // a whitespace
-        //[Lexeme("[ \\t]+", true)] WS = 11,
-
-        //[Lexeme("[\\n\\r]+", true, true)] EOL = 12
-
+        [Keyword("world")] E = 17,
 
     }
 }

@@ -11,12 +11,13 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
 
     public enum ExpressionToken
     {
+        // float number 
         [Double] DOUBLE = 1,
 
         // integer        
         [Int] INT = 3,
 
-        [AlphaNumDashId] IDENTIFIER = 4,
+        [AlphaId] IDENTIFIER = 4,
 
         // the + operator
         [Sugar("+")] PLUS = 5,
@@ -38,11 +39,10 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
 
         [Sugar("!")] FACTORIAL = 13,
 
+        [Keyword("hello")] HELLO = 15,
 
-        // a whitespace
-        //[Lexeme("[ \\t]+", true)] WS = 11,
 
-        //[Lexeme("[\\n\\r]+", true, true)] EOL = 12
+        [Keyword("world")] WORLD = 17,
 
 
     }

@@ -1,4 +1,4 @@
-﻿public int Visit<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+﻿public <#OUTPUT#> Visit<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
 {
     switch (node.Visitor)
     {

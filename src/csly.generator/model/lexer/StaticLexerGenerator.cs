@@ -37,8 +37,12 @@ internal class StaticLexerGenerator {
         var others = _lexerBuilder.Lexemes.Select(lexeme => GenerateOther(lexeme)).Where(content => content != null).ToList();
         var startsIf = string.Join("else ", starts);
         var othersIf = string.Join("\n", others);
-        var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.LexerTemplate),  additional: new Dictionary<string, string>()
+        var keywords = string.Join(",\n        ", _lexerBuilder.Lexemes
+            .Where(lexeme => lexeme.Type == GenericToken.KeyWord)
+            .Select(lexeme => $"{{ \"{lexeme.Name}\", ExpressionToken.{lexeme.Name} }}"));
+        var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.LexerTemplate), additional: new Dictionary<string, string>()
         {
+            { "KEYWORDS", keywords},
             {"START_RULES", startsIf },
             {"STATES", string.Join(", ",_states.Select(x => x.ToString())) },
             {"OTHER_STATES", othersIf }

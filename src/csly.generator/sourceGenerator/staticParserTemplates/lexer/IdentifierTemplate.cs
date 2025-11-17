@@ -7,10 +7,17 @@
     else
     {
         var value = source.Slice(previous.Index, position.Index - previous.Index).ToString();
-        tokens.Add(new Token<<#LEXER#>>(<#LEXER#>.<#NAME#>, value, previous.Clone()));
-        if (currentChar == (char)0)
+        // TODO : Check for keywords here
+        if (_keyWords.TryGetValue(value, out var keyword)) {
+            tokens.Add(new Token<<#LEXER#>>(keyword, value, previous.Clone()));
+        }
+        else
         {
-            position.Index++;
+            tokens.Add(new Token<<#LEXER#>>(<#LEXER#>.<#NAME#>, value, previous.Clone()));
+        if (currentChar == (char)0)
+            {
+                position.Index++;
+            }
         }
         state = LexerStates.Start;
     }

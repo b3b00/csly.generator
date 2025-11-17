@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace <#NAMESPACE#>;
 
 
@@ -11,6 +13,11 @@ public enum LexerStates
 public class Static<#LEXER#>
 {
 
+
+    private readonly Dictionary<string, <#LEXER#>> _keyWords = new Dictionary<string, <#LEXER#>>()  
+    {
+        <#KEYWORDS#>
+    };
 
     public Static<#LEXER#>()
     {
