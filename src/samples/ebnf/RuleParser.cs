@@ -1,8 +1,10 @@
-﻿using System;
-using csly.models;
+﻿using csly.models;
+using System;
 
 namespace ebnf.grammar;
 
+
+[ParserRoot("rule")]
  public class RuleParser 
 {
     #region rules grammar
@@ -288,16 +290,12 @@ namespace ebnf.grammar;
         string token = null;
         IClause clause;
         var isTerminal = false;
-        var b = Enum.TryParse<IN>(name, out token);
-        if (b)
-        {
-            isTerminal = true;
-        }
+        // TODO : use available token list => need a context . or a instance variable even it is not as clean, it does not mind as it's a build step
 
         
         
         if (isTerminal)
-            clause = new TerminalClause(new LeadingToken<IN>(token), discard);
+            clause = new TerminalClause(token, discard);
         else
         {
             if (name.StartsWith("'"))

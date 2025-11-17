@@ -20,6 +20,7 @@ public class ParserBuilderGenerator
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
+    private StaticParserBuilder _staticParserBuilder;
 
     private List<Rule> _rules = new();
 
@@ -38,13 +39,13 @@ public class ParserBuilderGenerator
     public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax)
     {
         string name = classDeclarationSyntax.Identifier.ToString();
-        StaticParserBuilder staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
+        _staticParserBuilder  = new StaticParserBuilder(_lexerGeneratorTokens);
         
-        ParserSyntaxWalker walker = new(name, _lexerName, _outputType, staticParserBuilder);
+        ParserSyntaxWalker walker = new(name, _lexerName, _outputType, _staticParserBuilder);
 
         walker.Visit(classDeclarationSyntax);
-        _rules = staticParserBuilder.Model;
-        var staticParser = GenerateStaticParser(staticParserBuilder.Model);
+        _rules = _staticParserBuilder.Model;
+        var staticParser = GenerateStaticParser(_staticParserBuilder.Model, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
         
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
@@ -66,7 +67,7 @@ public class ParserBuilderGenerator
         return root;
     }
 
-    private string GenerateStaticParser(List<Rule> rules)
+    private string GenerateStaticParser(List<Rule> rules, string startingNonTerminal)
     {
         StringBuilder builder = new();
     StringBuilder visitors = new StringBuilder();
@@ -351,9 +352,10 @@ public class ParserBuilderGenerator
 
     public string GenerateEntryPoint()
     {
+        var root = _staticParserBuilder.ParserOPtions.StartingNonTerminal;
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional:new Dictionary<string, string>()
         {
-            {"ROOT","expression" } //TODO
+            {"ROOT",root } //TODO
         });
         return content;
     }

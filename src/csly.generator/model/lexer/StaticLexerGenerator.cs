@@ -39,7 +39,7 @@ internal class StaticLexerGenerator {
         var othersIf = string.Join("\n", others);
         var keywords = string.Join(",\n        ", _lexerBuilder.Lexemes
             .Where(lexeme => lexeme.Type == GenericToken.KeyWord)
-            .Select(lexeme => $"{{ \"{lexeme.Name}\", ExpressionToken.{lexeme.Name} }}"));
+            .Select(lexeme => $"{{ \"{lexeme.Name}\", {_lexerBuilder.LexerName}.{lexeme.Name} }}"));
         var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.LexerTemplate), additional: new Dictionary<string, string>()
         {
             { "KEYWORDS", keywords},

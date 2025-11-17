@@ -6,5 +6,5 @@
         default:
                 throw new NotImplementedException($"Visitor {node.Visitor} not implemented");
     }
-            return 0;
+    return default(<#OUTPUT#>);
 }

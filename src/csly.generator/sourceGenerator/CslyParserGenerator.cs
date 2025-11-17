@@ -48,7 +48,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         if (syntaxNode != null)
         {
             var unit = syntaxNode.GetCompilationUnit();
-            return unit.Usings.Select(x => x.ToString()).ToList();
+            return unit.Usings.Select(x => x.ToString()).Where(x => !x.ToString().Contains("csly.generator")).ToList();
         }
         return new List<string>();
     }
@@ -219,6 +219,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                     // ***********
                     // entry point
+                    
                     var main = parserBuilderGenerator.GenerateEntryPoint();
                     code = $@"
 

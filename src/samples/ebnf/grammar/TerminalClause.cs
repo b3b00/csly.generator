@@ -12,7 +12,7 @@ public class TerminalClause : AbstractClause
     public bool Discarded { get; set; }
 
     public bool IsExplicit => _isExplicit;
-    public TerminalClause(string name)
+    public TerminalClause(string name, bool discarded = false)
     {
         Name = name;
         if (Name.StartsWith("'") && Name.EndsWith("'"))
@@ -20,6 +20,7 @@ public class TerminalClause : AbstractClause
             _isExplicit = true;
             Name = Name.Substring(1, Name.Length - 2);
         }
+        Discarded = discarded;
     }
 
     public override string ToString()
