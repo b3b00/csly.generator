@@ -311,24 +311,24 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                         _staticLexerBuilder.Add(GenericToken.KeyWord, name,
                             GetAttributeArgsArray(attributeSyntax, skip).ToArray());
                     }
-                    if (method == "Sugar")
+                    else if (method == "Sugar")
                     {
                         _staticLexerBuilder.Add(GenericToken.SugarToken, name,
                             GetAttributeArgsArray(attributeSyntax, skip).ToArray());
                     }
-                    if (method == "AlphaId")
+                    else if (method == "AlphaId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
                             name,
                             new[] {"a-zA-Z","a-zA-Z"});
                     }
-                    if (method == "AlphaNumId")
+                    else if (method == "AlphaNumId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
                             name,
                             new[] { "a-zA-Z", "a-zA-Z0-9" });
                     }
-                    if (method == "AlphaNumDashId")
+                    else if (method == "AlphaNumDashId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
                             name,

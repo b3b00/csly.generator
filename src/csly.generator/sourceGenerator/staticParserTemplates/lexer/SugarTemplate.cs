@@ -1,7 +1,7 @@
 ﻿
-if (currentChar == '<#CHAR#>')
+else if (<#LEXEME_CONDITION#>) // Sugar : "<#NAME#>"
 {
-    tokens.Add(new Token<<#LEXER#>>(<#LEXER#>.<#NAME#>, "<#CHAR#>", position));
+    tokens.Add(new Token<<#LEXER#>>(<#LEXER#>.<#NAME#>, "<#PATTERN#>", position));
     position.Index++;
     previous = position.Clone();
 }

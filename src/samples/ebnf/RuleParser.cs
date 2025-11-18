@@ -7,6 +7,15 @@ namespace ebnf.grammar;
 [ParserRoot("rule")]
  public class RuleParser 
 {
+
+    private readonly List<string> _terminals;
+
+
+    public RuleParser(List<string> terminals)
+    {
+        _terminals = terminals;
+    }
+
     #region rules grammar
 
     [Production("rule : IDENTIFIER COLON clauses")]
@@ -291,9 +300,9 @@ namespace ebnf.grammar;
         IClause clause;
         var isTerminal = false;
         // TODO : use available token list => need a context . or a instance variable even it is not as clean, it does not mind as it's a build step
+        isTerminal = _terminals.Contains(name) || (name.StartsWith("'") && name.EndsWith("'"));
 
-        
-        
+
         if (isTerminal)
             clause = new TerminalClause(token, discard);
         else

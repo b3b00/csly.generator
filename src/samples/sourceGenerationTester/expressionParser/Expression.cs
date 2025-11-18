@@ -2,8 +2,8 @@
 
 namespace sourceGenerationTester.expressionParser;
 
-[ParserGenerator]
-public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, double>
-{
+//[ParserGenerator]
+//public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, double>
+//{
 
-}
+//}

@@ -10,12 +10,3 @@ public partial class Ebnf : AbstractParserGenerator<EbnfTokenGeneric, RuleParser
 {
 
 }
-
-public class Dummy
-{
-    public static void T()
-    {
-        RuleParser parser = new RuleParser();
-        
-    }
-}
