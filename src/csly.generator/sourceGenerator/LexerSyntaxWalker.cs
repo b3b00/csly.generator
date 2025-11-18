@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -234,20 +235,20 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                         var channel = GetChannelArg(attributeSyntax);
                         AddChannel(attributeSyntax);
                     }
-                    //else if (attributeName == "Lexeme")
-                    //{
-                    //    VisitLexemeAttribute(attributeSyntax, name);
-                    //}
-                    //else if (attributeName == "Push")
-                    //{
-                    //    _builder.AppendLine(
-                    //        $".PushToMode({GetAttributeArgs(attributeSyntax, withLeadingComma: false)})");
-                    //}
-                    //else if (attributeName == "Pop")
-                    //{
-                    //    _builder.AppendLine(
-                    //        $".PopMode()");
-                    //}
+                    else if (attributeName == "Lexeme")
+                    {
+                        VisitLexemeAttribute(attributeSyntax, name);
+                    }
+                    else if (attributeName == "Push")
+                    {
+                        _builder.AppendLine(
+                            $".PushToMode({GetAttributeArgs(attributeSyntax, withLeadingComma: false)})");
+                    }
+                    else if (attributeName == "Pop")
+                    {
+                        _builder.AppendLine(
+                            $".PopMode()");
+                    }
 
                     AddLabels(labels);
 
@@ -301,27 +302,42 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
             {
                 var (method, skip) = GetMethodForGenericLexeme(member,
                     attributeSyntax.ArgumentList.Arguments);
+                
                 if (!string.IsNullOrEmpty(method))
                 {
-                    if (method == "Keyword" || method == "Sugar")
+                    // todo : manage identifier f(method) in {alphaid, alphanumdahsid, alphanumid, customid}
+                    if (method == "Keyword")
                     {
-                        _builder.AppendLine(
-                            $@".{method}({_lexerName}.{name} {GetAttributeArgsForLexemekeyWord(attributeSyntax, skip)})");
-                        var channel = GetChannelArg(attributeSyntax, skip);
-                        if (channel != null)
-                        {
-                            _builder.AppendLine($"     .OnChannel({channel})");
-                        }
+                        _staticLexerBuilder.Add(GenericToken.KeyWord, name,
+                            GetAttributeArgsArray(attributeSyntax, skip).ToArray());
                     }
+                    if (method == "Sugar")
+                    {
+                        _staticLexerBuilder.Add(GenericToken.SugarToken, name,
+                            GetAttributeArgsArray(attributeSyntax, skip).ToArray());
+                    }
+                    if (method == "AlphaId")
+                    {
+                        _staticLexerBuilder.Add(GenericToken.Identifier,
+                            name,
+                            new[] {"a-zA-Z","a-zA-Z"});
+                    }
+                    if (method == "AlphaNumId")
+                    {
+                        _staticLexerBuilder.Add(GenericToken.Identifier,
+                            name,
+                            new[] { "a-zA-Z", "a-zA-Z0-9" });
+                    }
+                    if (method == "AlphaNumDashId")
+                    {
+                        _staticLexerBuilder.Add(GenericToken.Identifier,
+                            name,
+                            new[] { "_a-zA-Z", "_-a-zA-Z0-9" });
+                    }                    
                     else
                     {
-                        _builder.AppendLine(
-                            $@".{method}({_lexerName}.{name} {GetAttributeArgs(attributeSyntax, skip)})");
-                        var channel = GetChannelArg(attributeSyntax, skip);
-                        if (channel != null)
-                        {
-                            _builder.AppendLine($"     .OnChannel({channel})");
-                        }
+                        GenericToken lexemeType = (GenericToken)Enum.Parse(typeof(GenericToken),member.Name.Identifier.Text);                         
+                        _staticLexerBuilder.Add(lexemeType, name, GetAttributeArgsArray(attributeSyntax, 1).ToArray());
                     }
                 }
             }

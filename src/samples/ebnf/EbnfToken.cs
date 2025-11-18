@@ -1,5 +1,4 @@
-﻿using csly.generator.model.lexer;
-using csly.generator.model.lexer.attributes;
+﻿using csly.models;
 
 namespace ebnf
 {   

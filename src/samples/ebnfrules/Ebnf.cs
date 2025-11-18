@@ -1,11 +1,24 @@
 ﻿using csly.models;
 using ebnf.grammar;
+using System.Diagnostics;
 
-namespace ebnf;
+namespace ebnf.grammar;
 
 [ParserGenerator]
 
-public class Ebnf : AbstractParserGenerator<EbnfToken, RuleParser, GrammarNode>
+public partial class Ebnf : AbstractParserGenerator<EbnfTokenGeneric, RuleParser, GrammarNode>
 {
 
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        RuleParser parser = new RuleParser(new List<string>() { "A","B","C","D","E"});
+        RuleParserMain main = new RuleParserMain(parser);
+        var t = main.Parse("a : b C d E f");
+
+
+    }
 }

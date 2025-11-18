@@ -1,4 +1,5 @@
 ﻿using csly.generator.model.lexer;
+using System;
 using System.Collections.Generic;
 
 internal class StaticLexerBuilder

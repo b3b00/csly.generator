@@ -107,7 +107,7 @@ internal class StaticLexerGenerator {
     {
         if (lexeme.Type == GenericToken.Identifier)
         {
-            var followPatterns = ParseIdentifierPattern(lexeme.Args[2]).ToList();
+            var followPatterns = ParseIdentifierPattern(lexeme.Args[1]).ToList();
             var cond = string.Join(" || ", followPatterns.Select(pattern =>
             {
                 if (pattern.Length == 2)
