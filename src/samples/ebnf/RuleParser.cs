@@ -296,7 +296,7 @@ namespace ebnf.grammar;
     private GrammarNode BuildTerminalOrNonTerimal(string name, bool discard = false)
     {
         
-        string token = null;
+        
         IClause clause;
         var isTerminal = false;
         // TODO : use available token list => need a context . or a instance variable even it is not as clean, it does not mind as it's a build step
@@ -304,7 +304,7 @@ namespace ebnf.grammar;
 
 
         if (isTerminal)
-            clause = new TerminalClause(token, discard);
+            clause = new TerminalClause(name, discard);
         else
         {
             if (name.StartsWith("'"))

@@ -72,6 +72,11 @@ public class ParserOPtions {
         {
             ComputeLeadersForNonTerminal(sp, nonTerminalLeaders);
         }
+        var nonTerminals = Model.Select(r => r.Head).Distinct().Where(x => !startingPoints.Contains(x)).ToList();
+        foreach (var nt in nonTerminals )
+        {
+            ComputeLeadersForNonTerminal(nt, nonTerminalLeaders);
+        }
     }
 
     private void ComputeLeadersForNonTerminal(string nonTerminal, Dictionary<string, List<string>> leadersForNTs)
