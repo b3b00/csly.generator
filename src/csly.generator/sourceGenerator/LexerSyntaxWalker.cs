@@ -332,7 +332,7 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
                             name,
-                            new[] { "_a-zA-Z", "_-a-zA-Z0-9" });
+                            new[] { "_a-zA-Z", "-_a-zA-Z0-9" });
                     }                    
                     else
                     {

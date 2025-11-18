@@ -91,7 +91,7 @@ internal class StaticLexerGenerator
         }
         if (lexeme.Type == GenericToken.Identifier)
         {
-            var startPatterns = ParseIdentifierPattern(lexeme.Args[1]).ToList();
+            var startPatterns = ParseIdentifierPattern(lexeme.Args[0]).ToList();
 
             var cond = string.Join(" || ", startPatterns.Select(pattern =>
             {
@@ -158,7 +158,7 @@ internal class StaticLexerGenerator
                 {
                         {"LEXEME_CONDITION", $"state == LexerStates.{States.InSugar}_{lexeme.Name}_{last}" },
                         {"PATTERN", lexeme.Args.First().Trim(new[] { '"' }) },
-                        {"NEW_STATE", "start" }
+                        {"NEW_STATE", nameof(States.Start) }
                 });
             sugarSteps.Add(lastStepContent);
             return sugarSteps;
