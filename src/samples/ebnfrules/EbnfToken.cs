@@ -5,49 +5,49 @@ namespace ebnf
     
     public enum EbnfTokenGeneric
     {
-        [Lexeme(GenericToken.Identifier,IdentifierType.AlphaNumericDash)] 
+        [AlphaNumericDashId] 
         IDENTIFIER = 1,
         
-        [Lexeme(GenericToken.SugarToken,":")]
+        [Sugar(":")]
         COLON = 2,
         
-        [Lexeme(GenericToken.SugarToken,"*")]
+        [Sugar("*")]
         ZEROORMORE = 3,
         
-        [Lexeme(GenericToken.SugarToken,"+")]
+        [Sugar("+")]
         ONEORMORE = 4,
         
-        [Lexeme(GenericToken.SugarToken,"?")]
+        [Sugar("?")]
         OPTION = 6,
         
-        [Lexeme(GenericToken.SugarToken,"[d]")]
+        [Sugar("[d]")]
         DISCARD = 7,
         
-        [Lexeme(GenericToken.SugarToken,"(")]
+        [Sugar("(")]
         LPAREN = 8,
         
-        [Lexeme(GenericToken.SugarToken,")")]
+        [Sugar(")")]
         RPAREN = 9,
         
-        [Lexeme(GenericToken.SugarToken,"|")]
+        [Sugar("|")]
         OR = 10,
         
-        [Lexeme(GenericToken.SugarToken,"[")]
+        [Sugar("[")]
         LCROG = 11,
         
-        [Lexeme(GenericToken.SugarToken,"]")]
+        [Sugar("]")]
         RCROG = 12,
 
-        [Lexeme(GenericToken.String, "'","\\")]
+        [String("'","\\")]
         STRING = 13,
         
-        [Lexeme(GenericToken.SugarToken, "-")]
+        [Sugar( "-")]
         DASH = 14,
         
-        [Lexeme(GenericToken.SugarToken, "{")]  
+        [Sugar( "{")]  
         LCURLY = 15,
         
-        [Lexeme(GenericToken.SugarToken, "}")]  
+        [Sugar( "}")]  
         RCURLY = 16,
 
         [Int]

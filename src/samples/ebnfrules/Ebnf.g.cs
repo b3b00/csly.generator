@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using csly.models;
@@ -1874,11 +1874,11 @@ public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseNonTerminal_clauses
         var token = tokens[position];
         var results = new List<SyntaxParseResult<EbnfTokenGeneric, GrammarNode>>();
 
-        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() {  };
+        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN) };
 
         var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r0Leadings.Any(x => x.Match(token))) {
             var r0 = ParseRule_clauses_0(tokens, position);
@@ -1890,7 +1890,7 @@ results.Add(r0);
         }
 var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r1Leadings.Any(x => x.Match(token))) {
             var r1 = ParseRule_clauses_1(tokens, position);
@@ -1916,11 +1916,11 @@ public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseNonTerminal_clause(
         var token = tokens[position];
         var results = new List<SyntaxParseResult<EbnfTokenGeneric, GrammarNode>>();
 
-        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() {  };
+        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN) };
 
         var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r0Leadings.Any(x => x.Match(token))) {
             var r0 = ParseRule_clause_0(tokens, position);
@@ -1932,7 +1932,7 @@ results.Add(r0);
         }
 var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r1Leadings.Any(x => x.Match(token))) {
             var r1 = ParseRule_clause_1(tokens, position);
@@ -1944,7 +1944,7 @@ results.Add(r1);
         }
 var r2Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r2Leadings.Any(x => x.Match(token))) {
             var r2 = ParseRule_clause_2(tokens, position);
@@ -1956,7 +1956,7 @@ results.Add(r2);
         }
 var r3Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r3Leadings.Any(x => x.Match(token))) {
             var r3 = ParseRule_clause_3(tokens, position);
@@ -1968,7 +1968,7 @@ results.Add(r3);
         }
 var r4Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r4Leadings.Any(x => x.Match(token))) {
             var r4 = ParseRule_clause_4(tokens, position);
@@ -1980,7 +1980,7 @@ results.Add(r4);
         }
 var r5Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r5Leadings.Any(x => x.Match(token))) {
             var r5 = ParseRule_clause_5(tokens, position);
@@ -1992,7 +1992,7 @@ results.Add(r5);
         }
 var r6Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r6Leadings.Any(x => x.Match(token))) {
             var r6 = ParseRule_clause_6(tokens, position);
@@ -2004,7 +2004,7 @@ results.Add(r6);
         }
 var r7Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r7Leadings.Any(x => x.Match(token))) {
             var r7 = ParseRule_clause_7(tokens, position);
@@ -2016,7 +2016,7 @@ results.Add(r7);
         }
 var r8Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r8Leadings.Any(x => x.Match(token))) {
             var r8 = ParseRule_clause_8(tokens, position);
@@ -2028,7 +2028,7 @@ results.Add(r8);
         }
 var r9Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
         };
 if (r9Leadings.Any(x => x.Match(token))) {
             var r9 = ParseRule_clause_9(tokens, position);
@@ -2040,7 +2040,7 @@ results.Add(r9);
         }
 var r10Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
         };
 if (r10Leadings.Any(x => x.Match(token))) {
             var r10 = ParseRule_clause_10(tokens, position);
@@ -2052,7 +2052,7 @@ results.Add(r10);
         }
 var r11Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r11Leadings.Any(x => x.Match(token))) {
             var r11 = ParseRule_clause_11(tokens, position);
@@ -2064,7 +2064,7 @@ results.Add(r11);
         }
 var r12Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r12Leadings.Any(x => x.Match(token))) {
             var r12 = ParseRule_clause_12(tokens, position);
@@ -2076,7 +2076,7 @@ results.Add(r12);
         }
 var r13Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r13Leadings.Any(x => x.Match(token))) {
             var r13 = ParseRule_clause_13(tokens, position);
@@ -2088,7 +2088,7 @@ results.Add(r13);
         }
 var r14Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r14Leadings.Any(x => x.Match(token))) {
             var r14 = ParseRule_clause_14(tokens, position);
@@ -2100,7 +2100,7 @@ results.Add(r14);
         }
 var r15Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r15Leadings.Any(x => x.Match(token))) {
             var r15 = ParseRule_clause_15(tokens, position);
@@ -2112,7 +2112,7 @@ results.Add(r15);
         }
 var r16Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r16Leadings.Any(x => x.Match(token))) {
             var r16 = ParseRule_clause_16(tokens, position);
@@ -2124,7 +2124,7 @@ results.Add(r16);
         }
 var r17Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r17Leadings.Any(x => x.Match(token))) {
             var r17 = ParseRule_clause_17(tokens, position);
@@ -2136,7 +2136,7 @@ results.Add(r17);
         }
 var r18Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r18Leadings.Any(x => x.Match(token))) {
             var r18 = ParseRule_clause_18(tokens, position);
@@ -2148,7 +2148,7 @@ results.Add(r18);
         }
 var r19Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r19Leadings.Any(x => x.Match(token))) {
             var r19 = ParseRule_clause_19(tokens, position);
@@ -2160,7 +2160,7 @@ results.Add(r19);
         }
 var r20Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r20Leadings.Any(x => x.Match(token))) {
             var r20 = ParseRule_clause_20(tokens, position);
@@ -2172,7 +2172,7 @@ results.Add(r20);
         }
 var r21Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LPAREN)
         };
 if (r21Leadings.Any(x => x.Match(token))) {
             var r21 = ParseRule_clause_21(tokens, position);
@@ -2198,11 +2198,11 @@ public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseNonTerminal_choicec
         var token = tokens[position];
         var results = new List<SyntaxParseResult<EbnfTokenGeneric, GrammarNode>>();
 
-        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() {  };
+        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG) };
 
         var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r0Leadings.Any(x => x.Match(token))) {
             var r0 = ParseRule_choiceclause_0(tokens, position);
@@ -2228,11 +2228,11 @@ public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseNonTerminal_groupcl
         var token = tokens[position];
         var results = new List<SyntaxParseResult<EbnfTokenGeneric, GrammarNode>>();
 
-        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() {  };
+        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG) };
 
         var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r0Leadings.Any(x => x.Match(token))) {
             var r0 = ParseRule_groupclauses_0(tokens, position);
@@ -2244,7 +2244,7 @@ results.Add(r0);
         }
 var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r1Leadings.Any(x => x.Match(token))) {
             var r1 = ParseRule_groupclauses_1(tokens, position);
@@ -2270,11 +2270,11 @@ public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseNonTerminal_choices
         var token = tokens[position];
         var results = new List<SyntaxParseResult<EbnfTokenGeneric, GrammarNode>>();
 
-        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() {  };
+        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING) };
 
         var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r0Leadings.Any(x => x.Match(token))) {
             var r0 = ParseRule_choices_0(tokens, position);
@@ -2286,7 +2286,7 @@ results.Add(r0);
         }
 var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
         };
 if (r1Leadings.Any(x => x.Match(token))) {
             var r1 = ParseRule_choices_1(tokens, position);
@@ -2298,7 +2298,7 @@ results.Add(r1);
         }
 var r2Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r2Leadings.Any(x => x.Match(token))) {
             var r2 = ParseRule_choices_2(tokens, position);
@@ -2310,7 +2310,7 @@ results.Add(r2);
         }
 var r3Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
         };
 if (r3Leadings.Any(x => x.Match(token))) {
             var r3 = ParseRule_choices_3(tokens, position);
@@ -2336,11 +2336,11 @@ public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseNonTerminal_groupcl
         var token = tokens[position];
         var results = new List<SyntaxParseResult<EbnfTokenGeneric, GrammarNode>>();
 
-        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() {  };
+        var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG) };
 
         var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r0Leadings.Any(x => x.Match(token))) {
             var r0 = ParseRule_groupclause_0(tokens, position);
@@ -2352,7 +2352,7 @@ results.Add(r0);
         }
 var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
         };
 if (r1Leadings.Any(x => x.Match(token))) {
             var r1 = ParseRule_groupclause_1(tokens, position);
@@ -2364,7 +2364,7 @@ results.Add(r1);
         }
 var r2Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
         };
 if (r2Leadings.Any(x => x.Match(token))) {
             var r2 = ParseRule_groupclause_2(tokens, position);
@@ -2376,7 +2376,7 @@ results.Add(r2);
         }
 var r3Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
         };
 if (r3Leadings.Any(x => x.Match(token))) {
             var r3 = ParseRule_groupclause_3(tokens, position);
@@ -2388,7 +2388,7 @@ results.Add(r3);
         }
 var r4Leadings = new LeadingToken<EbnfTokenGeneric>[]
         {
-            
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.LCROG)
         };
 if (r4Leadings.Any(x => x.Match(token))) {
             var r4 = ParseRule_groupclause_4(tokens, position);
