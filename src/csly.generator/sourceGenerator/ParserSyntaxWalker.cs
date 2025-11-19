@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text;
+using csly.ebnf.models;
 using csly.generator.model.parser.attributes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -21,7 +22,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         string name = node.Identifier.ToString();
         var attributes = node.AttributeLists
             .SelectMany(x => x.Attributes)
-            .Where(x => x.Name.ToString() != nameof(ParserRootAttribute))
+            .Where(x => x.Name.ToString() != nameof(model.parser.attributes.ParserRootAttribute))
             .ToList();
         foreach (var attribute in attributes)
         {

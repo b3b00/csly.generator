@@ -33,7 +33,7 @@ namespace csly.ebnf.models
         }
 
 
-        public Rule Parse(string ruleString)
+        public Rule Parse(string ruleString, string methodName)
         {
             (string head, string[] clauses) result = (null, null);
             if (ruleString != null)
@@ -51,14 +51,17 @@ namespace csly.ebnf.models
                     x => _tokens.Contains(x) ?
                         (IClause)new TerminalClause(x) :
                         (IClause)new NonTerminalClause(x)).ToList();
-                var rule = new Rule(head, clauses);
+                var rule = new Rule(head, clauses)
+                {
+                    MethodName = methodName
+                };
                 Model.Add(rule);
                 return rule;
             }
             return null;
         }
 
-        internal void ComputeLeaders()
+        public void ComputeLeaders()
         {
             Dictionary<string, List<string>> nonTerminalLeaders = new Dictionary<string, List<string>>();
 

@@ -1,15 +1,12 @@
-﻿using csly.generator.sourceGenerator;
-
-namespace sourceGenerationTester.expressionParser;
+﻿namespace sourceGenerationTester.expressionParser;
 
 [ParserGenerator]
-public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionToken, ExpressionParser, int>
+public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, double>
 {
-        
+
 }
 
-
-    public enum ExpressionToken
+public enum ExpressionToken
     {
         // float number 
         [Double] DOUBLE = 1,
@@ -39,35 +36,36 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
 
         [Sugar("!")] FACTORIAL = 13,
 
-        [Keyword("hello")] HELLO = 15,
+        [Keyword("hello")] PI = 15,
 
-
-        [Keyword("world")] WORLD = 17,
-
+        [Keyword("world")] E = 17,
 
     }
-
-
 
     [ParserRoot("expression")]
     public class ExpressionParser
     {
-
-        //[Production("root : expression")] 
-        //public int Root(int exprValue)
-        //{
-        //    return exprValue;
-        //}
-
-        [Production("primary: INT")]
-        public int Primary(Token<ExpressionToken> intToken)
+        [Production("primary: DOUBLE")]
+        public double PrimaryDouble(Token<ExpressionToken> dbl)
         {
-            return intToken.IntValue;
+            return dbl.DoubleValue;
+        }
+
+        [Production("primary: PI")]
+        public double PrimaryPi(Token<ExpressionToken> pi)
+        {
+            return 3.1415;
+        }
+
+        [Production("primary: E")]
+        public double PrimaryE(Token<ExpressionToken> e)
+        {
+            return 2.7182;
         }
 
         [NodeName("group")]
         [Production("primary: LPAREN  expression RPAREN ")]
-        public int Group(Token<ExpressionToken> l, int groupValue, Token<ExpressionToken> l)
+        public double Group(Token<ExpressionToken> l, double groupValue, Token<ExpressionToken> r)
         {
             return groupValue;
         }
@@ -76,32 +74,32 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
         [NodeName("addOrSubstract")]
         [Production("expression : term PLUS expression")]
         [Production("expression : term MINUS expression")]
-        public int Expression(int left, Token<ExpressionToken> operatorToken, int right)
+        public double Expression(double left, Token<ExpressionToken> operatorToken, double right)
         {
-            var result = 0;
+            double result = 0;
 
 
             switch (operatorToken.TokenID)
             {
                 case ExpressionToken.PLUS:
-                {
-                    result = left + right;
-                    break;
-                }
+                    {
+                        result = left + right;
+                        break;
+                    }
                 case ExpressionToken.MINUS:
-                {
-                    result = left - right;
-                    break;
-                }
+                    {
+                        result = left - right;
+                        break;
+                    }
             }
 
             return result;
         }
 
-        
+
         [NodeName("expression")]
         [Production("expression : term")]
-        public int Expression_Term(int termValue)
+        public double Expression_Term(double termValue)
         {
             return termValue;
         }
@@ -109,23 +107,23 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
         [NodeName("multOrDivide")]
         [Production("term : factor TIMES term")]
         [Production("term : factor DIVIDE term")]
-        public int Term(int left, Token<ExpressionToken> operatorToken, int right)
+        public double Term(double left, Token<ExpressionToken> operatorToken, double right)
         {
-            var result = 0;
+            double result = 0;
 
 
             switch (operatorToken.TokenID)
             {
                 case ExpressionToken.TIMES:
-                {
-                    result = left * right;
-                    break;
-                }
+                    {
+                        result = left * right;
+                        break;
+                    }
                 case ExpressionToken.DIVIDE:
-                {
-                    result = left / right;
-                    break;
-                }
+                    {
+                        result = left / right;
+                        break;
+                    }
             }
 
             return result;
@@ -133,21 +131,21 @@ public partial class ExpressionGenerator : AbstractParserGenerator<ExpressionTok
 
         [Production("term : factor")]
         [NodeName("term")]
-        public int Term_Factor(int factorValue)
+        public double Term_Factor(double factorValue)
         {
             return factorValue;
         }
 
         [Production("factor : primary")]
         [NodeName("primary")]
-        public int primaryFactor(int primValue)
+        public double primaryFactor(double primValue)
         {
             return primValue;
         }
 
         [NodeName("negate")]
         [Production("factor : MINUS factor")]
-        public int Factor(Token<ExpressionToken> discardedMinus, int factorValue)
+        public double MinusFactor(Token<ExpressionToken> discardedMinus, double factorValue)
         {
             return -factorValue;
         }

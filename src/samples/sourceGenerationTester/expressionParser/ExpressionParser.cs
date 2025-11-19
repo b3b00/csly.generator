@@ -1,5 +1,4 @@
-﻿//using csly.generator.model.lexer;
-using csly.models;
+﻿using csly.ebnf.models;
 using System;
 
 namespace sourceGenerationTester.expressionParser
@@ -99,15 +98,15 @@ namespace sourceGenerationTester.expressionParser
             return factorValue;
         }
 
-        [Production("factor : primary")]
+        [csly.ebnf.models.Production("factor : primary")]
         [NodeName("primary")]
         public double primaryFactor(double primValue)
         {
             return primValue;
         }
 
-        [NodeName("negate")]
-        [Production("factor : MINUS factor")]
+        [csly.ebnf.models.NodeName("negate")]
+        [csly.ebnf.models.Production("factor : MINUS factor")]
         public double MinusFactor(Token<ExpressionToken> discardedMinus, double factorValue)
         {
             return -factorValue;

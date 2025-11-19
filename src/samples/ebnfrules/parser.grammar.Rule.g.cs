@@ -13,6 +13,8 @@ namespace csly.ebnf.models
 
         public string Name => _name;
 
+        public string MethodName { get; set; }
+
         private readonly string _name;
 
         public Rule(string head, List<IClause> clauses)

@@ -53,7 +53,10 @@
 
   <ItemGroup>
     <Compile Include="sourceGenerator\staticParserTemplates\lexer\StaticLexerBuilder.cs" />
-    <Compile Include="sourceGenerator\staticParserTemplates\lexer\StaticLexerGenerator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="sourceGenerator\StaticLexerGenerator.cs" />
   </ItemGroup>
 
   <ItemGroup>

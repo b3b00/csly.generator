@@ -5,6 +5,11 @@ using System.Text;
 using ebnf.grammar;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using csly.ebnf.models;
+using Rule = csly.ebnf.models.Rule;
+using TerminalClause = csly.ebnf.models.TerminalClause;
+using NonTerminalClause = csly.ebnf.models.NonTerminalClause;
+using IClause = csly.ebnf.models.IClause;
 
 namespace csly.generator.sourceGenerator;
 
@@ -17,9 +22,9 @@ public class ParserBuilderGenerator
     private readonly string _namespace;
     private readonly TemplateEngine  _templateEngine;
 
-    private Dictionary<string, TerminalClause> _terminalParsers = new();
-    private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
-    private Dictionary<string, List<Rule>> _ruleParsers = new();
+    private Dictionary<string, csly.ebnf.models.TerminalClause> _terminalParsers = new();
+    private Dictionary<string, csly.ebnf.models.NonTerminalClause> _nonTerminalParsers = new();
+    private Dictionary<string, List<csly.ebnf.models.Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
 
     private List<Rule> _rules = new();

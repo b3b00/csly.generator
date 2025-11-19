@@ -5,13 +5,9 @@ using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SharpFileSystem.FileSystems;
-//using sourceGenerationTester.expressionParser;
-//using sourceGenerationTester.visitor;
 using System;
 using System.IO;
 using System.Linq;
-//using csly.generator.sourceGenerator;
-//using sourceGenerationTester.visitor;
 
 
 
@@ -27,7 +23,7 @@ public partial class Program
     public static void Main(string[] args)
     {
         Generate();
-        //Run();
+        Run();
         /*GoStatic();
         Run();*/
     }
@@ -37,7 +33,7 @@ public partial class Program
     {
 
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-        var parser = fs.ReadAllText("/samples/ebnf.gram");
+        var parser = fs.ReadAllText("/samples/expression.gram");
 
         var result = GenerateSource(parser, "SimpleParser");
 
@@ -102,35 +98,35 @@ public partial class Program
 
 
 
-    //private static void Run()
-    //{
-    //    var parser = new expressionParser.ExpressionParser();
+    private static void Run()
+    {
+        var parser = new expressionParser.ExpressionParser();
+        var main = new sourceGenerationTester.expressionParser.ExpressionParserMain();
+        //var entryPoint = new expressionParser.ExpressionParserMain(parser);
 
-    //    var entryPoint = new expressionParser.ExpressionParserMain(parser);
 
-        
 
-    //    while (true)
-    //    {
-    //        var choice = Console.ReadLine();
-    //        if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-    //        {
-    //            Environment.Exit(0);
-    //        }
-    //        var r = entryPoint.Parse(choice);
-    //        if (r.IsOk)
-    //        {
-    //            Console.WriteLine($"{choice} = {r.Result}");
-    //            Console.WriteLine(r.SyntaxTree.Dump("  "));
-    //        }
-    //        else
-    //        {
-    //            Console.WriteLine("Parse failed");
-    //            foreach (var err in r.Errors)
-    //            {
-    //                Console.WriteLine(err.ErrorMessage);
-    //            }
-    //        }
-    //    }
-    //}
+        //while (true)
+        //{
+        //    var choice = Console.ReadLine();
+        //    if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
+        //    {
+        //        Environment.Exit(0);
+        //    }
+        //    var r = entryPoint.Parse(choice);
+        //    if (r.IsOk)
+        //    {
+        //        Console.WriteLine($"{choice} = {r.Result}");
+        //        Console.WriteLine(r.SyntaxTree.Dump("  "));
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Parse failed");
+        //        foreach (var err in r.Errors)
+        //        {
+        //            Console.WriteLine(err.ErrorMessage);
+        //        }
+        //    }
+        //}
+    }
 }
