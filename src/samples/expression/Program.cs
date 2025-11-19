@@ -12,7 +12,7 @@ if (parsed.IsOk)
 }
 else
 {
-    Console.WriteLine("Parsing failed:");
+    Console.WriteLine($"Parsing failed: {parsed.Errors.Count} error{(parsed.Errors.Count > 1 ? "s":"")}");
     foreach (var err in parsed.Errors)
     {
         Console.WriteLine(err.ErrorMessage);
