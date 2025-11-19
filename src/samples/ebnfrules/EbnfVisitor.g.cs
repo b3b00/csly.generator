@@ -2,10 +2,10 @@
 
 using ebnf.grammar;
 using System;
-using csly.models;
+using csly.ebnf.models;
 using System.Collections.Generic;
 
-    using csly.models;
+    using csly.ebnf.models;
 
 namespace ebnf.grammar
 {

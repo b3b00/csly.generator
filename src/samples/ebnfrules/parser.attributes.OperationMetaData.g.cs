@@ -2,7 +2,7 @@
 using System.Reflection;
 using System;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class OperationMetaData<IN, OUT> where IN : struct, Enum

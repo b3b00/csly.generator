@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
 

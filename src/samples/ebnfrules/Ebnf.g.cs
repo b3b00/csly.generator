@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using csly.models;
+using csly.ebnf.models;
 
 namespace ebnf.grammar
 {

@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Text;
 using csly.generator.model.parser.attributes;
-using csly.generator.model.parser.grammar;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.generator.sourceGenerator;

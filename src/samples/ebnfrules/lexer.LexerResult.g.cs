@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     [DebuggerDisplay("{TokenID} : {Value} - {IsExplicit}")]

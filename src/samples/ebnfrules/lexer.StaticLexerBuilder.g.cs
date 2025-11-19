@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     internal class StaticLexerBuilder

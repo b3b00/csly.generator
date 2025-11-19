@@ -1,8 +1,9 @@
-﻿using System;
+﻿using csly.ebnf.models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class SyntaxParseResult<IN, OUT> where IN : struct, Enum

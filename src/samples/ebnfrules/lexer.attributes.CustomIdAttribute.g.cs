@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]

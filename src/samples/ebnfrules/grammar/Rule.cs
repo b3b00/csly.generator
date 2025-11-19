@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 
 namespace ebnf.grammar
@@ -21,6 +22,13 @@ namespace ebnf.grammar
             NodeName = "";
         }
 
+        public Rule(string head, List<IClause> clauses, string methodName) : this()
+        {
+            NonTerminalName = head;
+            Clauses = clauses;
+            MethodName = methodName;
+        }
+
         public string NodeName { get; set; } = null;
 
         public string[] SubNodeNames { get; set; } = null;
@@ -35,7 +43,7 @@ namespace ebnf.grammar
         private Dictionary<string, OperationMetaData> LambdaVisitorsForOperation { get; }
 
         // visitor for classical rules
-        private string MethodName { get; set; }
+        public string MethodName { get; set; }
 
         public bool IsExpressionRule { get; set; }
 
@@ -49,6 +57,10 @@ namespace ebnf.grammar
         public List<string> Leaders { get; set; } = new List<string>();
 
         public string NonTerminalName { get; set; }
+
+        public string Head => NonTerminalName;
+
+        public string Name => NonTerminalName;
 
         public bool ContainsSubRule
         {

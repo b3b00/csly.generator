@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public interface ISyntaxNode<IN, OUT> where IN : struct, Enum

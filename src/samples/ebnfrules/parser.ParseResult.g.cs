@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class ParseResult<IN, OUT> where IN : struct, Enum

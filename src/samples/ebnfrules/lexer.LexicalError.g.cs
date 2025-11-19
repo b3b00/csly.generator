@@ -1,6 +1,6 @@
 ﻿
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class LexicalError : ParseError

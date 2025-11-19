@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public sealed class LeadingToken<IN> : IEquatable<LeadingToken<IN>> where IN : struct, Enum

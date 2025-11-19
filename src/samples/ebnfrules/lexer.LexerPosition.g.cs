@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using System;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
 

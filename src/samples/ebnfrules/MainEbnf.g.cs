@@ -2,7 +2,7 @@
 
 using ebnf.grammar;
 using System;
-using csly.models;
+using csly.ebnf.models;
 using System.Collections.Generic;
 
     using System.Linq;

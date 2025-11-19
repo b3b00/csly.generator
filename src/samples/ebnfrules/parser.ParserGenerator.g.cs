@@ -1,4 +1,4 @@
-﻿namespace csly.models
+﻿namespace csly.ebnf.models
 {
 
 

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using csly.ebnf.models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
 

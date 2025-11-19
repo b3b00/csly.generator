@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class ParserOPtions

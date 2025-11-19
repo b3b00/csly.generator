@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class GroupSyntaxNode<IN, OUT> : ManySyntaxNode<IN, OUT> where IN : struct, Enum

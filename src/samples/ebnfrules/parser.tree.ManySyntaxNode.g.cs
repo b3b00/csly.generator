@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public class ManySyntaxNode<IN, OUT> : SyntaxNode<IN, OUT> where IN : struct, Enum

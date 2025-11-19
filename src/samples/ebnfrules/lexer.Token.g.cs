@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace csly.models
+namespace csly.ebnf.models
 {
 
     public enum CommentType

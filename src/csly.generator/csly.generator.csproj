@@ -45,7 +45,15 @@
 
   <ItemGroup>
     <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs" />
+    <!--<Compile Remove="model\parser\**\*.cs" />-->
     <Compile Remove="sourceGenerator\staticParserTemplates\**\*.cs" />
+    <EmbeddedResource Remove="model\parser\**" />
+    <None Remove="model\parser\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="sourceGenerator\staticParserTemplates\lexer\StaticLexerBuilder.cs" />
+    <Compile Include="sourceGenerator\staticParserTemplates\lexer\StaticLexerGenerator.cs" />
   </ItemGroup>
 
   <ItemGroup>
