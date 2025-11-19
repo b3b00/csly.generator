@@ -1,25 +1,25 @@
-﻿namespace csly.models;
-
-public class TerminalClause : AbstractClause
+﻿namespace csly.models
 {
 
-    private bool _isExplicit;
-
-    public bool IsExplicit => _isExplicit;
-    public TerminalClause(string name)
+    public class TerminalClause : AbstractClause
     {
-        Name = name;
-        if (Name.StartsWith("'") && Name.EndsWith("'"))
+
+        private bool _isExplicit;
+
+        public bool IsExplicit => _isExplicit;
+        public TerminalClause(string name)
         {
-            _isExplicit = true;
-            Name = Name.Substring(1, Name.Length - 2);
+            Name = name;
+            if (Name.StartsWith("'") && Name.EndsWith("'"))
+            {
+                _isExplicit = true;
+                Name = Name.Substring(1, Name.Length - 2);
+            }
+        }
+
+        public override string ToString()
+        {
+            return _isExplicit ? $"'{Name}'" : Name;
         }
     }
-
-    public override string ToString()
-    {
-        return _isExplicit ? $"'{Name}'" : Name;
-    }
-
-
 }

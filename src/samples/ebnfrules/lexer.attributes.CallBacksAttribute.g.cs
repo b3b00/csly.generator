@@ -1,15 +1,17 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
-public class CallBacksAttribute : Attribute
+namespace csly.models
 {
-    public Type CallBacksClass { get; set; }
-    
-    public CallBacksAttribute(Type callBacksClass)
+
+    [AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
+    public class CallBacksAttribute : Attribute
     {
-        CallBacksClass = callBacksClass;
-    } 
-        
+        public Type CallBacksClass { get; set; }
+
+        public CallBacksAttribute(Type callBacksClass)
+        {
+            CallBacksClass = callBacksClass;
+        }
+
+    }
 }

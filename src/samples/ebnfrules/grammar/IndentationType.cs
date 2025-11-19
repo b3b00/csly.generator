@@ -1,7 +1,9 @@
-namespace ebnf.grammar;
-
-public enum IndentationType
+namespace ebnf.grammar
 {
-    Indent,
-    UnIndent
+
+    public enum IndentationType
+    {
+        Indent,
+        UnIndent
+    }
 }

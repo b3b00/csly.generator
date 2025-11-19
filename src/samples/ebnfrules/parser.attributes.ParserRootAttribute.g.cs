@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class ParserRootAttribute : Attribute
+namespace csly.models
 {
-    
-    public string RootRule { get; set; }
 
-    public ParserRootAttribute(string rootRule)
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class ParserRootAttribute : Attribute
     {
-        RootRule = rootRule;
-    }
 
-    
+        public string RootRule { get; set; }
+
+        public ParserRootAttribute(string rootRule)
+        {
+            RootRule = rootRule;
+        }
+    }
 }

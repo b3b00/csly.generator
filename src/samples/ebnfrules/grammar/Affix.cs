@@ -1,9 +1,11 @@
-﻿namespace ebnf.grammar;
-
-public enum Affix
+﻿namespace ebnf.grammar
 {
-    NotOperator = 0,
-    PreFix = 1,
-    InFix = 2,
-    PostFix = 3
+
+    public enum Affix
+    {
+        NotOperator = 0,
+        PreFix = 1,
+        InFix = 2,
+        PostFix = 3
+    }
 }

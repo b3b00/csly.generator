@@ -1,4 +1,7 @@
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace ebnf.grammar
 {
     public sealed class ChoiceClause : AbstractClause

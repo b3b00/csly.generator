@@ -1,14 +1,16 @@
-﻿namespace csly.models;
-
-public enum EolType
+﻿namespace csly.models
 {
-    Windows,
-    Nix,
 
-    Mac,
-    Environment,
+    public enum EolType
+    {
+        Windows,
+        Nix,
 
-    Eof,
-    
-    No
+        Mac,
+        Environment,
+
+        Eof,
+
+        No
+    }
 }

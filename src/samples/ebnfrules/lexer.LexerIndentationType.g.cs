@@ -1,9 +1,11 @@
-﻿namespace csly.models;
-
-public enum LexerIndentationType
+﻿namespace csly.models
 {
-    Indent,
-    UIndent,
-    None,
-    Error
+
+    public enum LexerIndentationType
+    {
+        Indent,
+        UIndent,
+        None,
+        Error
+    }
 }

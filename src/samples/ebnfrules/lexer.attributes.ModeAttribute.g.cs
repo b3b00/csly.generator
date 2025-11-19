@@ -1,22 +1,24 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
-public class ModeAttribute : Attribute
+namespace csly.models
 {
- 
-    public const string DefaultLexerMode = "default";
-    
-    public string[] Modes { get; }
 
-    public ModeAttribute()
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    public class ModeAttribute : Attribute
     {
-        Modes = new[] { DefaultLexerMode };
-    }
-    
-    public ModeAttribute(params string[] modes)
-    {
-        Modes = modes;
+
+        public const string DefaultLexerMode = "default";
+
+        public string[] Modes { get; }
+
+        public ModeAttribute()
+        {
+            Modes = new[] { DefaultLexerMode };
+        }
+
+        public ModeAttribute(params string[] modes)
+        {
+            Modes = modes;
+        }
     }
 }

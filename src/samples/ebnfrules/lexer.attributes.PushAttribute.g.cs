@@ -1,14 +1,16 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Field)]
-public class PushAttribute : Attribute
+namespace csly.models
 {
-    public string TargetMode { get; }
 
-    public PushAttribute(string mode)
+    [AttributeUsage(AttributeTargets.Field)]
+    public class PushAttribute : Attribute
     {
-        TargetMode = mode;
+        public string TargetMode { get; }
+
+        public PushAttribute(string mode)
+        {
+            TargetMode = mode;
+        }
     }
 }

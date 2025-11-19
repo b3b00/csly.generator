@@ -5,363 +5,366 @@ using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace csly.models;
-
-public enum CommentType
+namespace csly.models
 {
-    Single,
-    Multi,
-    No
-}
 
-[DebuggerDisplay("{TokenID} : {Value} - {IsExplicit}")]
-public class Token<T> where T:struct, Enum
-{
-    
-    
-    [JsonIgnore]
-    public char StringDelimiter = '"';
-    [JsonIgnore]
-    public char DecimalSeparator = '.';
-    [JsonIgnore]
-    public char CharDelimiter ='\'';
-    
-
-    [JsonIgnore] private string _hexaPrefix = "0x";
-
-    public string HexaPrefix
+    public enum CommentType
     {
-        get => _hexaPrefix;
-        set { _hexaPrefix = value; }
+        Single,
+        Multi,
+        No
     }
-    
 
-
-    public Token(T token, string value, LexerPosition position, 
-        CommentType commentType = CommentType.Single, int? channel = null, char decimalSeparator = '.' ) : this(token,new ReadOnlyMemory<char>(value.ToCharArray()),position,commentType,channel, decimalSeparator:decimalSeparator)
-
-{
-    }
-    
-    public Token(T token, ReadOnlyMemory<char> value, LexerPosition position, 
-        CommentType commentType = CommentType.Single, int? channel = null, bool isWhiteSpace = false, char decimalSeparator = '.' )
+    [DebuggerDisplay("{TokenID} : {Value} - {IsExplicit}")]
+    public class Token<T> where T : struct, Enum
     {
-        IsWhiteSpace = isWhiteSpace;
-        IsEOS = false;
-        TokenID = token;
-        SpanValue = value;
-        Position = position;
-        CommentType = commentType;
-        DecimalSeparator = decimalSeparator;
-        if (CommentType != CommentType.No)
+
+
+        [JsonIgnore]
+        public char StringDelimiter = '"';
+        [JsonIgnore]
+        public char DecimalSeparator = '.';
+        [JsonIgnore]
+        public char CharDelimiter = '\'';
+
+
+        [JsonIgnore] private string _hexaPrefix = "0x";
+
+        public string HexaPrefix
         {
-            if (channel == null)
-            {
-                channel = Channels.Main;
-            }
-        }
-        else
-        {
-            channel = channel ?? Channels.Main;
+            get => _hexaPrefix;
+            set { _hexaPrefix = value; }
         }
 
-        Channel = channel.Value;
-    }
 
 
-    public Token()
-    {
-        IsEOS = true;
-        End = true;
-        Position = new LexerPosition(0, 0, 0);
-        DecimalSeparator = '.';
-    }
-    
-    
-    public List<Token<T>> NextTokens(int channelId)
-    {
-        TokenChannel<T> channel = null;
-        if (TokenChannels.TryGet(channelId, out channel))
+        public Token(T token, string value, LexerPosition position,
+            CommentType commentType = CommentType.Single, int? channel = null, char decimalSeparator = '.') : this(token, new ReadOnlyMemory<char>(value.ToCharArray()), position, commentType, channel, decimalSeparator: decimalSeparator)
+
         {
-            var list = new List<Token<T>>();
-            int position = PositionInTokenFlow + 1;
-            if (position >= 0 && position <= channel.Count - 1)
+        }
+
+        public Token(T token, ReadOnlyMemory<char> value, LexerPosition position,
+            CommentType commentType = CommentType.Single, int? channel = null, bool isWhiteSpace = false, char decimalSeparator = '.')
+        {
+            IsWhiteSpace = isWhiteSpace;
+            IsEOS = false;
+            TokenID = token;
+            SpanValue = value;
+            Position = position;
+            CommentType = commentType;
+            DecimalSeparator = decimalSeparator;
+            if (CommentType != CommentType.No)
             {
-                
-                for (int i = position; position < channel.Count; position++)
+                if (channel == null)
                 {
-                    var token = channel[position];
-                    if (token != null)
-                    {
-                        list.Add(token);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    channel = Channels.Main;
                 }
             }
-
-            return list;
-        }
-        return new List<Token<T>>();
-    }
-    
-    public Token<T> Next(int channelId)
-    {
-        TokenChannel<T> channel = null;
-         
-        if (TokenChannels.TryGet(channelId, out channel))
-        {
-            int position = PositionInTokenFlow + 1;
-            if (position < channel.Count)
+            else
             {
-                return channel[position];
+                channel = channel ?? Channels.Main;
             }
-        }
-        return null;
-    }
 
-    public List<Token<T>> PreviousTokens(int channelId)
-    {
-        TokenChannel<T> channel = null;
-        if (TokenChannels.TryGet(channelId, out channel))
+            Channel = channel.Value;
+        }
+
+
+        public Token()
         {
-            var list = new List<Token<T>>();
-            int position = PositionInTokenFlow - 1;
-            if (position >= 0 && position <= channel.Count - 1)
+            IsEOS = true;
+            End = true;
+            Position = new LexerPosition(0, 0, 0);
+            DecimalSeparator = '.';
+        }
+
+
+        public List<Token<T>> NextTokens(int channelId)
+        {
+            TokenChannel<T> channel = null;
+            if (TokenChannels.TryGet(channelId, out channel))
             {
-                
-                for (int i = position; position > 0; position--)
+                var list = new List<Token<T>>();
+                int position = PositionInTokenFlow + 1;
+                if (position >= 0 && position <= channel.Count - 1)
                 {
-                    var token = channel[position];
-                    if (token != null)
+
+                    for (int i = position; position < channel.Count; position++)
                     {
-                        list.Add(token);
-                    }
-                    else
-                    {
-                        break;
+                        var token = channel[position];
+                        if (token != null)
+                        {
+                            list.Add(token);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
-            }
 
-            return list;
+                return list;
+            }
+            return new List<Token<T>>();
         }
-        return new List<Token<T>>();
-    }
-    
-    public Token<T> Previous(int channelId)
-    {
-        TokenChannel<T> channel = null;
-         
-        if (TokenChannels.TryGet(channelId, out channel))
+
+        public Token<T> Next(int channelId)
         {
-            int position = PositionInTokenFlow - 1;
-            if (position >= 0 && position <= channel.Count - 1) 
+            TokenChannel<T> channel = null;
+
+            if (TokenChannels.TryGet(channelId, out channel))
             {
-                return channel[position];
+                int position = PositionInTokenFlow + 1;
+                if (position < channel.Count)
+                {
+                    return channel[position];
+                }
             }
+            return null;
         }
-        return null;
-    }
 
-    public int Channel {get; set;} = 0;
-
-    [JsonIgnore]
-    public  ReadOnlyMemory<char> SpanValue { get; set; }
-    
-    public LexerPosition Position { get; set; }
-
-    public int PositionInTokenVisibleFlow { get; set; }
-    
-    public int PositionInTokenFlow { get; set; }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public T TokenID { get; set; }
-
-    public string Label { get; set; }
-    
-    public bool IsComment { get; set; }
-
-    public bool Discarded { get; set; } = false;
-
-    public bool IsEOS { get; set; }
-    
-    public bool IsIndent { get; set; } = false;
-    
-    public bool IsUnIndent { get; set; } = false;
-
-    [JsonIgnore]
-    public bool IsNoIndent { get; set; } = false;
-
-    public bool IsIndentation => IsIndent || IsUnIndent || IsNoIndent;
-    
-    public int IndentationLevel { get; set; }
-    
-    public bool IsWhiteSpace { get; set; }
-    
-    public bool IsEOL { get; set; }
-    
-    public bool IsExplicit { get; set; }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public CommentType CommentType { get; set; } = CommentType.No;
-
-    public bool IsEmpty { get; set; }
-
-    [JsonIgnore]
-    public bool IsMultiLineComment => CommentType == CommentType.Multi;
-
-    [JsonIgnore]
-    public bool IsSingleLineComment => CommentType == CommentType.Single;
-
-    public string Value => SpanValue.ToString();
-
-    
-
-
-    [JsonIgnore]
-    public string StringWithoutQuotes
-    {
-        get
+        public List<Token<T>> PreviousTokens(int channelId)
         {
-            var result = Value;
-            if (StringDelimiter != (char) 0)
+            TokenChannel<T> channel = null;
+            if (TokenChannels.TryGet(channelId, out channel))
             {
-                if (result.StartsWith(StringDelimiter.ToString())) result = result.Substring(1);
-                if (result.EndsWith(StringDelimiter.ToString())) result = result.Substring(0, result.Length - 1);
+                var list = new List<Token<T>>();
+                int position = PositionInTokenFlow - 1;
+                if (position >= 0 && position <= channel.Count - 1)
+                {
+
+                    for (int i = position; position > 0; position--)
+                    {
+                        var token = channel[position];
+                        if (token != null)
+                        {
+                            list.Add(token);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                return list;
             }
-
-            return result;
+            return new List<Token<T>>();
         }
-    }
 
-
-
-    [JsonIgnore]
-    public int IntValue => int.Parse(Value);
-    
-    [JsonIgnore]
-    public long HexaIntValue => Convert.ToInt32(Value.Substring(HexaPrefix.Length), 16);
-
-    [JsonIgnore]
-    public DateTime DateTimeValue { get; set; }
-    
-    [JsonIgnore]
-    public  double DoubleValue
-    {
-        get
+        public Token<T> Previous(int channelId)
         {
-            var val = Value.Replace(DecimalSeparator, '.');
-            var culture = CultureInfo.InvariantCulture;
-            double result = 0.0;
-            double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture,
-                out result);
-            
-            return result;
-        }
-    }
+            TokenChannel<T> channel = null;
 
-    [JsonIgnore]
-    public char CharValue  {
-        get
-        {
-            var result = Value;
-            if (CharDelimiter != (char)0 && result.StartsWith(CharDelimiter.ToString()) &&
-                result.EndsWith(CharDelimiter.ToString()) && result.Length > 2)
+            if (TokenChannels.TryGet(channelId, out channel))
             {
-                result = result.Substring(1, result.Length - 1);
+                int position = PositionInTokenFlow - 1;
+                if (position >= 0 && position <= channel.Count - 1)
+                {
+                    return channel[position];
+                }
+            }
+            return null;
+        }
+
+        public int Channel { get; set; } = 0;
+
+        [JsonIgnore]
+        public ReadOnlyMemory<char> SpanValue { get; set; }
+
+        public LexerPosition Position { get; set; }
+
+        public int PositionInTokenVisibleFlow { get; set; }
+
+        public int PositionInTokenFlow { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public T TokenID { get; set; }
+
+        public string Label { get; set; }
+
+        public bool IsComment { get; set; }
+
+        public bool Discarded { get; set; } = false;
+
+        public bool IsEOS { get; set; }
+
+        public bool IsIndent { get; set; } = false;
+
+        public bool IsUnIndent { get; set; } = false;
+
+        [JsonIgnore]
+        public bool IsNoIndent { get; set; } = false;
+
+        public bool IsIndentation => IsIndent || IsUnIndent || IsNoIndent;
+
+        public int IndentationLevel { get; set; }
+
+        public bool IsWhiteSpace { get; set; }
+
+        public bool IsEOL { get; set; }
+
+        public bool IsExplicit { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public CommentType CommentType { get; set; } = CommentType.No;
+
+        public bool IsEmpty { get; set; }
+
+        [JsonIgnore]
+        public bool IsMultiLineComment => CommentType == CommentType.Multi;
+
+        [JsonIgnore]
+        public bool IsSingleLineComment => CommentType == CommentType.Single;
+
+        public string Value => SpanValue.ToString();
+
+
+
+
+        [JsonIgnore]
+        public string StringWithoutQuotes
+        {
+            get
+            {
+                var result = Value;
+                if (StringDelimiter != (char)0)
+                {
+                    if (result.StartsWith(StringDelimiter.ToString())) result = result.Substring(1);
+                    if (result.EndsWith(StringDelimiter.ToString())) result = result.Substring(0, result.Length - 1);
+                }
+
+                return result;
+            }
+        }
+
+
+
+        [JsonIgnore]
+        public int IntValue => int.Parse(Value);
+
+        [JsonIgnore]
+        public long HexaIntValue => Convert.ToInt32(Value.Substring(HexaPrefix.Length), 16);
+
+        [JsonIgnore]
+        public DateTime DateTimeValue { get; set; }
+
+        [JsonIgnore]
+        public double DoubleValue
+        {
+            get
+            {
+                var val = Value.Replace(DecimalSeparator, '.');
+                var culture = CultureInfo.InvariantCulture;
+                double result = 0.0;
+                double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture,
+                    out result);
+
+                return result;
+            }
+        }
+
+        [JsonIgnore]
+        public char CharValue
+        {
+            get
+            {
+                var result = Value;
+                if (CharDelimiter != (char)0 && result.StartsWith(CharDelimiter.ToString()) &&
+                    result.EndsWith(CharDelimiter.ToString()) && result.Length > 2)
+                {
+                    result = result.Substring(1, result.Length - 1);
+                }
+
+                return result[0];
+            }
+        }
+
+
+        public bool End { get; set; }
+
+        public bool IsLineEnding { get; set; }
+
+        [JsonIgnore]
+        public TokenChannels<T> TokenChannels { get; set; }
+
+        public static Token<T> Empty()
+        {
+            var empty = new Token<T>();
+            empty.IsEmpty = true;
+            return empty;
+        }
+
+        [ExcludeFromCodeCoverage]
+
+        public string GetDebug()
+        {
+            if (IsEOS)
+            {
+                return "<<EOS>>";
             }
 
-            return result[0];
+            if (IsWhiteSpace)
+            {
+                return $"<<WS>>[{Value}]";
+            }
+
+            if (IsEOL)
+            {
+                return "<<EOL>>";
+            }
+
+            string value = $"{TokenID} [{Value.Replace("\r", "").Replace("\n", "")}]";
+
+            if (IsIndent)
+            {
+                value = $"<<INDENT({IndentationLevel})>>";
+            }
+
+            if (IsUnIndent)
+            {
+                value = $"<<UINDENT({IndentationLevel})>>";
+            }
+
+            if (IsExplicit)
+            {
+                value = $"[{Value.Replace("\r", "").Replace("\n", "")}]";
+            }
+
+            return value;
         }
-    } 
 
 
-    public bool End { get; set; }
-    
-    public bool IsLineEnding { get; set; }
-    
-    [JsonIgnore]
-    public TokenChannels<T> TokenChannels { get; set; }         
-
-    public static Token<T> Empty()
-    {
-        var empty = new Token<T>();
-        empty.IsEmpty = true;
-        return empty;
-    }
-
-    [ExcludeFromCodeCoverage]
-
-    public string GetDebug()
-    {
-        if (IsEOS)
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
         {
-            return "<<EOS>>";
-        }
+            if (IsEOS)
+            {
+                return "<<EOS>>";
+            }
 
-        if (IsWhiteSpace)
-        {
-            return $"<<WS>>[{Value}]";
-        }
+            if (IsWhiteSpace)
+            {
+                return $"<<WS>>[{Value}]";
+            }
 
-        if (IsEOL)
-        {
-            return "<<EOL>>";
-        }
+            string value = $"{TokenID} [{Value}]";
 
-        string value = $"{TokenID} [{Value.Replace("\r","").Replace("\n","")}]";
-            
-        if (IsIndent)
-        {
-            value = $"<<INDENT({IndentationLevel})>>";
-        }
+            if (IsIndent)
+            {
+                value = $"<<INDENT({IndentationLevel})>>";
+            }
 
-        if (IsUnIndent)
-        {
-            value = $"<<UINDENT({IndentationLevel})>>";
-        }
+            if (IsUnIndent)
+            {
+                value = $"<<UINDENT({IndentationLevel})>>";
+            }
 
-        if (IsExplicit)
-        {
-            value = $"[{Value.Replace("\r", "").Replace("\n", "")}]";
+            if (IsExplicit)
+            {
+                value = $"[{Value.Replace("\r", "").Replace("\n", "")}]";
+            }
+            return $"{value} @{Position} on channel {Channel}";
         }
-
-        return value;
-    }
-    
-    
-    [ExcludeFromCodeCoverage]
-    public override string ToString()
-    {
-        if (IsEOS)
-        {
-            return "<<EOS>>";
-        }
-
-        if (IsWhiteSpace)
-        {
-            return $"<<WS>>[{Value}]";
-        }
-
-        string value = $"{TokenID} [{Value}]";
-            
-        if (IsIndent)
-        {
-            value = $"<<INDENT({IndentationLevel})>>";
-        }
-
-        if (IsUnIndent)
-        {
-            value = $"<<UINDENT({IndentationLevel})>>";
-        }
-
-        if (IsExplicit)
-        {
-            value = $"[{Value.Replace("\r", "").Replace("\n", "")}]";
-        }
-        return $"{value} @{Position} on channel {Channel}";
     }
 }

@@ -5,7 +5,7 @@ namespace ebnf
     
     public enum EbnfTokenGeneric
     {
-        [AlphaNumericDashId] 
+        [AlphaNumDashId] 
         IDENTIFIER = 1,
         
         [Sugar(":")]

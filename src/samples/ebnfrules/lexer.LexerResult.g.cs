@@ -2,40 +2,42 @@
 using System;
 using System.Collections.Generic;
 
-namespace csly.models;
-
-[DebuggerDisplay("{TokenID} : {Value} - {IsExplicit}")]
-
-public class LexerResult<T> where T:struct, Enum
+namespace csly.models
 {
-    public List<Token<T>> Tokens { get; set; } = new List<Token<T>>();
-    
-    public string Error { get; set; } = null;
 
-    private bool _isOk = false;
+    [DebuggerDisplay("{TokenID} : {Value} - {IsExplicit}")]
 
-
-    public bool IsOk => _isOk;
-
-    public bool IsError => !_isOk;
-
-    public static implicit operator LexerResult<T>(string error)
+    public class LexerResult<T> where T : struct, Enum
     {
-        var result = new LexerResult<T>()
-        {
-            Error = error,
-            _isOk = false
-        };
-        return result;
-    }
+        public List<Token<T>> Tokens { get; set; } = new List<Token<T>>();
 
-    public static implicit operator LexerResult<T>(List<Token<T>> tokens)
-    {
-        var result = new LexerResult<T>()
+        public string Error { get; set; } = null;
+
+        private bool _isOk = false;
+
+
+        public bool IsOk => _isOk;
+
+        public bool IsError => !_isOk;
+
+        public static implicit operator LexerResult<T>(string error)
         {
-            Tokens = tokens,
-            _isOk = true
-        };
-        return result;
+            var result = new LexerResult<T>()
+            {
+                Error = error,
+                _isOk = false
+            };
+            return result;
+        }
+
+        public static implicit operator LexerResult<T>(List<Token<T>> tokens)
+        {
+            var result = new LexerResult<T>()
+            {
+                Tokens = tokens,
+                _isOk = true
+            };
+            return result;
+        }
     }
 }

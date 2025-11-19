@@ -6,28 +6,30 @@ using System.Linq;
 using System;
 using ebnf.grammar;
 
-namespace ebnf.grammar;
-
-public sealed class GroupClause : IClause
+namespace ebnf.grammar
 {
-    public GroupClause(IClause clause)
-    {
-        Clauses = new List<IClause> {clause};
-    }
-    
 
-    public List<IClause> Clauses { get; set; }
-    public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-    [ExcludeFromCodeCoverage]
-    public bool MayBeEmpty()
+    public sealed class GroupClause : IClause
     {
-        return true;
-    }
+        public GroupClause(IClause clause)
+        {
+            Clauses = new List<IClause> { clause };
+        }
 
-    public void AddRange(GroupClause clauses)
-    {
-        Clauses.AddRange(clauses.Clauses);
+
+        public List<IClause> Clauses { get; set; }
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        [ExcludeFromCodeCoverage]
+        public bool MayBeEmpty()
+        {
+            return true;
+        }
+
+        public void AddRange(GroupClause clauses)
+        {
+            Clauses.AddRange(clauses.Clauses);
+        }
+
     }
-    
 }

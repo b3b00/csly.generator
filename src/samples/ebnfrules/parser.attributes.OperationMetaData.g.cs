@@ -2,77 +2,79 @@
 using System.Reflection;
 using System;
 
-namespace csly.models;
-
-public class OperationMetaData<IN, OUT> where IN : struct, Enum
+namespace csly.models
 {
-    public OperationMetaData(int precedence, Associativity assoc, MethodInfo method, Affix affix, IN oper, string nodeName = null)
+
+    public class OperationMetaData<IN, OUT> where IN : struct, Enum
     {
-        Precedence = precedence;
-        Associativity = assoc;
-        VisitorMethod = method;
-        OperatorToken = oper;
-        Affix = affix;
-        NodeName = nodeName;
-    }
-    
-    public OperationMetaData(int precedence, Associativity assoc, MethodInfo method, Affix affix, string oper, string nodeName = null)
-    {
-        Precedence = precedence;
-        Associativity = assoc;
-        VisitorMethod = method;
-        ExplicitOperatorToken = oper;
-        Affix = affix;
-        NodeName = nodeName;
-    }
-    
-    public OperationMetaData(int precedence, Associativity assoc, Func<object[],OUT> lambda, Affix affix, IN oper, string nodeName = null)
-    {
-        Precedence = precedence;
-        Associativity = assoc;
-        LambdaVisitor = lambda;
-        OperatorToken = oper;
-        Affix = affix;
-        NodeName = nodeName;
-    }
-    
-    public OperationMetaData(int precedence, Associativity assoc, Func<object[],OUT> lambda, Affix affix, string oper, string nodeName = null)
-    {
-        Precedence = precedence;
-        Associativity = assoc;
-        LambdaVisitor = lambda;
-        ExplicitOperatorToken = oper;
-        Affix = affix;
-        NodeName = nodeName;
-    }
+        public OperationMetaData(int precedence, Associativity assoc, MethodInfo method, Affix affix, IN oper, string nodeName = null)
+        {
+            Precedence = precedence;
+            Associativity = assoc;
+            VisitorMethod = method;
+            OperatorToken = oper;
+            Affix = affix;
+            NodeName = nodeName;
+        }
 
-    public int Precedence { get; set; }
+        public OperationMetaData(int precedence, Associativity assoc, MethodInfo method, Affix affix, string oper, string nodeName = null)
+        {
+            Precedence = precedence;
+            Associativity = assoc;
+            VisitorMethod = method;
+            ExplicitOperatorToken = oper;
+            Affix = affix;
+            NodeName = nodeName;
+        }
 
-    public Associativity Associativity { get; set; }
+        public OperationMetaData(int precedence, Associativity assoc, Func<object[], OUT> lambda, Affix affix, IN oper, string nodeName = null)
+        {
+            Precedence = precedence;
+            Associativity = assoc;
+            LambdaVisitor = lambda;
+            OperatorToken = oper;
+            Affix = affix;
+            NodeName = nodeName;
+        }
 
-    public MethodInfo VisitorMethod { get; set; }
-    
-    public Func<object[],OUT> LambdaVisitor { get; set; }  
+        public OperationMetaData(int precedence, Associativity assoc, Func<object[], OUT> lambda, Affix affix, string oper, string nodeName = null)
+        {
+            Precedence = precedence;
+            Associativity = assoc;
+            LambdaVisitor = lambda;
+            ExplicitOperatorToken = oper;
+            Affix = affix;
+            NodeName = nodeName;
+        }
 
-    public IN OperatorToken { get; set; }
+        public int Precedence { get; set; }
 
-    public string Operatorkey => (IsExplicitOperatorToken ? ExplicitOperatorToken : OperatorToken.ToString());
+        public Associativity Associativity { get; set; }
 
-    public Affix Affix { get; set; }
-    
-    public string NodeName { get; set; }
+        public MethodInfo VisitorMethod { get; set; }
 
-    public bool IsBinary => Affix == Affix.InFix;
+        public Func<object[], OUT> LambdaVisitor { get; set; }
 
-    public bool IsUnary => Affix != Affix.InFix;
+        public IN OperatorToken { get; set; }
 
-    public bool IsExplicitOperatorToken => !string.IsNullOrEmpty(ExplicitOperatorToken);
+        public string Operatorkey => (IsExplicitOperatorToken ? ExplicitOperatorToken : OperatorToken.ToString());
 
-    public string ExplicitOperatorToken { get; set; }
+        public Affix Affix { get; set; }
 
-    [ExcludeFromCodeCoverage]
-    public override string ToString()
-    {
-        return $"{OperatorToken} / {Affix} : {Precedence} / {Associativity}";
+        public string NodeName { get; set; }
+
+        public bool IsBinary => Affix == Affix.InFix;
+
+        public bool IsUnary => Affix != Affix.InFix;
+
+        public bool IsExplicitOperatorToken => !string.IsNullOrEmpty(ExplicitOperatorToken);
+
+        public string ExplicitOperatorToken { get; set; }
+
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            return $"{OperatorToken} / {Affix} : {Precedence} / {Associativity}";
+        }
     }
 }

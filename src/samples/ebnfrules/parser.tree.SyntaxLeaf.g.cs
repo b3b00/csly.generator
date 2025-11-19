@@ -1,35 +1,37 @@
 ﻿
 using System;
 
-namespace csly.models;
-
-public class SyntaxLeaf<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
+namespace csly.models
 {
-    public SyntaxLeaf(Token<IN> token, bool discarded)
-    {
-        Token = token;
-        Discarded = discarded;
-    }
-    
-    public bool IsEpsilon => false;
 
-    public Token<IN> Token { get;  }
-    public bool Discarded { get; }
-    public string Name => Token.TokenID.ToString();
-    
-    public bool HasByPassNodes { get; set; } = false;
-    
-    public string Dump(string tab)
+    public class SyntaxLeaf<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
     {
-        return $"{tab}+ {Token.TokenID.ToString()} : {Token.Value} @{Token.PositionInTokenFlow}";
-    }
+        public SyntaxLeaf(Token<IN> token, bool discarded)
+        {
+            Token = token;
+            Discarded = discarded;
+        }
 
-    public string ToJson(int index = 0)
-    {
-        return $@"""{index}.{Token.TokenID.ToString()}"" : ""{Token.Value}""";
-    }
+        public bool IsEpsilon => false;
 
-    public void ForceName(string name)
-    {
+        public Token<IN> Token { get; }
+        public bool Discarded { get; }
+        public string Name => Token.TokenID.ToString();
+
+        public bool HasByPassNodes { get; set; } = false;
+
+        public string Dump(string tab)
+        {
+            return $"{tab}+ {Token.TokenID.ToString()} : {Token.Value} @{Token.PositionInTokenFlow}";
+        }
+
+        public string ToJson(int index = 0)
+        {
+            return $@"""{index}.{Token.TokenID.ToString()}"" : ""{Token.Value}""";
+        }
+
+        public void ForceName(string name)
+        {
+        }
     }
 }

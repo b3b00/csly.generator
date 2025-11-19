@@ -1,7 +1,9 @@
-namespace ebnf.grammar;
-
-public interface IClause : GrammarNode
+namespace ebnf.grammar
 {
-    string Name { get; set; }
-    bool MayBeEmpty();
+
+    public interface IClause : GrammarNode
+    {
+        string Name { get; set; }
+        bool MayBeEmpty();
+    }
 }

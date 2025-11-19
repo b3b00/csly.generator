@@ -1,29 +1,31 @@
 
-namespace ebnf.grammar;
-
-public class NonTerminalClause : AbstractClause
+namespace ebnf.grammar
 {
 
-    public bool IsGroup { get; set; } = false;
-
-    public NonTerminalClause(string name)
+    public class NonTerminalClause : AbstractClause
     {
-        Name = name;
-    }
 
-    public override string ToString()
-    {
-        return Name;
-    }
+        public bool IsGroup { get; set; } = false;
 
-    private bool _mayBeEmpty = false;
+        public NonTerminalClause(string name)
+        {
+            Name = name;
+        }
 
-    public override bool MayBeEmpty() => _mayBeEmpty;
+        public override string ToString()
+        {
+            return Name;
+        }
 
-    public bool SetMayBeEmpty(bool mayBeEmpty)
-    {
-        bool setted = mayBeEmpty && !_mayBeEmpty;
-        _mayBeEmpty = mayBeEmpty;
-        return setted;
+        private bool _mayBeEmpty = false;
+
+        public override bool MayBeEmpty() => _mayBeEmpty;
+
+        public bool SetMayBeEmpty(bool mayBeEmpty)
+        {
+            bool setted = mayBeEmpty && !_mayBeEmpty;
+            _mayBeEmpty = mayBeEmpty;
+            return setted;
+        }
     }
 }

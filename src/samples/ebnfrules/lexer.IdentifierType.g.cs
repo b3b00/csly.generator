@@ -1,9 +1,11 @@
-﻿namespace csly.models;
-
-public enum IdentifierType
+﻿namespace csly.models
 {
-    Alpha,
-    AlphaNumeric,
-    AlphaNumericDash,
-    Custom
+
+    public enum IdentifierType
+    {
+        Alpha,
+        AlphaNumeric,
+        AlphaNumericDash,
+        Custom
+    }
 }

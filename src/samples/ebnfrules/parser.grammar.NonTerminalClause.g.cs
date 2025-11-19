@@ -1,14 +1,16 @@
-﻿namespace csly.models;
-
-public class NonTerminalClause : AbstractClause
+﻿namespace csly.models
 {
-    public NonTerminalClause(string name)
-    {
-        Name = name;
-    }
 
-    public override string ToString()
+    public class NonTerminalClause : AbstractClause
     {
-        return Name;
+        public NonTerminalClause(string name)
+        {
+            Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

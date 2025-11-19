@@ -1,12 +1,14 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class AutoCloseIndentationsAttribute : Attribute
+namespace csly.models
 {
-    public AutoCloseIndentationsAttribute()
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class AutoCloseIndentationsAttribute : Attribute
     {
-            
+        public AutoCloseIndentationsAttribute()
+        {
+
+        }
     }
 }

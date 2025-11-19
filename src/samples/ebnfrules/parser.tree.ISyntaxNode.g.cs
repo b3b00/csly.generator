@@ -1,21 +1,23 @@
 ﻿using System;
 
-namespace csly.models;
-
-public interface ISyntaxNode<IN, OUT> where IN : struct, Enum
+namespace csly.models
 {
 
-    public bool IsEpsilon { get;}
-    
-    bool Discarded { get;  }
-    string Name { get; }
-    
-    bool HasByPassNodes { get; set; }
-    
-    string Dump(string tab);
+    public interface ISyntaxNode<IN, OUT> where IN : struct, Enum
+    {
 
-    string ToJson(int index = 0);
-    
-    void ForceName(string name);
-    
+        bool IsEpsilon { get; }
+
+        bool Discarded { get; }
+        string Name { get; }
+
+        bool HasByPassNodes { get; set; }
+
+        string Dump(string tab);
+
+        string ToJson(int index = 0);
+
+        void ForceName(string name);
+
+    }
 }

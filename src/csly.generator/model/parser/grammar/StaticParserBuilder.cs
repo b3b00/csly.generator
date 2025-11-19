@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ebnf.grammar;
+
 
 namespace csly.generator.model.parser.grammar;
 
@@ -23,11 +25,16 @@ public class ParserOPtions {
 
     public ParserOPtions ParserOPtions { get; set; }
 
+    private readonly RuleParser _ruleParser;
+
+    private readonly RuleParserMain _ebnfMain;
+
     public StaticParserBuilder(List<string> tokens)
     {
         _tokens = tokens;
+        _ruleParser = new RuleParser(tokens);
+        _ebnfMain = new RuleParserMain(_ruleParser);
         ParserOPtions = new ParserOPtions();
-        
     }
 
 
@@ -43,7 +50,13 @@ public class ParserOPtions {
                     return null;
                 }
 
-                var head = ruleString.Substring(0, i).Trim();
+                var parsed = _ebnfMain.Parse(ruleString);
+            if ( parsed.IsError)            
+            {
+                
+            }
+
+            var head = ruleString.Substring(0, i).Trim();
                 var clauseStrings = ruleString.Substring(i + 1).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 var clauses = clauseStrings.Select(
                     x => _tokens.Contains(x) ? 

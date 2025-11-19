@@ -1,13 +1,15 @@
 ﻿using System;
 
-namespace csly.models;
-
-
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class AlphaNumIdAttribute : LexemeAttribute
+namespace csly.models
 {
-    public AlphaNumIdAttribute() : base(GenericToken.Identifier,IdentifierType.AlphaNumeric)
+
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    public class AlphaNumIdAttribute : LexemeAttribute
     {
-        
-    } 
+        public AlphaNumIdAttribute() : base(GenericToken.Identifier, IdentifierType.AlphaNumeric)
+        {
+
+        }
+    }
 }

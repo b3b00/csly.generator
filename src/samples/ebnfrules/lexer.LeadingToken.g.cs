@@ -1,91 +1,93 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System;
 
-namespace csly.models;
-
-public sealed class LeadingToken<IN> : IEquatable<LeadingToken<IN>> where IN:struct, Enum
+namespace csly.models
 {
-    public IN TokenId { get; set; }
-    
-    public string ExplicitToken { get; set; }
-    
-    public bool IsExplicitToken { get; set; }
-    
-    public bool IsIndent { get; set; }
-    
-    public bool IsUnindent { get; set; }
 
-    public LeadingToken(IN tokenId)
+    public sealed class LeadingToken<IN> : IEquatable<LeadingToken<IN>> where IN : struct, Enum
     {
-        TokenId = tokenId;
-        IsExplicitToken = false;
-    }
+        public IN TokenId { get; set; }
 
-    public LeadingToken(bool isIndent, bool isUnindent)
-    {
-        IsUnindent = isUnindent;
-        IsIndent = isIndent;
-    }
-    
-    public LeadingToken(IN tokenId, string explicitToken)
-    {
-        TokenId = tokenId;
-        ExplicitToken = explicitToken;
-        IsExplicitToken = true;
-    }
+        public string ExplicitToken { get; set; }
 
-    public bool Match(Token<IN> token)
-    {
-        if (IsExplicitToken)
+        public bool IsExplicitToken { get; set; }
+
+        public bool IsIndent { get; set; }
+
+        public bool IsUnindent { get; set; }
+
+        public LeadingToken(IN tokenId)
         {
-            return ExplicitToken == token.Value;
-        }
-        if (IsIndent)
-        {
-            return token.IsIndent;
-        }
-        if (IsUnindent)
-        {
-            return token.IsUnIndent;
+            TokenId = tokenId;
+            IsExplicitToken = false;
         }
 
-        return TokenId.Equals(token.TokenID);
-    }
-
-    [ExcludeFromCodeCoverage]
-    public override string ToString()
-    {
-        if (IsExplicitToken)
+        public LeadingToken(bool isIndent, bool isUnindent)
         {
-            return $"'{ExplicitToken}'";
+            IsUnindent = isUnindent;
+            IsIndent = isIndent;
         }
-        else
+
+        public LeadingToken(IN tokenId, string explicitToken)
         {
-            return TokenId.ToString();
+            TokenId = tokenId;
+            ExplicitToken = explicitToken;
+            IsExplicitToken = true;
         }
-    }
 
-    public bool Equals(LeadingToken<IN> other)
-    {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
-        if (IsExplicitToken)
+        public bool Match(Token<IN> token)
         {
-            return other.IsExplicitToken && ExplicitToken == other.ExplicitToken;
+            if (IsExplicitToken)
+            {
+                return ExplicitToken == token.Value;
+            }
+            if (IsIndent)
+            {
+                return token.IsIndent;
+            }
+            if (IsUnindent)
+            {
+                return token.IsUnIndent;
+            }
+
+            return TokenId.Equals(token.TokenID);
         }
-        return TokenId.Equals(other.TokenId);
-    }
 
-    public override bool Equals(object obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((LeadingToken<IN>)obj);
-    }
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            if (IsExplicitToken)
+            {
+                return $"'{ExplicitToken}'";
+            }
+            else
+            {
+                return TokenId.ToString();
+            }
+        }
 
-    public override int GetHashCode()
-    {
-        return IsExplicitToken ? this.ExplicitToken.GetHashCode() : TokenId.GetHashCode();
+        public bool Equals(LeadingToken<IN> other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (IsExplicitToken)
+            {
+                return other.IsExplicitToken && ExplicitToken == other.ExplicitToken;
+            }
+            return TokenId.Equals(other.TokenId);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LeadingToken<IN>)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return IsExplicitToken ? this.ExplicitToken.GetHashCode() : TokenId.GetHashCode();
+        }
     }
 }

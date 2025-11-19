@@ -1,11 +1,13 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Field)]
-public class PopAttribute : Attribute
+namespace csly.models
 {
-    public PopAttribute()
+
+    [AttributeUsage(AttributeTargets.Field)]
+    public class PopAttribute : Attribute
     {
+        public PopAttribute()
+        {
+        }
     }
 }

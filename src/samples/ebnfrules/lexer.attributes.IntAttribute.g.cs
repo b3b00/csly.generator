@@ -1,13 +1,15 @@
 ﻿using System;
 
-namespace csly.models;
-
-
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class IntAttribute : LexemeAttribute
+namespace csly.models
 {
-    public IntAttribute() : base(GenericToken.Int)
+
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    public class IntAttribute : LexemeAttribute
     {
-        
+        public IntAttribute() : base(GenericToken.Int)
+        {
+
+        }
     }
 }

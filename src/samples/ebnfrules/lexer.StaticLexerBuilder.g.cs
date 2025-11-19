@@ -1,32 +1,34 @@
 ﻿
 using System.Collections.Generic;
 
-namespace csly.models;
-
-internal class StaticLexerBuilder
+namespace csly.models
 {
 
-    private readonly string _lexerName;
-
-    public string LexerName => _lexerName;
-
-    private List<Lexeme> _lexemes = new List<Lexeme>();
-
-    public List<Lexeme> Lexemes => _lexemes;
-
-    public StaticLexerBuilder(string lexerName)
+    internal class StaticLexerBuilder
     {
-        _lexerName = lexerName;
-    }
+
+        private readonly string _lexerName;
+
+        public string LexerName => _lexerName;
+
+        private List<Lexeme> _lexemes = new List<Lexeme>();
+
+        public List<Lexeme> Lexemes => _lexemes;
+
+        public StaticLexerBuilder(string lexerName)
+        {
+            _lexerName = lexerName;
+        }
 
 
-    public void AddLexeme(Lexeme lexeme)
-    {
-        _lexemes.Add(lexeme);
-    }
+        public void AddLexeme(Lexeme lexeme)
+        {
+            _lexemes.Add(lexeme);
+        }
 
-    public void Add(GenericToken type, string name, params string[] args)
-    {
-        AddLexeme(new Lexeme(type, name, args));
+        public void Add(GenericToken type, string name, params string[] args)
+        {
+            AddLexeme(new Lexeme(type, name, args));
+        }
     }
 }

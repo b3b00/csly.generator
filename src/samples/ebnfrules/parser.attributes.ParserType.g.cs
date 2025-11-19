@@ -1,7 +1,9 @@
-﻿namespace csly.models;
-
-public enum ParserType
+﻿namespace csly.models
 {
-    LL_RECURSIVE_DESCENT = 1,
-    EBNF_LL_RECURSIVE_DESCENT = 2
+
+    public enum ParserType
+    {
+        LL_RECURSIVE_DESCENT = 1,
+        EBNF_LL_RECURSIVE_DESCENT = 2
+    }
 }

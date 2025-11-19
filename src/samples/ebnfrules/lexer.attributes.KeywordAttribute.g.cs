@@ -1,13 +1,15 @@
 ﻿using System;
 
-namespace csly.models;
-
-
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
-public class KeywordAttribute : LexemeAttribute
+namespace csly.models
 {
-    public KeywordAttribute(string keyword, int channel = Channels.Main) : base(GenericToken.KeyWord, keyword, channel)
+
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
+    public class KeywordAttribute : LexemeAttribute
     {
-        
+        public KeywordAttribute(string keyword, int channel = Channels.Main) : base(GenericToken.KeyWord, channel, keyword)
+        {
+
+        }
     }
 }

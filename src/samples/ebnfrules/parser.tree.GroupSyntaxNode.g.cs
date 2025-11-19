@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System;
 
-namespace csly.models;
-
-public class GroupSyntaxNode<IN, OUT> : ManySyntaxNode<IN, OUT> where IN : struct, Enum
+namespace csly.models
 {
-    public GroupSyntaxNode(string name) : base(name)
-    {
-    }
 
-    public GroupSyntaxNode(string name,  List<ISyntaxNode<IN, OUT>> children) : this(name)
+    public class GroupSyntaxNode<IN, OUT> : ManySyntaxNode<IN, OUT> where IN : struct, Enum
     {
-        Children.AddRange(children);
-    }
+        public GroupSyntaxNode(string name) : base(name)
+        {
+        }
 
+        public GroupSyntaxNode(string name, List<ISyntaxNode<IN, OUT>> children) : this(name)
+        {
+            Children.AddRange(children);
+        }
+
+    }
 }

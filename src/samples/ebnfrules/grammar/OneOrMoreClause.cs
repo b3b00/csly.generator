@@ -1,25 +1,27 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ebnf.grammar;
-
-public sealed class OneOrMoreClause : ManyClause
+namespace ebnf.grammar
 {
-    public OneOrMoreClause(IClause clause)
+
+    public sealed class OneOrMoreClause : ManyClause
     {
-        Clause = clause;
+        public OneOrMoreClause(IClause clause)
+        {
+            Clause = clause;
+        }
+
+
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            return Clause + "+";
+        }
+
+        public override bool MayBeEmpty()
+        {
+            return true;
+        }
+
     }
-
-
-    [ExcludeFromCodeCoverage]
-    public override string ToString()
-    {
-        return Clause + "+";
-    }
-
-    public override bool MayBeEmpty()
-    {
-        return true;
-    }
-
 }

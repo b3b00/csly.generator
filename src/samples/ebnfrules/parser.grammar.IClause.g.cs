@@ -1,6 +1,8 @@
-﻿namespace csly.models;
-
-public interface IClause
+﻿namespace csly.models
 {
-    string Name { get; set; } 
+
+    public interface IClause
+    {
+        string Name { get; set; }
+    }
 }

@@ -1,8 +1,10 @@
-﻿namespace ebnf.grammar;
-
-public enum Associativity
+﻿namespace ebnf.grammar
 {
-    None = 0,
-    Left = 1,
-    Right = 2
+
+    public enum Associativity
+    {
+        None = 0,
+        Left = 1,
+        Right = 2
+    }
 }

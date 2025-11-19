@@ -1,13 +1,15 @@
 ﻿
 using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class CustomIdAttribute : LexemeAttribute
+namespace csly.models
 {
-    public CustomIdAttribute(string startPattern, string endPattern) : base(GenericToken.Identifier, IdentifierType.Custom,startPattern,endPattern)
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    public class CustomIdAttribute : LexemeAttribute
     {
-        
-    } 
+        public CustomIdAttribute(string startPattern, string endPattern) : base(GenericToken.Identifier, IdentifierType.Custom, startPattern, endPattern)
+        {
+
+        }
+    }
 }

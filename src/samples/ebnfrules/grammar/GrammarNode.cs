@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace ebnf.grammar;
-
-public interface GrammarNode
+namespace ebnf.grammar
 {
+
+    public interface GrammarNode
+    {
+    }
 }

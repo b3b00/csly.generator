@@ -1,14 +1,16 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-public class NodeNameAttribute : Attribute
+namespace csly.models
 {
-    public  string Name { get;  } = null;
 
-    public NodeNameAttribute(string name)
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class NodeNameAttribute : Attribute
     {
-        Name = name;
+        public string Name { get; } = null;
+
+        public NodeNameAttribute(string name)
+        {
+            Name = name;
+        }
     }
 }

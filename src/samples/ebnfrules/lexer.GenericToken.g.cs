@@ -1,4 +1,5 @@
-﻿namespace csly.models;
+﻿namespace csly.models
+{
 
     public enum GenericToken
     {
@@ -18,3 +19,4 @@
         Comment,
         UpTo
     }
+}

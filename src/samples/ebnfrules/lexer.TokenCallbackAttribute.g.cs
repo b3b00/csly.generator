@@ -1,14 +1,16 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-public class TokenCallbackAttribute : Attribute
+namespace csly.models
 {
-    public int EnumValue { get; set; }
 
-    public TokenCallbackAttribute(int enumValue)
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class TokenCallbackAttribute : Attribute
     {
-        EnumValue = enumValue;
+        public int EnumValue { get; set; }
+
+        public TokenCallbackAttribute(int enumValue)
+        {
+            EnumValue = enumValue;
+        }
     }
 }

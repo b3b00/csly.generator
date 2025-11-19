@@ -1,14 +1,15 @@
 ﻿using System;
 
-namespace csly.models;
-
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-public class SubNodeNamesAttribute : Attribute
+namespace csly.models
 {
-    public  string[] Names { get;  } = null;
-
-    public SubNodeNamesAttribute(params string[] names)
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class SubNodeNamesAttribute : Attribute
     {
-        Names = names;
+        public string[] Names { get; } = null;
+
+        public SubNodeNamesAttribute(params string[] names)
+        {
+            Names = names;
+        }
     }
 }
