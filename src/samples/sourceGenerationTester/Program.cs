@@ -9,21 +9,13 @@ using System;
 using System.IO;
 using System.Linq;
 
-
-
 namespace sourceGenerationTester;
-
-
-
-
-
-
 public partial class Program
 {
     public static void Main(string[] args)
     {
         Generate();
-        Run();
+        //Run();
         /*GoStatic();
         Run();*/
     }
@@ -98,35 +90,34 @@ public partial class Program
 
 
 
-    private static void Run()
-    {
-        var parser = new expressionParser.ExpressionParser();
-        var main = new sourceGenerationTester.expressionParser.ExpressionParserMain();
-        //var entryPoint = new expressionParser.ExpressionParserMain(parser);
+    //private static void Run()
+    //{
+    //var parser = new expressionParser.ExpressionParser();
+    //var main = new sourceGenerationTester.expressionParser.ExpressionParserMain();
+    //var entryPoint = new expressionParser.ExpressionParserMain(parser);
 
 
 
-        //while (true)
-        //{
-        //    var choice = Console.ReadLine();
-        //    if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-        //    {
-        //        Environment.Exit(0);
-        //    }
-        //    var r = entryPoint.Parse(choice);
-        //    if (r.IsOk)
-        //    {
-        //        Console.WriteLine($"{choice} = {r.Result}");
-        //        Console.WriteLine(r.SyntaxTree.Dump("  "));
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Parse failed");
-        //        foreach (var err in r.Errors)
-        //        {
-        //            Console.WriteLine(err.ErrorMessage);
-        //        }
-        //    }
-        //}
-    }
+    //while (true)
+    //{
+    //    var choice = Console.ReadLine();
+    //    if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
+    //    {
+    //        Environment.Exit(0);
+    //    }
+    //    var r = entryPoint.Parse(choice);
+    //    if (r.IsOk)
+    //    {
+    //        Console.WriteLine($"{choice} = {r.Result}");
+    //        Console.WriteLine(r.SyntaxTree.Dump("  "));
+    //    }
+    //    else
+    //    {
+    //        Console.WriteLine("Parse failed");
+    //        foreach (var err in r.Errors)
+    //        {
+    //            Console.WriteLine(err.ErrorMessage);
+    //        }
+    //    }
+    //}
 }

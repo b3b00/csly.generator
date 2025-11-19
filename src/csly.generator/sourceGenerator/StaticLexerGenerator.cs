@@ -19,7 +19,8 @@ namespace csly.generator.sourceGenerator
         InInt,
         InDouble,
         InString,
-        InChar
+        InChar,
+        Sugar
     };
 
     internal class StaticLexerGenerator
@@ -28,7 +29,7 @@ namespace csly.generator.sourceGenerator
 
         private readonly TemplateEngine _templateEngine;
 
-        private readonly List<States> _states = new List<States>();
+        private readonly List<string> _states = new List<string>();
 
         private readonly List<Lexeme> _longLexemes = new List<Lexeme>();
         public StaticLexerGenerator(StaticLexerBuilder lexerBuilder)
@@ -40,9 +41,9 @@ namespace csly.generator.sourceGenerator
         public string Generate()
         {
             var starts = _lexerBuilder.Lexemes.Select(lexeme => GenerateStart(lexeme)).Where(content => content != null).ToList();
-
-            var others = _lexerBuilder.Lexemes.Select(lexeme => GenerateOther(lexeme)).Where(content => content != null).ToList();
-            var startsIf = string.Join("else ", starts);
+            var o = _lexerBuilder.Lexemes.SelectMany(lexeme => GenerateOther(lexeme));
+            var others = o.Where(content => content != null).ToList();
+            var startsIf = string.Join("\n", starts);
             var othersIf = string.Join("\n", others);
             var keywords = string.Join(",\n        ", _lexerBuilder.Lexemes
                 .Where(lexeme => lexeme.Type == GenericToken.KeyWord)
@@ -65,10 +66,19 @@ namespace csly.generator.sourceGenerator
         {
             if (lexeme.Type == GenericToken.SugarToken)
             {
-                var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.SugarTemplate), lexeme.Name, additional: new Dictionary<string, string>()
+                string nextState = $"{nameof(States.Sugar)}_{lexeme.Name}_1";
+                var currentChar = lexeme.Args.First().Trim(new[] { '"' })[0];
+                string condition = $"currentChar == '{currentChar}'";
+                var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.SugarTemplate), lexeme.Name,
+                    additional: new Dictionary<string, string>()
             {
-                {"CHAR", lexeme.Args.First().Trim(new[]{'"'}) }
+                        
+                {"CHAR", lexeme.Args.First().Trim(new[]{'"'}) },
+                        {"NEW_STATE",nextState },
+                        {"LEXEME_CONDITION",condition },
+                        {"PATTERN", lexeme.Args.First().Trim(new[]{'"'}) }
             });
+                _states.Add(nextState);
                 return content;
             }
             if (lexeme.Type == GenericToken.Identifier)
@@ -92,7 +102,7 @@ namespace csly.generator.sourceGenerator
                 {"NEW_STATE", States.InIdentifier.ToString() }
             });
                 _longLexemes.Add(lexeme);
-                _states.Add(States.InIdentifier);
+                _states.Add(States.InIdentifier.ToString());
                 return content;
             }
             if (lexeme.Type == GenericToken.Int)
@@ -104,14 +114,54 @@ namespace csly.generator.sourceGenerator
                 {"NEW_STATE", States.InInt.ToString() }
             });
                 _longLexemes.Add(lexeme);
-                _states.Add(States.InInt);
+                _states.Add(States.InInt.ToString());
                 return content;
             }
             return null;
         }
 
-        public string GenerateOther(Lexeme lexeme)
+        public List<string> GenerateOther(Lexeme lexeme)
         {
+            if (lexeme.Type == GenericToken.SugarToken)
+            {
+                List<string> nextStates = new List<string>();
+
+                var pattern = lexeme.Args.First().Trim(new[] { '"' });
+                int last = 1;
+                if (pattern.Length > 1)
+                {
+
+                    for (int i = 1; i < pattern.Length; i++)
+                    {
+                        last = i;
+                        char currentChar = pattern[i];
+                        string condition = $"(state == LexerStates.{nameof(States.Sugar)}_{lexeme.Name}_{i - 1} && currentChar == '{currentChar}')";
+                        string currentState = $"{nameof(States.Sugar)}_{lexeme.Name}_{i + 1}";
+                        string nextState = (i == pattern.Length - 1) ? "Start" : $"{nameof(States.Sugar)}_{lexeme.Name}_{i + 1}";
+                        var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.OtherTemplate), lexeme.Name,
+                            additional: new Dictionary<string, string>()
+                    {
+                        {"CHAR", pattern[i].ToString() },
+                                {"NEW_STATE",nextState },
+                                {"LEXEME_CONDITION",condition }
+                    });
+                        nextStates.Add(content);
+                        _states.Add(currentState);
+                    }
+                }
+
+                string conditionEnd = $"(state == LexerStates.{nameof(States.Sugar)}_{lexeme.Name}_{last} )";
+                var endContent = _templateEngine.ApplyTemplate(nameof(LexerTemplates.SugarTemplate), lexeme.Name,
+                    additional: new Dictionary<string, string>()
+                    {
+                        {"LEXEME_CONDITION", conditionEnd },
+                        {"NEW_STATE","Start" },
+                        {"PATTERN", pattern }
+                    });
+                nextStates.Add(endContent);
+
+                return nextStates;
+            }
             if (lexeme.Type == GenericToken.Identifier)
             {
                 var followPatterns = ParseIdentifierPattern(lexeme.Args[1]).ToList();
@@ -132,14 +182,14 @@ namespace csly.generator.sourceGenerator
                 {"LEXEME_NAME", lexeme.Name },
                 {"CONDITION", cond }
             });
-                return content;
+                return new List<string>() { content };
             }
             if (lexeme.Type == GenericToken.Int)
             {
                 var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.IntTemplate), lexeme.Name);
-                return content;
+                return new List<string>() { content };
             }
-            return null;
+            return new List<string>();
         }
 
 

@@ -69,7 +69,10 @@ public class CslyParserGenerator : IIncrementalGenerator
 
             return "";
         };
-        
+
+
+        // generate models
+
         TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
         var models = templateEngine.GetAllTemplateNamesForFolder("model");
         foreach (var model in models)
@@ -174,28 +177,44 @@ public class CslyParserGenerator : IIncrementalGenerator
                     usings = usings.Distinct().ToList();
 
                     LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator();
-                    StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
-                    var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
-                        declarationsByName, staticLexerBuilder);
-                    StaticLexerGenerator staticLexerGenerator =
-                        new StaticLexerGenerator(staticLexerBuilder);
-                    var t = staticLexerGenerator.Generate();
+                    try
+                    {                        
+                        StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
+                        var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
+                            declarationsByName, staticLexerBuilder);
+                        StaticLexerGenerator staticLexerGenerator =
+                            new StaticLexerGenerator(staticLexerBuilder);
+                        var t = staticLexerGenerator.Generate();
 
-                    var staticLexer = @$"
+                        var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}
 
 
    {t}
 ";
 
-                    context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
+                        context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
+
+                    }
+                    catch(Exception e) {                        
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                CslyGeneratorErrors.LEXER_GENERATION_FAILED,
+                                "lexer generation failed",
+                                "lexer generation failed for {0} : {1}, {2}",
+                                "csly",
+                                DiagnosticSeverity.Error,
+                                true), classDeclarationSyntax.GetLocation(), lexerName, e.Message, e.StackTrace));
+                        return;
+                    }
 
                     ParserBuilderGenerator parserBuilderGenerator =
                         new ParserBuilderGenerator(lexerName, parserType, outputType, ns, lexerGenerator.Tokens);
+                    try
+                    {
+                        var staticParser = parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax);
 
-                    var staticParser = parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax);
-                    
-                    string code = $@"
+                        string parserCode = $@"
 
 {string.Join(Environment.NewLine, usings)}
 
@@ -204,24 +223,36 @@ public class CslyParserGenerator : IIncrementalGenerator
 
 }}";
 
-                    context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
+                        context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
 
-                    var staticVisitor = parserBuilderGenerator.GenerateStaticVisitor();
+                        var staticVisitor = parserBuilderGenerator.GenerateStaticVisitor();
 
-                    code = $@"
+                        string visitorCode = $@"
 
 {string.Join(Environment.NewLine, usings)}
 
     {staticVisitor}
 
 ";
-                    context.AddSource($"{className}Visitor.g.cs", SourceText.From(code, Encoding.UTF8));
-
+                        context.AddSource($"{className}Visitor.g.cs", SourceText.From(visitorCode, Encoding.UTF8));
+                    }
+                    catch(Exception e)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                CslyGeneratorErrors.PARSER_GENERATION_FAILED,
+                                "parser generation failed",
+                                "parser generation failed for {0} : {1}, {2}",
+                                "csly",
+                                DiagnosticSeverity.Error,
+                                true), classDeclarationSyntax.GetLocation(), parserType, e.Message, e.StackTrace));
+                        return;
+                    }
                     // ***********
                     // entry point
-                    
+
                     var main = parserBuilderGenerator.GenerateEntryPoint();
-                    code = $@"
+                    string code = $@"
 
 {string.Join(Environment.NewLine, usings)}
 

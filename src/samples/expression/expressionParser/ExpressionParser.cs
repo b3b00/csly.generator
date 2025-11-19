@@ -1,4 +1,5 @@
-﻿using csly.ebnf.models;
+﻿
+using csly.models;
 using System;
 
 namespace sourceGenerationTester.expressionParser
@@ -8,10 +9,7 @@ namespace sourceGenerationTester.expressionParser
     public class ExpressionParser
     {
         [Production("primary: DOUBLE")]
-        public double PrimaryDouble(Token<ExpressionToken> dbl)
-        {
-            return dbl.DoubleValue;
-        }
+        public double PrimaryDouble(Token<ExpressionToken> dbl) => dbl.DoubleValue;
 
         [Production("primary: PI")]
         public double PrimaryPi(Token<ExpressionToken> pi)
@@ -98,15 +96,15 @@ namespace sourceGenerationTester.expressionParser
             return factorValue;
         }
 
-        [csly.ebnf.models.Production("factor : primary")]
+        [Production("factor : primary")]
         [NodeName("primary")]
         public double primaryFactor(double primValue)
         {
             return primValue;
         }
 
-        [csly.ebnf.models.NodeName("negate")]
-        [csly.ebnf.models.Production("factor : MINUS factor")]
+        [NodeName("negate")]
+        [Production("factor : MINUS factor")]
         public double MinusFactor(Token<ExpressionToken> discardedMinus, double factorValue)
         {
             return -factorValue;

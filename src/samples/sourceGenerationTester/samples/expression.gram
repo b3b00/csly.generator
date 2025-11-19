@@ -1,4 +1,6 @@
-﻿namespace sourceGenerationTester.expressionParser;
+﻿using csly.models;
+
+namespace sourceGenerationTester.expressionParser;
 
 [ParserGenerator]
 public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, double>
@@ -6,50 +8,11 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
 
 }
 
-public enum ExpressionToken
-    {
-        // float number 
-        [Double] DOUBLE = 1,
-
-        // integer        
-        [Int] INT = 3,
-
-        [AlphaId] IDENTIFIER = 4,
-
-        // the + operator
-        [Sugar("+")] PLUS = 5,
-
-        // the - operator
-        [Sugar("-")] MINUS = 6,
-
-        // the * operator
-        [Sugar("*")] TIMES = 7,
-
-        //  the  / operator
-        [Sugar("/")] DIVIDE = 8,
-
-        // a left paranthesis (
-        [Sugar("(")] LPAREN = 9,
-
-        // a right paranthesis )
-        [Sugar(")")] RPAREN = 10,
-
-        [Sugar("!")] FACTORIAL = 13,
-
-        [Keyword("hello")] PI = 15,
-
-        [Keyword("world")] E = 17,
-
-    }
-
-    [ParserRoot("expression")]
+   [ParserRoot("expression")]
     public class ExpressionParser
     {
         [Production("primary: DOUBLE")]
-        public double PrimaryDouble(Token<ExpressionToken> dbl)
-        {
-            return dbl.DoubleValue;
-        }
+        public double PrimaryDouble(Token<ExpressionToken> dbl) => dbl.DoubleValue;
 
         [Production("primary: PI")]
         public double PrimaryPi(Token<ExpressionToken> pi)
@@ -149,4 +112,40 @@ public enum ExpressionToken
         {
             return -factorValue;
         }
+    }
+
+    public enum ExpressionToken
+    {
+        // float number 
+        [Double] DOUBLE = 1,
+
+        // integer        
+        [Int] INT = 3,
+
+        [AlphaId] IDENTIFIER = 4,
+
+        // the + operator
+        [Sugar("+")] PLUS = 5,
+
+        // the - operator
+        [Sugar("-")] MINUS = 6,
+
+        // the * operator
+        [Sugar("*")] TIMES = 7,
+
+        //  the  / operator
+        [Sugar("/")] DIVIDE = 8,
+
+        // a left paranthesis (
+        [Sugar("(")] LPAREN = 9,
+
+        // a right paranthesis )
+        [Sugar(")")] RPAREN = 10,
+
+        [Sugar("!")] FACTORIAL = 13,
+
+        [Keyword("hello")] PI = 15,
+
+        [Keyword("world")] E = 17,
+
     }

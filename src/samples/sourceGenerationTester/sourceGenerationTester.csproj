@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="expressionParser\Expression.cs" />
+      <Compile Remove="expressionParser\ExpressionParser.cs" />
+      <Compile Remove="expressionParser\ExpressionToken.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <!--<ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
 
       <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
@@ -17,6 +23,12 @@
     <ItemGroup>
       <EmbeddedResource Include="samples\ebnf.gram" />
       <EmbeddedResource Include="samples\expression.gram" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="expressionParser\Expression.cs" />
+      <None Include="expressionParser\ExpressionParser.cs" />
+      <None Include="expressionParser\ExpressionToken.cs" />
     </ItemGroup>
 
     <ItemGroup>

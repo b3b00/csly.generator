@@ -59,9 +59,9 @@
     <EmbeddedResource Include="sourceGenerator\StaticLexerGenerator.cs" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <ProjectReference Include="..\samples\ebnfrules\ebnfrules.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
   
 
   

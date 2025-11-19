@@ -154,40 +154,46 @@ public class ParserBuilderGenerator
     
     private void GenerateNonTerminal(NonTerminalClause nonTerminalClause, StringBuilder builder)
     {
-        var rules = _ruleParsers[nonTerminalClause.Name];
-        StringBuilder calls = new();
+        if (_ruleParsers.TryGetValue(nonTerminalClause.Name, out var rules))
+        {            
+            StringBuilder calls = new();
 
-        var allLeaders = rules.SelectMany(r => r.Leaders)
-                .Distinct().ToList()
-                .Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})");
-        var expecting = string.Join(", ", allLeaders);
+            var allLeaders = rules.SelectMany(r => r.Leaders)
+                    .Distinct().ToList()
+                    .Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})");
+            var expecting = string.Join(", ", allLeaders);
 
-        for (int i = 0; i < rules.Count(); i++)
-        {
-            
-
-            var rule = rules[i];
-            if (rule.Leaders.Count != 0)
+            for (int i = 0; i < rules.Count(); i++)
             {
-                ;
-            }            
-            var leaders = string.Join(", ",rule.Leaders.Distinct().Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})"));
-            string callTemplate = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleCallTemplate),nonTerminalClause.Name,
-                additional: new Dictionary<string, string>()
-            {
+
+
+                var rule = rules[i];
+                if (rule.Leaders.Count != 0)
+                {
+                    ;
+                }
+                var leaders = string.Join(", ", rule.Leaders.Distinct().Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})"));
+                string callTemplate = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleCallTemplate), nonTerminalClause.Name,
+                    additional: new Dictionary<string, string>()
+                {
                 {"LEADINGS",leaders}, // static : compute leadings for rule
                 {"INDEX",i.ToString()}
-            });
-            calls.AppendLine(callTemplate);
-        }
-        
-        string content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalParserTemplate),nonTerminalClause.Name,
-            additional: new Dictionary<string, string>()
-            {
+                });
+                calls.AppendLine(callTemplate);
+            }
+
+            string content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalParserTemplate), nonTerminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {
                 {"CALLS", calls.ToString()},
                 {"EXPECTEDTOKENS",expecting }
-            });
-        builder.AppendLine(content).AppendLine();
+                });
+            builder.AppendLine(content).AppendLine();
+        }
+        else
+        {
+            ;
+        }
     }
     
     private void GenerateRule(Rule rule, StringBuilder builder, int index)

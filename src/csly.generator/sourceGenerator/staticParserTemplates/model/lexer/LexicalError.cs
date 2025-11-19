@@ -17,8 +17,7 @@ public class LexicalError : ParseError
 
     public char UnexpectedChar { get; set; }
 
-    /*public override string ErrorMessage => I18N.Instance.GetText(_i18N, I18NMessage.UnexpectedChar,
-        UnexpectedChar.ToString(), Line.ToString(), Column.ToString(), ((int)UnexpectedChar).ToString());*/
+    public override string ErrorMessage => $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar} at {Line},{Column}";
 
     public override string ToString()
     {

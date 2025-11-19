@@ -1,4 +1,4 @@
-﻿using csly.ebnf.models;
+﻿using csly.models;
 
 namespace sourceGenerationTester.expressionParser;
 
