@@ -19,7 +19,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <IsRoslynComponent>true</IsRoslynComponent>
-    <!--<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>-->
+    
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,6 +46,10 @@
   <ItemGroup>
     <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs" />
     <Compile Remove="sourceGenerator\staticParserTemplates\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\samples\ebnfrules\ebnfrules.csproj" />
   </ItemGroup>
   
 
