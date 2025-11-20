@@ -7,7 +7,7 @@ internal enum LexerTemplates
     SugarTemplate,
     TokenTypeTemplate,
     OtherStartTemplate,
-    OtherTemplate,
+    NextSugarTemplate,
     IdentifierTemplate,
     IntTemplate
 }

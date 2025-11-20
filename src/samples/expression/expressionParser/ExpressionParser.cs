@@ -67,6 +67,7 @@ namespace sourceGenerationTester.expressionParser
         [NodeName("multOrDivide")]
         [Production("term : factor TIMES term")]
         [Production("term : factor DIVIDE term")]
+        [Production("term : factor EXP term")]
         public int Term(int left, Token<ExpressionToken> operatorToken, int right)
         {
             int result = 0;
@@ -82,6 +83,11 @@ namespace sourceGenerationTester.expressionParser
                 case ExpressionToken.DIVIDE:
                     {
                         result = left / right;
+                        break;
+                    }
+                    case ExpressionToken.EXP:
+                    {
+                        result = (int)Math.Pow(left, right);
                         break;
                     }
             }

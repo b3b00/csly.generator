@@ -5,7 +5,7 @@ Console.WriteLine("Hello, World!");
 
 ExpressionParser parser = new ExpressionParser();
 ExpressionParserMain main = new ExpressionParserMain(parser);
-var parsed = main.Parse("2+2");
+var parsed = main.Parse("1+2^^3");
 if (parsed.IsOk)
 {
     Console.WriteLine($"Parsed successfully! ::{parsed.Result}::");

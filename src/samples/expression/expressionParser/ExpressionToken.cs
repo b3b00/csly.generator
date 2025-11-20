@@ -12,6 +12,8 @@ namespace sourceGenerationTester.expressionParser
 
         [AlphaId] IDENTIFIER = 4,
 
+        [Sugar("^^")] EXP = 12,
+
         // the + operator
         [Sugar("+")] PLUS = 5,
 

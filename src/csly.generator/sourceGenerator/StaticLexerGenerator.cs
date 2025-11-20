@@ -133,12 +133,12 @@ namespace csly.generator.sourceGenerator
 
                     for (int i = 1; i < pattern.Length; i++)
                     {
-                        last = i;
+                        last = i+1;
                         char currentChar = pattern[i];
-                        string condition = $"(state == LexerStates.{nameof(States.Sugar)}_{lexeme.Name}_{i - 1} && currentChar == '{currentChar}')";
+                        string condition = $"(state == LexerStates.{nameof(States.Sugar)}_{lexeme.Name}_{i} && currentChar == '{currentChar}')";
                         string currentState = $"{nameof(States.Sugar)}_{lexeme.Name}_{i + 1}";
-                        string nextState = (i == pattern.Length - 1) ? "Start" : $"{nameof(States.Sugar)}_{lexeme.Name}_{i + 1}";
-                        var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.OtherTemplate), lexeme.Name,
+                        string nextState = currentState;
+                        var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.NextSugarTemplate), lexeme.Name,
                             additional: new Dictionary<string, string>()
                     {
                         {"CHAR", pattern[i].ToString() },

@@ -70,6 +70,7 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         [NodeName("multOrDivide")]
         [Production("term : factor TIMES term")]
         [Production("term : factor DIVIDE term")]
+        [Production("term : factor EXP term")]
         public int Term(int left, Token<ExpressionToken> operatorToken, int right)
         {
             int result = 0;
@@ -87,6 +88,11 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
                         result = left / right;
                         break;
                     }
+                case ExpressionToken.EXP:
+                {
+                    result = (int)Math.Pow(left, right);
+                    break;
+                }
             }
 
             return result;
@@ -151,6 +157,8 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         [Keyword("TEN")] TEN = 15,
 
         [Keyword("FORTYTWO")] FORTYTWO = 17,
+
+        [Sugar("^^")] EXP = 18,
 
     }
 }
