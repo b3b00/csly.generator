@@ -3,25 +3,25 @@
 namespace sourceGenerationTester.expressionParser;
 
 [ParserGenerator]
-public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, double>
+public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, int>
 {
 
 }
 
-   [ParserRoot("expression")]
+ [ParserRoot("expression")]
     public class ExpressionParser
     {
         [Production("primary: INT")]
         public int Primaryint(Token<ExpressionToken> dbl) => dbl.IntValue;
 
         [Production("primary: TEN")]
-        public int PrimaryPi(Token<ExpressionToken> pi)
+        public int Primary10(Token<ExpressionToken> pi)
         {
             return 10;
         }
 
         [Production("primary: FORTYTWO")]
-        public int PrimaryE(Token<ExpressionToken> e)
+        public int Primary42(Token<ExpressionToken> e)
         {
             return 42;
         }
@@ -88,11 +88,11 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
                         result = left / right;
                         break;
                     }
-                case ExpressionToken.EXP:
-                {
-                    result = (int)Math.Pow(left, right);
-                    break;
-                }
+                    case ExpressionToken.EXP:
+                    {
+                        result = (int)Math.Pow(left, right);
+                        break;
+                    }
             }
 
             return result;
@@ -120,8 +120,6 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         }
     }
 
-
-{
     public enum ExpressionToken
     {
         // float number 
@@ -132,7 +130,7 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
 
         [AlphaId] IDENTIFIER = 4,
 
-
+        [Sugar("^^")] EXP = 12,
 
         // the + operator
         [Sugar("+")] PLUS = 5,
@@ -158,7 +156,4 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
 
         [Keyword("FORTYTWO")] FORTYTWO = 17,
 
-        [Sugar("^^")] EXP = 18,
-
     }
-}
