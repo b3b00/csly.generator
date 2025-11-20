@@ -11,24 +11,24 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
    [ParserRoot("expression")]
     public class ExpressionParser
     {
-        [Production("primary: DOUBLE")]
-        public double PrimaryDouble(Token<ExpressionToken> dbl) => dbl.DoubleValue;
+        [Production("primary: INT")]
+        public int Primaryint(Token<ExpressionToken> dbl) => dbl.IntValue;
 
-        [Production("primary: PI")]
-        public double PrimaryPi(Token<ExpressionToken> pi)
+        [Production("primary: TEN")]
+        public int PrimaryPi(Token<ExpressionToken> pi)
         {
-            return 3.1415;
+            return 10;
         }
 
-        [Production("primary: E")]
-        public double PrimaryE(Token<ExpressionToken> e)
+        [Production("primary: FORTYTWO")]
+        public int PrimaryE(Token<ExpressionToken> e)
         {
-            return 2.7182;
+            return 42;
         }
 
         [NodeName("group")]
         [Production("primary: LPAREN  expression RPAREN ")]
-        public double Group(Token<ExpressionToken> l, double groupValue, Token<ExpressionToken> r)
+        public int Group(Token<ExpressionToken> l, int groupValue, Token<ExpressionToken> r)
         {
             return groupValue;
         }
@@ -37,9 +37,9 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         [NodeName("addOrSubstract")]
         [Production("expression : term PLUS expression")]
         [Production("expression : term MINUS expression")]
-        public double Expression(double left, Token<ExpressionToken> operatorToken, double right)
+        public int Expression(int left, Token<ExpressionToken> operatorToken, int right)
         {
-            double result = 0;
+            int result = 0;
 
 
             switch (operatorToken.TokenID)
@@ -62,7 +62,7 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
 
         [NodeName("expression")]
         [Production("expression : term")]
-        public double Expression_Term(double termValue)
+        public int Expression_Term(int termValue)
         {
             return termValue;
         }
@@ -70,9 +70,9 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         [NodeName("multOrDivide")]
         [Production("term : factor TIMES term")]
         [Production("term : factor DIVIDE term")]
-        public double Term(double left, Token<ExpressionToken> operatorToken, double right)
+        public int Term(int left, Token<ExpressionToken> operatorToken, int right)
         {
-            double result = 0;
+            int result = 0;
 
 
             switch (operatorToken.TokenID)
@@ -94,35 +94,39 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
 
         [Production("term : factor")]
         [NodeName("term")]
-        public double Term_Factor(double factorValue)
+        public int Term_Factor(int factorValue)
         {
             return factorValue;
         }
 
         [Production("factor : primary")]
         [NodeName("primary")]
-        public double primaryFactor(double primValue)
+        public int primaryFactor(int primValue)
         {
             return primValue;
         }
 
         [NodeName("negate")]
         [Production("factor : MINUS factor")]
-        public double MinusFactor(Token<ExpressionToken> discardedMinus, double factorValue)
+        public int MinusFactor(Token<ExpressionToken> discardedMinus, int factorValue)
         {
             return -factorValue;
         }
     }
 
+
+{
     public enum ExpressionToken
     {
         // float number 
-        [Double] DOUBLE = 1,
+        //[Double] DOUBLE = 1,
 
         // integer        
         [Int] INT = 3,
 
         [AlphaId] IDENTIFIER = 4,
+
+
 
         // the + operator
         [Sugar("+")] PLUS = 5,
@@ -144,8 +148,9 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
 
         [Sugar("!")] FACTORIAL = 13,
 
-        [Keyword("hello")] PI = 15,
+        [Keyword("TEN")] TEN = 15,
 
-        [Keyword("world")] E = 17,
+        [Keyword("FORTYTWO")] FORTYTWO = 17,
 
     }
+}

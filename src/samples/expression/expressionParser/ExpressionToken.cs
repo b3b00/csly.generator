@@ -5,7 +5,7 @@ namespace sourceGenerationTester.expressionParser
     public enum ExpressionToken
     {
         // float number 
-        [Double] DOUBLE = 1,
+        //[Double] DOUBLE = 1,
 
         // integer        
         [Int] INT = 3,
@@ -32,9 +32,9 @@ namespace sourceGenerationTester.expressionParser
 
         [Sugar("!")] FACTORIAL = 13,
 
-        [Keyword("hello")] PI = 15,
+        [Keyword("TEN")] TEN = 15,
 
-        [Keyword("world")] E = 17,
+        [Keyword("FORTYTWO")] FORTYTWO = 17,
 
     }
 }

@@ -1,4 +1,4 @@
-﻿else if (state == LexerStates.InIdentifier){
+﻿if (state == LexerStates.InIdentifier){
     if (<#CONDITION#>)
     {
         position.Index++;

@@ -44,7 +44,7 @@ namespace csly.generator.sourceGenerator
             var o = _lexerBuilder.Lexemes.SelectMany(lexeme => GenerateOther(lexeme));
             var others = o.Where(content => content != null).ToList();
             var startsIf = string.Join("else ", starts);
-            var othersIf = string.Join("\n", others);
+            var othersIf = string.Join("else ", others);
             var keywords = string.Join(",\n        ", _lexerBuilder.Lexemes
                 .Where(lexeme => lexeme.Type == GenericToken.KeyWord)
                 .Select(lexeme => $"{{ \"{lexeme.Name}\", ExpressionToken.{lexeme.Name} }}"));
@@ -69,7 +69,7 @@ namespace csly.generator.sourceGenerator
                 string nextState = $"{nameof(States.Sugar)}_{lexeme.Name}_1";
                 var currentChar = lexeme.Args.First().Trim(new[] { '"' })[0];
                 string condition = $"currentChar == '{currentChar}'";
-                var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.SugarTemplate), lexeme.Name,
+                var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.OtherStartTemplate), lexeme.Name,
                     additional: new Dictionary<string, string>()
             {
                         

@@ -8,24 +8,24 @@ namespace sourceGenerationTester.expressionParser
     [ParserRoot("expression")]
     public class ExpressionParser
     {
-        [Production("primary: DOUBLE")]
-        public double PrimaryDouble(Token<ExpressionToken> dbl) => dbl.DoubleValue;
+        [Production("primary: INT")]
+        public int Primaryint(Token<ExpressionToken> dbl) => dbl.IntValue;
 
-        [Production("primary: PI")]
-        public double PrimaryPi(Token<ExpressionToken> pi)
+        [Production("primary: TEN")]
+        public int Primary10(Token<ExpressionToken> pi)
         {
-            return 3.1415;
+            return 10;
         }
 
-        [Production("primary: E")]
-        public double PrimaryE(Token<ExpressionToken> e)
+        [Production("primary: FORTYTWO")]
+        public int Primary42(Token<ExpressionToken> e)
         {
-            return 2.7182;
+            return 42;
         }
 
         [NodeName("group")]
         [Production("primary: LPAREN  expression RPAREN ")]
-        public double Group(Token<ExpressionToken> l, double groupValue, Token<ExpressionToken> r)
+        public int Group(Token<ExpressionToken> l, int groupValue, Token<ExpressionToken> r)
         {
             return groupValue;
         }
@@ -34,9 +34,9 @@ namespace sourceGenerationTester.expressionParser
         [NodeName("addOrSubstract")]
         [Production("expression : term PLUS expression")]
         [Production("expression : term MINUS expression")]
-        public double Expression(double left, Token<ExpressionToken> operatorToken, double right)
+        public int Expression(int left, Token<ExpressionToken> operatorToken, int right)
         {
-            double result = 0;
+            int result = 0;
 
 
             switch (operatorToken.TokenID)
@@ -59,7 +59,7 @@ namespace sourceGenerationTester.expressionParser
 
         [NodeName("expression")]
         [Production("expression : term")]
-        public double Expression_Term(double termValue)
+        public int Expression_Term(int termValue)
         {
             return termValue;
         }
@@ -67,9 +67,9 @@ namespace sourceGenerationTester.expressionParser
         [NodeName("multOrDivide")]
         [Production("term : factor TIMES term")]
         [Production("term : factor DIVIDE term")]
-        public double Term(double left, Token<ExpressionToken> operatorToken, double right)
+        public int Term(int left, Token<ExpressionToken> operatorToken, int right)
         {
-            double result = 0;
+            int result = 0;
 
 
             switch (operatorToken.TokenID)
@@ -91,21 +91,21 @@ namespace sourceGenerationTester.expressionParser
 
         [Production("term : factor")]
         [NodeName("term")]
-        public double Term_Factor(double factorValue)
+        public int Term_Factor(int factorValue)
         {
             return factorValue;
         }
 
         [Production("factor : primary")]
         [NodeName("primary")]
-        public double primaryFactor(double primValue)
+        public int primaryFactor(int primValue)
         {
             return primValue;
         }
 
         [NodeName("negate")]
         [Production("factor : MINUS factor")]
-        public double MinusFactor(Token<ExpressionToken> discardedMinus, double factorValue)
+        public int MinusFactor(Token<ExpressionToken> discardedMinus, int factorValue)
         {
             return -factorValue;
         }
