@@ -29,9 +29,10 @@ namespace ebnf.grammar
 
         public override bool MayBeEmpty() => false;
 
-
-
-
+        public override string Dump()
+        {
+            return Name;
+        }
     }
 
     public sealed class IndentTerminalClause : TerminalClause
@@ -54,10 +55,12 @@ namespace ebnf.grammar
         public override string ToString()
         {
             var b = new StringBuilder();
-            b.Append(ExpectedIndentation == IndentationType.Indent ? "TAB" : "UNTAB");
+            b.Append(ExpectedIndentation == IndentationType.Indent ? "INDENT" : "UINDENT");
             if (Discarded) b.Append("[d]");
             return b.ToString();
         }
+
+        public string Dump() => ToString();
 
     }
 }

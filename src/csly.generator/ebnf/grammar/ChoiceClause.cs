@@ -57,5 +57,9 @@ namespace ebnf.grammar
             return Equals((ChoiceClause)obj);
         }
 
+        public override string Dump()
+        {
+            return $"[{string.Join(" | ", Choices.Select(c => c.Dump()))}]";
+        }
     }
 }

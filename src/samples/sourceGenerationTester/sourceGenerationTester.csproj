@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <EmbeddedResource Include="samples\ebnf.gram" />
+      <EmbeddedResource Include="samples\toky.gram" />
       <EmbeddedResource Include="samples\expression.gram" />
     </ItemGroup>
 

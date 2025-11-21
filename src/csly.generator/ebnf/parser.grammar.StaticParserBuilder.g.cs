@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ebnf.grammar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace csly.ebnf.models
+namespace csly.ebnf.builder
 {
 
     public class ParserOPtions
@@ -25,37 +26,29 @@ namespace csly.ebnf.models
 
         public ParserOPtions ParserOPtions { get; set; }
 
+        private readonly RuleParserMain _parserMain;
+
+        private readonly RuleParser _ruleParser;
+
+
         public StaticParserBuilder(List<string> tokens)
         {
             _tokens = tokens;
             ParserOPtions = new ParserOPtions();
-
+            _ruleParser = new RuleParser(_tokens);
+            _parserMain = new RuleParserMain(_ruleParser);
         }
 
 
         public Rule Parse(string ruleString, string methodName)
         {
-            (string head, string[] clauses) result = (null, null);
             if (ruleString != null)
-            {
+            {                
                 ruleString = ruleString.Substring(1, ruleString.Length - 2);
-                var i = ruleString.IndexOf(":", StringComparison.Ordinal);
-                if (i <= 0)
-                {
-                    return null;
-                }
 
-                var head = ruleString.Substring(0, i).Trim();
-                var clauseStrings = ruleString.Substring(i + 1).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                var clauses = clauseStrings.Select(
-                    x => _tokens.Contains(x) ?
-                        (IClause)new TerminalClause(x) :
-                        (IClause)new NonTerminalClause(x)).ToList();
-                var rule = new Rule(head, clauses)
-                {
-                    MethodName = methodName
-                };
-                Model.Add(rule);
+                var parsed = _parserMain.Parse(ruleString);                
+                var rule = parsed.Result as Rule;
+                rule.MethodName = methodName;
                 return rule;
             }
             return null;

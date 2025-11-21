@@ -27,5 +27,10 @@ namespace ebnf.grammar
             _mayBeEmpty = mayBeEmpty;
             return setted;
         }
+
+        public override string Dump()
+        {
+            return Name;
+        }
     }
 }

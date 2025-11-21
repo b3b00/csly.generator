@@ -1,5 +1,4 @@
-﻿using csly.models;
-
+﻿
 namespace <#NAMESPACE#>;
 
 internal class <#PARSER#>Visitor

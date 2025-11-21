@@ -1,14 +1,15 @@
 ﻿using csly.models;
+using System;
 
-namespace sourceGenerationTester.expressionParser;
+namespace sourceGenerationTester.expressionParser {
 
 [ParserGenerator]
-public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, int>
-{
+    public partial class Expression : AbstractParserGenerator<ExpressionToken, ExpressionParser, int>
+    {
 
-}
+    }
 
- [ParserRoot("expression")]
+[ParserRoot("expression")]
     public class ExpressionParser
     {
         [Production("primary: INT")]
@@ -120,7 +121,8 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         }
     }
 
-    public enum ExpressionToken
+
+     public enum ExpressionToken
     {
         // float number 
         //[Double] DOUBLE = 1,
@@ -155,5 +157,7 @@ public partial class Expression : AbstractParserGenerator<ExpressionToken, Expre
         [Keyword("TEN")] TEN = 15,
 
         [Keyword("FORTYTWO")] FORTYTWO = 17,
+
+    }
 
     }

@@ -41,7 +41,10 @@ namespace ebnf.grammar
         {
             return MinRepetitionCount == 0;
         }
-        
-        
+
+        public override string Dump()
+        {
+            return $"{Clause.Dump()}{DumpRange()}";
+        }
     }
 }

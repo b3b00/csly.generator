@@ -1,7 +1,5 @@
 using System.Linq;
-using System.Text;
-using csly.ebnf.models;
-using csly.generator.model.parser.attributes;
+using csly.ebnf.builder;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.generator.sourceGenerator;
@@ -93,14 +91,16 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             {
                 if (IsOperand(node))
                 {
-                    var rule = GetAttributeArgs(attribute, withLeadingComma: false);
-                    // STATIC : todo later when base will be working
+                    var rule = GetAttributeArgs(attribute, withLeadingComma: false);                    
                 }
                 else
                 {
-                    var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);                    
+                    var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
                     // STATIC : parse rule 
-                    var rule = _staticParserBuilder.Parse(ruleString,node.Identifier.Text);                    
+                    GeneratorLogger.Log($"\nparsing rule >>{ruleString}<<");
+                    var rule = _staticParserBuilder.Parse(ruleString,node.Identifier.Text);      
+                    _staticParserBuilder.Model.Add(rule);
+                    GeneratorLogger.Log($"\nparsed rule >>{rule.Dump()}<<");
                 }
             }
             // STATIC : operations later

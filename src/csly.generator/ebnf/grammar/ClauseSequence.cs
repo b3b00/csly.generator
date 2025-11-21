@@ -31,5 +31,10 @@ namespace ebnf.grammar
         {
             AddRange(seq.Clauses);
         }
+
+        public string Dump()
+        {
+            return string.Join(" ", Clauses.Select(x => x.Dump()));
+        }
     }
 }

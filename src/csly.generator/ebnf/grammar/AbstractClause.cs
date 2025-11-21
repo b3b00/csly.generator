@@ -5,6 +5,8 @@ namespace ebnf.grammar
     {
         public string Name { get; set; }
 
+        public abstract string Dump();
+
         public abstract bool MayBeEmpty();
     }
 }

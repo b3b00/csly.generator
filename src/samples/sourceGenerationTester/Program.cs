@@ -32,7 +32,7 @@ public partial class Program
         var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
-        string path = "c:/tmp/generation/";
+        string path = "c:/tmp/generation";
 
         foreach (var file in contents)
         {

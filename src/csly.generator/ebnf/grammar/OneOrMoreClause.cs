@@ -23,5 +23,9 @@ namespace ebnf.grammar
             return true;
         }
 
+        public override string Dump()
+        {
+            return $"{Clause.Dump()}+";
+        }
     }
 }

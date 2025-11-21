@@ -29,11 +29,6 @@ namespace ebnf.grammar
             return $"{Clause}?";
         }
 
-        [ExcludeFromCodeCoverage]
-        public string Dump()
-        {
-            return $"{Clause}?";
-        }
 
         public bool Equals(IClause clause)
         {
@@ -60,6 +55,10 @@ namespace ebnf.grammar
         public override int GetHashCode()
         {
             return (Clause != null ? Clause.GetHashCode() : 0);
+        }
+
+        public string Dump() {
+            return $"{Clause}?";
         }
     }
 }

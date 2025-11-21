@@ -171,5 +171,10 @@ namespace ebnf.grammar
                 VisitorMethodsForOperation[operation.Operatorkey] = operation;
 
         }
+
+        public string Dump()
+        {
+            return $"Rule: {NonTerminalName} : {string.Join(" ",Clauses.Select(x => x.Dump()))}";
+        }
     }
 }

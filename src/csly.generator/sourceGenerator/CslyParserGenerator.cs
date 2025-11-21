@@ -238,6 +238,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     }
                     catch(Exception e)
                     {
+                        GeneratorLogger.Log($"\nException {e.Message} : \n{e.StackTrace}");
                         context.ReportDiagnostic(Diagnostic.Create(
                             new DiagnosticDescriptor(
                                 CslyGeneratorErrors.PARSER_GENERATION_FAILED,
