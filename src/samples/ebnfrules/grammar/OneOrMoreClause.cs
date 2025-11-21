@@ -23,5 +23,6 @@ namespace ebnf.grammar
             return true;
         }
 
+        public override string Dump() => ToString();
     }
 }

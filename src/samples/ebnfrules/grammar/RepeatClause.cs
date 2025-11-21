@@ -41,7 +41,9 @@ namespace ebnf.grammar
         {
             return MinRepetitionCount == 0;
         }
-        
-        
+
+        public override string Dump() => ToString();
+
+
     }
 }

@@ -4,7 +4,7 @@ namespace extending;
 
 public enum Toky
 {
-
+    [AlphaId] ID,
     [Keyword("A")] A,
     [Keyword("B")] B,
     [Keyword("C")] C

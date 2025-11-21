@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ public class ParserBuilderGenerator
 
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
+    private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();
+    private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();    
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
 
@@ -100,6 +103,11 @@ public class ParserBuilderGenerator
         {
             GenerateNonTerminal(nonTerminalParser.Value,parsers);
             missings = missings.Where(x => x.Name != nonTerminalParser.Key).ToList();
+        }
+
+        foreach (var zeroOrMoreParser in _zeroOrMoreParsers)
+        {
+            GenerateZeroOrMore(zeroOrMoreParser.Value, parsers);
         }
 
         // generate parser for non terminals that are not used in rules ( ex : root non terminal )
@@ -193,6 +201,55 @@ public class ParserBuilderGenerator
         }
     }
     
+    private void GenerateZeroOrMore(ZeroOrMoreClause zeroOrMoreClause, StringBuilder builder)
+    {
+        string call = "";
+        switch(zeroOrMoreClause.Clause)
+        {
+            case TerminalClause terminalClause:
+                {
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), zeroOrMoreClause.Clause.Name,
+                        additional: new Dictionary<string, string>() { { "INDEX", "inner" } });
+                    call += @$" 
+                            currentPosition = innerResult.EndingPosition;
+                            innerResult = rinner;
+                            manyNode.IsManyValues = false;
+                            manyNode.IsManyGroups = false;
+                            manyNode.IsManyTokens = true;
+                            manyNode.Add(innerResult.Root);";
+                    AddClause(terminalClause);
+                    break;
+                }
+            case NonTerminalClause nonTerminalClause:
+                {
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), zeroOrMoreClause.Clause.Name,
+                        additional: new Dictionary<string, string>() { { "INDEX", "inner" } });
+                    call += @$"
+                            currentPosition = innerResult.EndingPosition;
+                            innerResult = rinner;
+                            manyNode.IsManyValues = {!nonTerminalClause.IsGroup};
+                            manyNode.IsManyGroups = {nonTerminalClause.IsGroup};
+                            manyNode.IsManyTokens = false;
+                            manyNode.Add(innerResult.Root);";
+                    AddClause(nonTerminalClause);
+                    break;
+                }
+                
+            default:
+                {
+                    throw new NotImplementedException("zero or more clause not implemented for " + zeroOrMoreClause.Clause.GetType().Name);
+                }
+        }
+
+        var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreParserTemplate), zeroOrMoreClause.Name,
+            additional: new Dictionary<string, string>()
+            {
+                {"CALL", call },
+                {"INNER_CLAUSE_NAME", zeroOrMoreClause.Clause.Name}
+            });
+        builder.AppendLine(content).AppendLine();
+    }
+
     private void GenerateRule(Rule rule, StringBuilder builder, int index)
     {
         AddRule(rule);
@@ -228,6 +285,13 @@ public class ParserBuilderGenerator
                         additional:new Dictionary<string,string>() {{"INDEX",i.ToString()}});
                     AddClause(nonTerminalClause);
                 }
+                if (clause is ZeroOrMoreClause zeroOrMoreClause)
+                {
+                    // TODO : generate zero or more clause call                    
+                        call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreClauseTemplate), zeroOrMoreClause.Name,
+                        additional:new Dictionary<string,string>() {{"INDEX",i.ToString()}});
+                    AddClause(zeroOrMoreClause);
+                }
                 clausesBuilder.AppendLine(call).AppendLine();
             }
         }
@@ -244,6 +308,8 @@ public class ParserBuilderGenerator
             });
         builder.AppendLine(content);
     }
+
+    
 
     private void AddRule(Rule rule)
     {
@@ -269,6 +335,22 @@ public class ParserBuilderGenerator
         if (!_nonTerminalParsers.ContainsKey(nonTerminalClause.Name))
         {
             _nonTerminalParsers[nonTerminalClause.Name] = nonTerminalClause;
+        }
+    }
+
+    private void AddClause(ZeroOrMoreClause zeroOrMoreClause)
+    {
+        if (!_zeroOrMoreParsers.ContainsKey(zeroOrMoreClause.Name))
+        {
+            _zeroOrMoreParsers[zeroOrMoreClause.Name] = zeroOrMoreClause;
+        }
+    }
+
+    private void AddClause(OneOrMoreClause oneOrMoreClause)
+    {
+        if (!_oneOrMoreParsers.ContainsKey(oneOrMoreClause.Name))
+        {
+            _oneOrMoreParsers[oneOrMoreClause.Name] = oneOrMoreClause;
         }
     }
 

@@ -14,7 +14,12 @@ internal enum ParserTemplates
     RuleCallTemplate,
     RuleParserTemplate,
     TerminalClauseTemplate,
-    TerminalParserTemplate
+    TerminalParserTemplate,
+    ZeroOrMoreParserTemplate,
+    OneOrMoreParserTemplate,
+    OneOrMoreClauseTemplate,
+    ZeroOrMoreClauseTemplate
+
 }
 
 internal enum VisitorTemplates

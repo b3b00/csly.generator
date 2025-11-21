@@ -6,6 +6,9 @@ namespace ebnf.grammar
 
     public sealed class OneOrMoreClause : ManyClause
     {
+
+        public override string Name { get => "OneOrMore" + Clause.Name; set { } }
+
         public OneOrMoreClause(IClause clause)
         {
             Clause = clause;

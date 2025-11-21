@@ -4,7 +4,7 @@ namespace extending;
 
 public enum Toky
 {
-
+[AlphaId] ID,
     [Keyword("A")] A,
     [Keyword("B")] B,
     [Keyword("C")] C
@@ -34,7 +34,7 @@ public class ExtParser {
     [Production("c : C")]
     public string C(Token<Toky> c)
     {
-        return c.Value;
+        return c.Value; 
     }
 
 }

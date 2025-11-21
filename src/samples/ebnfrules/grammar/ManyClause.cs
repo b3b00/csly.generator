@@ -10,5 +10,7 @@ namespace ebnf.grammar
 
         public abstract bool MayBeEmpty();
 
+        public abstract string Dump();
+
     }
 }
