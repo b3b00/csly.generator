@@ -90,7 +90,12 @@ public class ParserBuilderGenerator
             }
                
         }
-    
+
+        foreach (var zeroOrMoreParser in _zeroOrMoreParsers)
+        {
+            GenerateZeroOrMore(zeroOrMoreParser.Value, parsers);
+        }
+
         foreach (var terminalParser in _terminalParsers)
         {
             GenerateTerminal(terminalParser.Value,parsers);
@@ -99,16 +104,15 @@ public class ParserBuilderGenerator
         var missings = rules.Select(x => new NonTerminalClause(x.Head)).ToList();
                     
 
+
+
         foreach (var nonTerminalParser in _nonTerminalParsers)
         {
             GenerateNonTerminal(nonTerminalParser.Value,parsers);
             missings = missings.Where(x => x.Name != nonTerminalParser.Key).ToList();
         }
 
-        foreach (var zeroOrMoreParser in _zeroOrMoreParsers)
-        {
-            GenerateZeroOrMore(zeroOrMoreParser.Value, parsers);
-        }
+        
 
         // generate parser for non terminals that are not used in rules ( ex : root non terminal )
         if (missings.Count > 0)
