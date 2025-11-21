@@ -1,4 +1,6 @@
 
+#region helpers
+
 public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminal(List<Token<<#LEXER#>>> tokens, <#LEXER#> expected, int position,
         bool discarded = false)
     {
@@ -49,3 +51,5 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseExplicitTerminal(List<Token
 
     return result;
 }
+
+#endregion

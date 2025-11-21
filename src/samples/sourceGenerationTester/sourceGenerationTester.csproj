@@ -16,20 +16,12 @@
       <!--<ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
 
       <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
-
-      <ProjectReference Include="..\ebnfrules\ebnfrules.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Include="samples\ebnf.gram" />
       <EmbeddedResource Include="samples\toky.gram" />
       <EmbeddedResource Include="samples\expression.gram" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="expressionParser\Expression.cs" />
-      <None Include="expressionParser\ExpressionParser.cs" />
-      <None Include="expressionParser\ExpressionToken.cs" />
     </ItemGroup>
 
     <ItemGroup>
