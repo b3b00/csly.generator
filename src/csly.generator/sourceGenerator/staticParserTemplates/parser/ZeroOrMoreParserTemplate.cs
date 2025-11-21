@@ -3,18 +3,17 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseZeroOrMore_<#NAME#>(List<To
     {
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
     var manyNode = new ManySyntaxNode<<#LEXER#>, <#OUTPUT#>>($"<#INNER_CLAUSE_NAME#>*");
-    var currentPosition = position;
-    var innerClause = clause.Clause;
+    var currentPosition = position;    
     var stillOk = true;
 
-    SyntaxParseResult<IN, OUT> lastInnerResult = null;
+    SyntaxParseResult <<#LEXER#>, <#OUTPUT#>> lastInnerResult = null;
 
-    var innerErrors = new List<UnexpectedTokenSyntaxError<IN>>();
+    var innerErrors = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>();
 
     bool hasByPasNodes = false;
     while (stillOk)
     {
-        SyntaxParseResult<IN, OUT> innerResult = null;
+        SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> innerResult = null;
 
         <#CALL#>        
 
@@ -38,7 +37,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseZeroOrMore_<#NAME#>(List<To
             }
         }       
 
-        stillOk = innerResult != null && !innerResult.IsError && currentPosition < tokens.Length;
+        stillOk = innerResult != null && !innerResult.IsError && currentPosition < tokens.Count;
     }
 
     result.EndingPosition = currentPosition;

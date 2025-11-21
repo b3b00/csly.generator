@@ -29,5 +29,7 @@ internal enum VisitorTemplates
     CallVisitRuleTemplate,
     NonTerminalVisitorTemplate,
     RuleVisitorTemplate,
-    VisitorTemplate
+    VisitorTemplate,
+    CallVisitZeroOrMoreTemplate,
+    ZeroOrMoreVisitorTemplate
 }   

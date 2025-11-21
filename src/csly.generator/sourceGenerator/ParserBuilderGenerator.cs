@@ -371,8 +371,16 @@ public class ParserBuilderGenerator
                 var ruleVisitor = GenerateRuleVisitor(rule, i);
                 visitors.AppendLine(ruleVisitor);
             }
-
         }
+
+        _rules.SelectMany(_rules => _rules.Clauses).ToList().ForEach(clause =>
+        {
+            if (clause is ZeroOrMoreClause zeroOrMoreClause)
+            {
+                var zeroOrMoreVisitor = GenerateZeroOrMoreVisitor(zeroOrMoreClause, 0);
+                visitors.AppendLine(zeroOrMoreVisitor);
+            }
+        });
 
         var parser = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.VisitorTemplate),
             additional: new Dictionary<string, string>()
@@ -406,6 +414,39 @@ public class ParserBuilderGenerator
         return content;
     }
 
+    private string GenerateZeroOrMoreVisitor(ZeroOrMoreClause zeroOrMore, int count)
+    {
+        string clauseVisitor = "";
+        string outputType = "";
+        if (zeroOrMore.Clause is TerminalClause terminalClause)
+        {
+            outputType = $"Token<{_lexerName}>";
+            
+            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {                    
+                        {"INDEX","i"}
+                });
+        }
+        if (zeroOrMore.Clause is NonTerminalClause nonTerminalClause)
+        {
+            outputType = _outputType;
+            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {                    
+                        {"INDEX","Child"}
+                });
+        }
+
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.ZeroOrMoreVisitorTemplate), zeroOrMore.Name,
+            additional: new Dictionary<string, string>() {
+            {"VISITOR", clauseVisitor},
+            {"CLAUSE_OUTPUT", outputType },
+            });
+
+        return content;
+    }
+
     private string GenerateRuleVisitor(Rule rule, int index)
     {
         StringBuilder visitors = new StringBuilder();
@@ -424,6 +465,14 @@ public class ParserBuilderGenerator
             if (clause is NonTerminalClause nonTerminalClause)
             {
                 clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
+                    additional: new Dictionary<string, string>()
+                    {
+                        {"INDEX",i.ToString()}
+                    });
+            }
+            if (clause is ZeroOrMoreClause zeroOrMoreClause)
+            {
+                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitZeroOrMoreTemplate), zeroOrMoreClause.Name,
                     additional: new Dictionary<string, string>()
                     {
                         {"INDEX",i.ToString()}
