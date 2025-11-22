@@ -131,6 +131,44 @@ namespace csly.ebnf.builder
                     }
                 }
             }
+            else if (first is ZeroOrMoreClause zeroOrMoreClause)
+            {
+                var innerFirst = zeroOrMoreClause.Clause;
+                if (innerFirst is TerminalClause termInner)
+                {
+                    rule.Leaders.Add(termInner.Name);
+                    if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
+                    {
+                        if (!existingLeaders.Contains(termInner.Name))
+                        {
+                            existingLeaders.Add(termInner.Name);
+                        }
+                    }
+                    else
+                    {
+                        leadersForNTs[rule.Head] = new List<string> { termInner.Name };
+                    }
+                }
+                else if (innerFirst is NonTerminalClause ntInner)
+                {
+                    // get leaders for nt
+                    if (leadersForNTs.ContainsKey(ntInner.Name))
+                    {
+                        var ntLeaders = leadersForNTs[ntInner.Name];
+                        rule.Leaders.AddRange(ntLeaders);
+                    }
+                    else
+                    {
+                        ComputeLeadersForNonTerminal(ntInner.Name, leadersForNTs);
+                        if (leadersForNTs.ContainsKey(ntInner.Name))
+                        {
+                            var ntLeaders = leadersForNTs[ntInner.Name];
+                            rule.Leaders.AddRange(ntLeaders);
+                        }
+                    }
+                }
+            }
+     
         }
 
         private List<string> FindStartingPoints()

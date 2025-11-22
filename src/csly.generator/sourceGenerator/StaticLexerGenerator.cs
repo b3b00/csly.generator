@@ -44,7 +44,7 @@ namespace csly.generator.sourceGenerator
             var o = _lexerBuilder.Lexemes.SelectMany(lexeme => GenerateOther(lexeme));
             var others = o.Where(content => content != null).ToList();
             var startsIf = string.Join("else ", starts);
-            var othersIf = string.Join("else ", others);
+            var othersIf = "else "+string.Join("else ", others);
             var keywords = string.Join(",\n        ", _lexerBuilder.Lexemes
                 .Where(lexeme => lexeme.Type == GenericToken.KeyWord)
                 .Select(lexeme => $"{{ \"{lexeme.Name}\", {_lexerBuilder.LexerName}.{lexeme.Name} }}"));

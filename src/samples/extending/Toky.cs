@@ -39,7 +39,7 @@ public class ExtParser {
 
 }
 
-//[ParserGenerator]
+[ParserGenerator]
 public partial class Tokynou : AbstractParserGenerator<Toky, ExtParser, string>
 {
 }
