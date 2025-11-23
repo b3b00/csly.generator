@@ -28,7 +28,7 @@ public class ExtParser {
     [Production("bs : B*")]
     public string Bs(List<Token<Toky>> bs)
     {
-        return string.Join(" ", bs.Select(b => b.Value));
+        return "Bs { "+string.Join(", ", bs.Select(b => b.Value))+" }";
     }
 
     [Production("c : C")]
