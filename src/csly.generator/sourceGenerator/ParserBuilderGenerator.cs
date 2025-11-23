@@ -212,29 +212,15 @@ public class ParserBuilderGenerator
         {
             case TerminalClause terminalClause:
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), zeroOrMoreClause.Clause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplateForMany), zeroOrMoreClause.Clause.Name,
                         additional: new Dictionary<string, string>() { { "INDEX", "inner" } });
-                    call += @$" 
-                            currentPosition = innerResult.EndingPosition;
-                            innerResult = rinner;
-                            manyNode.IsManyValues = false;
-                            manyNode.IsManyGroups = false;
-                            manyNode.IsManyTokens = true;
-                            manyNode.Add(innerResult.Root);";
                     AddClause(terminalClause);
                     break;
                 }
             case NonTerminalClause nonTerminalClause:
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), zeroOrMoreClause.Clause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplateForMany), zeroOrMoreClause.Clause.Name,
                         additional: new Dictionary<string, string>() { { "INDEX", "inner" } });
-                    call += @$"
-                            currentPosition = innerResult.EndingPosition;
-                            innerResult = rinner;
-                            manyNode.IsManyValues = {!nonTerminalClause.IsGroup};
-                            manyNode.IsManyGroups = {nonTerminalClause.IsGroup};
-                            manyNode.IsManyTokens = false;
-                            manyNode.Add(innerResult.Root);";
                     AddClause(nonTerminalClause);
                     break;
                 }

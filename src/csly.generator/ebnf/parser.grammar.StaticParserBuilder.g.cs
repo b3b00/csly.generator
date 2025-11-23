@@ -71,6 +71,9 @@ namespace csly.ebnf.builder
             {
                 ComputeLeadersForNonTerminal(sp, nonTerminalLeaders);
             }
+            Model.Where(x => !startingPoints.Contains(x.Head)) .ToList().ForEach(r => ComputeLeadersForNonTerminal(r.Head, nonTerminalLeaders));
+
+
         }
 
         private void ComputeLeadersForNonTerminal(string nonTerminal, Dictionary<string, List<string>> leadersForNTs)

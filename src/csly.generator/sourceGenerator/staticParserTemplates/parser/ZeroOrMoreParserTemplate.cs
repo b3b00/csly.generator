@@ -37,7 +37,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseZeroOrMore_<#NAME#>(List<To
             }
         }       
 
-        stillOk = innerResult != null && !innerResult.IsError && currentPosition < tokens.Count;
+        //stillOk = innerResult != null && !innerResult.IsError && currentPosition < tokens.Count;
     }
 
     result.EndingPosition = currentPosition;
