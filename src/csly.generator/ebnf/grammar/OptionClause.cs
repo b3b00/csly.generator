@@ -15,12 +15,9 @@ namespace ebnf.grammar
 
         public bool IsGroupOption => Clause is NonTerminalClause clause && clause.IsGroup;
 
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get => Clause.Name; set {} }
 
-        public bool MayBeEmpty()
-        {
-            return true;
-        }
+        public bool MayBeEmpty() => true;
 
 
         [ExcludeFromCodeCoverage]

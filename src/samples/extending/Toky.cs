@@ -9,6 +9,9 @@ public enum Toky
     [Keyword("B")] B,
     [Keyword("C")] C,
     [Keyword("D")] D,
+    [Keyword("X")] X,
+    [Keyword("Y")] Y,
+    [Keyword("Z")] Z
 }
 
 

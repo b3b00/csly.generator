@@ -101,7 +101,7 @@ namespace csly.ebnf.builder
         {
             int i = 0;
             var first = rule.Clauses[0];
-            while (first.MayBeEmpty() || i < rule.Clauses.Count)
+            do
             {
                 first = rule.Clauses[i];
                 if (first is TerminalClause term)
@@ -173,9 +173,47 @@ namespace csly.ebnf.builder
                             }
                         }
                     }
-                }                
+                }
+                else if (first is OptionClause optionClause)
+                {
+                    var inner = optionClause.Clause;
+                    if (inner is TerminalClause termInner)
+                    {
+                        rule.Leaders.Add(termInner.Name);
+                        if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
+                        {
+                            if (!existingLeaders.Contains(termInner.Name))
+                            {
+                                existingLeaders.Add(termInner.Name);
+                            }
+                        }
+                        else
+                        {
+                            leadersForNTs[rule.Head] = new List<string> { termInner.Name };
+                        }
+                    }
+                    else if (inner is NonTerminalClause ntInner)
+                    {
+                        // get leaders for nt
+                        if (leadersForNTs.ContainsKey(ntInner.Name))
+                        {
+                            var ntLeaders = leadersForNTs[ntInner.Name];
+                            rule.Leaders.AddRange(ntLeaders);
+                        }
+                        else
+                        {
+                            ComputeLeadersForNonTerminal(ntInner.Name, leadersForNTs);
+                            if (leadersForNTs.ContainsKey(ntInner.Name))
+                            {
+                                var ntLeaders = leadersForNTs[ntInner.Name];
+                                rule.Leaders.AddRange(ntLeaders);
+                            }
+                        }
+                    }
+                }
                 i++;
             }
+            while (first.MayBeEmpty() && i < rule.Clauses.Count);
         }
 
         private List<string> FindStartingPoints()

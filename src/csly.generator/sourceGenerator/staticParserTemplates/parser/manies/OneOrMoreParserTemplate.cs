@@ -2,7 +2,7 @@
 public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseMany_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position)
     {
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
-    var manyNode = new ManySyntaxNode<<#LEXER#>, <#OUTPUT#>>($"<#INNER_CLAUSE_NAME#>*");
+    var manyNode = new ManySyntaxNode<<#LEXER#>, <#OUTPUT#>>($"<#INNER_CLAUSE_NAME#>+");
     var currentPosition = position;    
     var stillOk = true;
 

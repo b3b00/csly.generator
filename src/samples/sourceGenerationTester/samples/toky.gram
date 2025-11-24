@@ -4,11 +4,14 @@ namespace extending;
 
 public enum Toky
 {
-[AlphaId] ID,
+    [AlphaId] ID,
     [Keyword("A")] A,
     [Keyword("B")] B,
     [Keyword("C")] C,
-    [Keyword("C")] D
+    [Keyword("D")] D,
+    [Keyword("X")] X,
+    [Keyword("Y")] Y,
+    [Keyword("Z")] Z
 }
 
 
@@ -16,30 +19,37 @@ public enum Toky
     public class ExtParser
     {
 
-        [Production("root : a bs c")]
-    public string Root(string a , string bs, string c)     {
-        return a + " " + bs + " " + c;
-    }
+        [Production("root : option a bs c")]
+        public string Root(string option, string a, string bs, string c)
+        {
+            return option + " " + a + " " + bs + " " + c;
+        }
 
-    [Production("a : A")]
-    public string A(Token<Toky> a)
-    {
-               return "ah ah";
-    }
+        [Production("a : A")]
+        public string A(Token<Toky> a)
+        {
+            return "ah ah";
+        }
 
-    [Production("bs : B* D")]
-    public string Bs(List<Token<Toky>> bs, Token<Toky> d)
-    {
-        string bees = bs.Count > 0 ? $"{bs.Count} 🐝" : "no 🐝";
+        [Production("bs : B* D")]
+        public string Bs(List<Token<Toky>> bs, Token<Toky> d)
+        {
+            string bees = bs.Count > 0 ? $"{bs.Count} 🐝" : "no 🐝";
             return $"{bees}, lady di";
-    }
+        }
 
-    [Production("c : C")]
-    public string C(Token<Toky> c)
-    {
-        return "si!";
-    }
+        [Production("c : C")]
+        public string C(Token<Toky> c)
+        {
+            return "si!";
+        }
 
+        [Production("option : X? Y Z")]
+        public string Option(Token<Toky> x, Token<Toky> y, Token<Toky> z)
+        {
+            string ex = x.IsEmpty ? "" : "ex ";
+            return $"{ex}why zee";
+        }
     }
 
 [ParserGenerator]

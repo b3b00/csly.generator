@@ -6,10 +6,10 @@ namespace extending
     public class ExtParser
     {
 
-        [Production("root : a bs c")]
-        public string Root(string a, string bs, string c)
+        [Production("root : option a bs c")]
+        public string Root(string option, string a, string bs, string c)
         {
-            return a + " " + bs + " " + c;
+            return option + " " + a + " " + bs + " " + c;
         }
 
         [Production("a : A")]
@@ -31,5 +31,11 @@ namespace extending
             return "si!";
         }
 
+        [Production("option : X? Y Z")]
+        public string Option(Token<Toky> x, Token<Toky> y, Token<Toky> z)
+        {
+            string ex = x.IsEmpty ? "" : "ex ";
+            return $"{ex}why zee";
+        }
     }
 }

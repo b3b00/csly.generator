@@ -23,6 +23,7 @@ public class ParserBuilderGenerator
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
     private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();
     private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();
+    private Dictionary<string, OptionClause> _optionParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
 
@@ -49,6 +50,8 @@ public class ParserBuilderGenerator
 
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model;
+
+
         GeneratorLogger.Log($"\nfound {_rules.Count} rules");
         var staticParser = GenerateStaticParser(_staticParserBuilder.Model, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
 
@@ -59,6 +62,20 @@ public class ParserBuilderGenerator
 
 
     }
+
+    private void SetEmptyNonTerminals()
+    {
+        _rules.GroupBy(x => x.Head).ToDictionary(x => x.Key, x => x.ToList());
+
+        var nonTerminalClauses = _rules.SelectMany(x => x.Clauses).OfType<NonTerminalClause>().ToList();
+
+        foreach (var nt in nonTerminalClauses)
+        {
+            var rules = _rules.Where(x => x.Head == nt.Name).ToList();
+            nt.SetMayBeEmpty(rules.Exists(x => x.MayBeEmpty));
+        }        
+    }
+
 
     private string GetRootRule(ClassDeclarationSyntax classDeclarationSyntax)
     {
@@ -99,6 +116,11 @@ public class ParserBuilderGenerator
         foreach (var oneOrMoreParser in _oneOrMoreParsers)
         {
             GenerateOneOrMore(oneOrMoreParser.Value, parsers);
+        }
+
+        foreach (var optionParser in _optionParsers)
+        {
+            GenerateOption(optionParser.Value, parsers);
         }
 
         foreach (var terminalParser in _terminalParsers)
@@ -210,29 +232,30 @@ public class ParserBuilderGenerator
         }
     }
 
-    private string GenerateInnerClauseCallForMany(ManyClause clause, int index)
+    #region many
+
+    private string GenerateInnerClauseCallForMany(IClause innerClause, int index)
     {
         string call = "";
-        switch (clause.manyClause)
+        switch (innerClause)
         {
             case TerminalClause terminalClause:
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseForManyTemplate), clause.manyClause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseForManyTemplate), innerClause.Name,
                         additional: new Dictionary<string, string>() { { "INDEX", index.ToString() } });
                     AddClause(terminalClause);
                     break;
                 }
             case NonTerminalClause nonTerminalClause:
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseForManyTemplate), clause.manyClause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseForManyTemplate), innerClause.Name,
                         additional: new Dictionary<string, string>() { { "INDEX", index.ToString() } });
                     AddClause(nonTerminalClause);
                     break;
                 }
-
             default:
                 {
-                    throw new NotImplementedException("zero or more clause not implemented for " + clause.manyClause.GetType().Name);
+                    throw new NotImplementedException("many clause not implemented for " + innerClause.GetType().Name);
                 }
         }
         return call;
@@ -240,7 +263,7 @@ public class ParserBuilderGenerator
 
     private void GenerateZeroOrMore(ZeroOrMoreClause zeroOrMoreClause, StringBuilder builder)
     {
-        string call = GenerateInnerClauseCallForMany(zeroOrMoreClause, 0);
+        string call = GenerateInnerClauseCallForMany(zeroOrMoreClause.manyClause, 0);
 
 
         var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreParserTemplate), zeroOrMoreClause.Name,
@@ -256,9 +279,9 @@ public class ParserBuilderGenerator
     {
         string call = "";
 
-        string firstcall = GenerateInnerClauseCallForMany(oneOrMoreClause, 0);
+        string firstcall = GenerateInnerClauseCallForMany(oneOrMoreClause.manyClause, 0);
 
-        string manycall = GenerateInnerClauseCallForMany(oneOrMoreClause, 1);
+        string manycall = GenerateInnerClauseCallForMany(oneOrMoreClause.manyClause, 1);
 
 
 
@@ -271,6 +294,50 @@ public class ParserBuilderGenerator
             });
         builder.AppendLine(content).AppendLine();
     }
+
+    #endregion
+
+    #region options
+
+    private void GenerateOption(OptionClause optionClause, StringBuilder builder)
+    {
+        string call = GenerateInnerClauseCallForOption(optionClause.Clause, 0);
+        var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.OptionParserTemplate), optionClause.Name,
+            additional: new Dictionary<string, string>()
+            {
+                {"CALL", call },
+                {"INNER_CLAUSE_NAME", optionClause.Clause.Name},
+                {"OUTPUT_TYPE",""}
+            });
+        builder.AppendLine(content).AppendLine();
+    }
+
+    private string GenerateInnerClauseCallForOption(IClause innerClause, int index)
+    {
+        string call = "";
+        switch (innerClause)
+        {
+            case TerminalClause terminalClause:
+                {
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseForOptionTemplate), innerClause.Name);
+                    AddClause(terminalClause);
+                    break;
+                }
+            case NonTerminalClause nonTerminalClause:
+                {
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseForOptionTemplate), innerClause.Name);
+                    AddClause(nonTerminalClause);
+                    break;
+                }
+            default:
+                {
+                    throw new NotImplementedException("option clause not implemented for " + innerClause.GetType().Name);
+                }
+        }
+        return call;
+    }
+
+    #endregion
 
     private void GenerateRule(Rule rule, StringBuilder builder, int index)
     {
@@ -321,7 +388,17 @@ public class ParserBuilderGenerator
                             });
                             AddClause(manyClause);
                             break;
-                        }                    
+                        }
+                    case OptionClause optionClause:
+                        {
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.OptionClauseTemplate), optionClause.Name,
+                            additional: new Dictionary<string, string>() {
+                                { "INDEX", i.ToString() },
+                                {"NOT_EMPTY","false"}
+                            });
+                            AddClause(optionClause);
+                            break;
+                        }
                     default:
                         {
                             throw new NotImplementedException("clause class not implemented for " + clause.GetType().Name);
@@ -345,7 +422,13 @@ public class ParserBuilderGenerator
         builder.AppendLine(content);
     }
 
-
+    private void AddClause(OptionClause optionClause)
+    {
+        if (!_zeroOrMoreParsers.ContainsKey(optionClause.Name))
+        {
+            _optionParsers[optionClause.Name] = optionClause;
+        }
+    }
 
     private void AddRule(Rule rule)
     {
@@ -435,6 +518,15 @@ public class ParserBuilderGenerator
             if (clause is OneOrMoreClause oneOrMoreClause)
             {
                 var zeroOrMoreVisitor = GenerateOneOrMoreVisitor(oneOrMoreClause, 0);
+                visitors.AppendLine(zeroOrMoreVisitor);
+            }
+        });
+
+        _rules.SelectMany(_rules => _rules.Clauses).ToList().ForEach(clause =>
+        {
+            if (clause is OptionClause optionClause)
+            {
+                var zeroOrMoreVisitor = GenerateOptionVisitor(optionClause, 0);
                 visitors.AppendLine(zeroOrMoreVisitor);
             }
         });
@@ -537,6 +629,44 @@ public class ParserBuilderGenerator
         return content;
     }
 
+    private string GenerateOptionVisitor(OptionClause optionClause, int count)
+    {
+        string clauseVisitor = "";
+        string outputType = "";
+        string emptyValue = "";
+        if (optionClause.Clause is TerminalClause terminalClause)
+        {
+            outputType = $"Token<{_lexerName}>";
+
+            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {
+                        {"INDEX","0"}
+                });
+            emptyValue = $"new Token<{_lexerName}>() {{ IsEmpty = true }};";
+        }
+        if (optionClause.Clause is NonTerminalClause nonTerminalClause)
+        {
+            outputType = $"OptionValue<{_lexerName},{_outputType}>";
+            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {
+                        {"INDEX","0"}
+                });
+            emptyValue = $"new OptionValue<{_outputType}>()";
+        }
+        
+
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.OptionVisitorTemplate), optionClause.Name,
+            additional: new Dictionary<string, string>() {
+            {"EMPTY_VALUE", emptyValue},
+            {"VISITOR", clauseVisitor},
+            {"CLAUSE_OUTPUT", outputType },
+            });
+
+        return content;
+    }
+
     private string GenerateRuleVisitor(Rule rule, int index)
     {
         StringBuilder visitors = new StringBuilder();
@@ -544,37 +674,57 @@ public class ParserBuilderGenerator
         {
             var clause = rule.Clauses[i];
             var clauseVisitor = "";
-            if (clause is TerminalClause terminalClause)
+            switch (clause)
             {
-                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
-                    additional: new Dictionary<string, string>()
+                case TerminalClause terminalClause:
                     {
+                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
+                            additional: new Dictionary<string, string>()
+                            {
                         {"INDEX",i.ToString()}
-                    });
-            }
-            if (clause is NonTerminalClause nonTerminalClause)
-            {
-                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
-                    additional: new Dictionary<string, string>()
+                            });
+                        break;
+                    }
+                case NonTerminalClause nonTerminalClause:
                     {
+                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
+                            additional: new Dictionary<string, string>()
+                            {
                         {"INDEX",i.ToString()}
-                    });
-            }
-            if (clause is ZeroOrMoreClause zeroOrMoreClause)
-            {
-                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitManyTemplate), zeroOrMoreClause.Name,
-                    additional: new Dictionary<string, string>()
+                            });
+                        break;
+                    }
+                case ZeroOrMoreClause zeroOrMoreClause:
                     {
+                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitManyTemplate), zeroOrMoreClause.Name,
+                            additional: new Dictionary<string, string>()
+                            {
                         {"INDEX",i.ToString()}
-                    });
-            }
-            if (clause is OneOrMoreClause oneOrMoreClause)
-            {
-                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitManyTemplate), oneOrMoreClause.Name,
-                    additional: new Dictionary<string, string>()
+                            });
+                        break;
+                    }
+                case OneOrMoreClause oneOrMoreClause:
                     {
+                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitManyTemplate), oneOrMoreClause.Name,
+                            additional: new Dictionary<string, string>()
+                            {
                         {"INDEX",i.ToString()}
-                    });
+                            });
+                        break;
+                    }
+                case OptionClause optionClause:
+                    {
+                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitOptionTemplate), optionClause.Name,
+                            additional: new Dictionary<string, string>()
+                            {
+                        {"INDEX",i.ToString()}
+                            });
+                        break;
+                    }
+                default:
+                    {
+                                               throw new NotImplementedException("clause visitor not implemented for " + clause.GetType().Name);
+                    }
             }
             visitors.AppendLine(clauseVisitor);
         }
