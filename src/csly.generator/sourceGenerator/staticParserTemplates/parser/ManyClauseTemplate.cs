@@ -1,7 +1,7 @@
  
 // parse non terminal <#NAME#>
 var r<#INDEX#> = ParseMany_<#NAME#>(tokens,position);
- if (r<#INDEX#>.IsError)
+ if (r<#INDEX#>.IsError && <#NOT_EMPTY#>)
  {
      return r<#INDEX#>;
  }

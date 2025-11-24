@@ -15,20 +15,20 @@ namespace extending
         [Production("a : A")]
         public string A(Token<Toky> a)
         {
-            return a.Value;
+            return "ah ah";
         }
 
         [Production("bs : B* D")]
         public string Bs(List<Token<Toky>> bs, Token<Toky> d)
         {
-            string bees = bs.Count > 0 ? "Bs { " + string.Join(", ", bs.Select(b => b.Value)) + " }" : "no Bees";
-            return $"{bees}, {d.Value}";
+            string bees = bs.Count > 0 ? $"{bs.Count} 🐝" : "no 🐝";
+            return $"{bees}, lady di";
         }
 
         [Production("c : C")]
         public string C(Token<Toky> c)
         {
-            return c.Value;
+            return "si!";
         }
 
     }

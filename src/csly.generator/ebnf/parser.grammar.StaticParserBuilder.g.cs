@@ -99,80 +99,83 @@ namespace csly.ebnf.builder
 
         private void ComputeLeaderForRule(Rule rule, Dictionary<string, List<string>> leadersForNTs)
         {
-
+            int i = 0;
             var first = rule.Clauses[0];
-            if (first is TerminalClause term)
+            while (first.MayBeEmpty() || i < rule.Clauses.Count)
             {
-                rule.Leaders.Add(term.Name);
-                if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
+                first = rule.Clauses[i];
+                if (first is TerminalClause term)
                 {
-                    if (!existingLeaders.Contains(term.Name))
+                    rule.Leaders.Add(term.Name);
+                    if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
                     {
-                        existingLeaders.Add(term.Name);
+                        if (!existingLeaders.Contains(term.Name))
+                        {
+                            existingLeaders.Add(term.Name);
+                        }
+                    }
+                    else
+                    {
+                        leadersForNTs[rule.Head] = new List<string> { term.Name };
                     }
                 }
-                else
+                else if (first is NonTerminalClause nt)
                 {
-                    leadersForNTs[rule.Head] = new List<string> { term.Name };
-                }
-            }
-            else if (first is NonTerminalClause nt)
-            {
-                // get leaders for nt
-                if (leadersForNTs.ContainsKey(nt.Name))
-                {
-                    var ntLeaders = leadersForNTs[nt.Name];
-                    rule.Leaders.AddRange(ntLeaders);
-                }
-                else
-                {
-                    ComputeLeadersForNonTerminal(nt.Name, leadersForNTs);
+                    // get leaders for nt
                     if (leadersForNTs.ContainsKey(nt.Name))
                     {
                         var ntLeaders = leadersForNTs[nt.Name];
                         rule.Leaders.AddRange(ntLeaders);
                     }
-                }
-            }
-            else if (first is ManyClause manyClause)
-            {
-                var innerFirst = manyClause.manyClause;
-                if (innerFirst is TerminalClause termInner)
-                {
-                    rule.Leaders.Add(termInner.Name);
-                    if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
+                    else
                     {
-                        if (!existingLeaders.Contains(termInner.Name))
+                        ComputeLeadersForNonTerminal(nt.Name, leadersForNTs);
+                        if (leadersForNTs.ContainsKey(nt.Name))
                         {
-                            existingLeaders.Add(termInner.Name);
+                            var ntLeaders = leadersForNTs[nt.Name];
+                            rule.Leaders.AddRange(ntLeaders);
                         }
                     }
-                    else
-                    {
-                        leadersForNTs[rule.Head] = new List<string> { termInner.Name };
-                    }
                 }
-                else if (innerFirst is NonTerminalClause ntInner)
+                else if (first is ManyClause manyClause)
                 {
-                    // get leaders for nt
-                    if (leadersForNTs.ContainsKey(ntInner.Name))
+                    var innerFirst = manyClause.manyClause;
+                    if (innerFirst is TerminalClause termInner)
                     {
-                        var ntLeaders = leadersForNTs[ntInner.Name];
-                        rule.Leaders.AddRange(ntLeaders);
+                        rule.Leaders.Add(termInner.Name);
+                        if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
+                        {
+                            if (!existingLeaders.Contains(termInner.Name))
+                            {
+                                existingLeaders.Add(termInner.Name);
+                            }
+                        }
+                        else
+                        {
+                            leadersForNTs[rule.Head] = new List<string> { termInner.Name };
+                        }
                     }
-                    else
+                    else if (innerFirst is NonTerminalClause ntInner)
                     {
-                        ComputeLeadersForNonTerminal(ntInner.Name, leadersForNTs);
+                        // get leaders for nt
                         if (leadersForNTs.ContainsKey(ntInner.Name))
                         {
                             var ntLeaders = leadersForNTs[ntInner.Name];
                             rule.Leaders.AddRange(ntLeaders);
                         }
+                        else
+                        {
+                            ComputeLeadersForNonTerminal(ntInner.Name, leadersForNTs);
+                            if (leadersForNTs.ContainsKey(ntInner.Name))
+                            {
+                                var ntLeaders = leadersForNTs[ntInner.Name];
+                                rule.Leaders.AddRange(ntLeaders);
+                            }
+                        }
                     }
-                }
+                }                
+                i++;
             }
-
-     
         }
 
         private List<string> FindStartingPoints()

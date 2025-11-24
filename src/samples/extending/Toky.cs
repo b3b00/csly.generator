@@ -7,7 +7,8 @@ public enum Toky
     [AlphaId] ID,
     [Keyword("A")] A,
     [Keyword("B")] B,
-    [Keyword("C")] C
+    [Keyword("C")] C,
+    [Keyword("D")] D,
 }
 
 

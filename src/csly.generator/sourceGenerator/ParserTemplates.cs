@@ -16,11 +16,10 @@ internal enum ParserTemplates
     TerminalClauseTemplate,
     TerminalParserTemplate,
     ZeroOrMoreParserTemplate,
-    OneOrMoreParserTemplate,
-    OneOrMoreClauseTemplate,
-    ZeroOrMoreClauseTemplate,        
+    OneOrMoreParserTemplate,            
     NonTerminalClauseForManyTemplate,
-    TerminalClauseForManyTemplate
+    TerminalClauseForManyTemplate,
+    ManyClauseTemplate
 }
 
 internal enum VisitorTemplates

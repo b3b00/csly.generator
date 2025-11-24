@@ -23,7 +23,7 @@ namespace ebnf.grammar
 
         public override bool MayBeEmpty()
         {
-            return true;
+            return false;
         }
 
         public override string Dump()

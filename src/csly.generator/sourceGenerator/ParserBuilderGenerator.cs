@@ -312,20 +312,16 @@ public class ParserBuilderGenerator
                             AddClause(nonTerminalClause);
                             break;
                         }
-                    case ZeroOrMoreClause zeroOrMoreClause:
+                    case ManyClause manyClause:
                         {
-                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreClauseTemplate), zeroOrMoreClause.Name,
-                            additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
-                            AddClause(zeroOrMoreClause);
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ManyClauseTemplate), manyClause.Name,
+                            additional: new Dictionary<string, string>() { 
+                                { "INDEX", i.ToString() },
+                                {"NOT_EMPTY",(!manyClause.MayBeEmpty()).ToString().ToLower()}
+                            });
+                            AddClause(manyClause);
                             break;
-                        }
-                    case OneOrMoreClause oneOrMoreClause:
-                        {
-                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.OneOrMoreClauseTemplate), oneOrMoreClause.Name,
-                            additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
-                            AddClause(oneOrMoreClause);
-                            break;
-                        }
+                        }                    
                     default:
                         {
                             throw new NotImplementedException("clause class not implemented for " + clause.GetType().Name);
@@ -375,6 +371,18 @@ public class ParserBuilderGenerator
         if (!_nonTerminalParsers.ContainsKey(nonTerminalClause.Name))
         {
             _nonTerminalParsers[nonTerminalClause.Name] = nonTerminalClause;
+        }
+    }
+
+    private void AddClause(ManyClause manyClause)
+    {
+        if (manyClause is ZeroOrMoreClause zeroOrMoreClause)
+        {
+            AddClause(zeroOrMoreClause);
+        }
+        else if (manyClause is OneOrMoreClause oneOrMoreClause)
+        {
+            AddClause(oneOrMoreClause);
         }
     }
 
