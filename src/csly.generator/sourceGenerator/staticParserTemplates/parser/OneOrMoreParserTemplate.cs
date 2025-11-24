@@ -11,11 +11,38 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseMany_<#NAME#>(List<Token<<#
     var innerErrors = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>();
 
     bool hasByPasNodes = false;
+
+    SyntaxParseResult <<#LEXER#>, <#OUTPUT#>> innerResult = null;
+
+
+    // first call to inner clause parser (mandatory value)
+    <#FIRSTCALL#>
+
+    if (innerResult != null && !innerResult.IsError)
+    {
+        manyNode.Add(innerResult.Root);
+        currentPosition = innerResult.EndingPosition;
+        lastInnerResult = innerResult;
+        hasByPasNodes = hasByPasNodes || innerResult.HasByPassNodes;
+        var lastInnerErrors = lastInnerResult.GetErrors();
+        if (lastInnerErrors != null)
+        {
+            innerErrors.AddRange(lastInnerErrors);
+        }
+    }
+    else
+    {
+        return innerResult;
+    }
+
+
+
     while (stillOk)
     {
-        SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> innerResult = null;
+        innerResult = null;
 
-        <#CALL#>        
+        // call inner clause parser (optional values)
+        <#MANYCALL#>        
 
         if (innerResult != null && !innerResult.IsError)
         {
@@ -35,7 +62,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseMany_<#NAME#>(List<Token<<#
             {
                 innerErrors.AddRange(innerResult.GetErrors());
             }
-        }       
+        }
 
         //stillOk = innerResult != null && !innerResult.IsError && currentPosition < tokens.Count;
     }

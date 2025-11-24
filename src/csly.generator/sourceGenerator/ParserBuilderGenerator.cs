@@ -17,19 +17,19 @@ public class ParserBuilderGenerator
     private readonly string _outputType;
     private readonly List<string> _lexerGeneratorTokens;
     private readonly string _namespace;
-    private readonly TemplateEngine  _templateEngine;
+    private readonly TemplateEngine _templateEngine;
 
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
     private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();
-    private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();    
+    private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
 
     private List<Rule> _rules = new();
 
 
-    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, string ns,  List<string> lexerGeneratorTokens)
+    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, string ns, List<string> lexerGeneratorTokens)
     {
         _lexerName = lexerName;
         _parserName = parserName;
@@ -38,26 +38,26 @@ public class ParserBuilderGenerator
         _lexerGeneratorTokens = lexerGeneratorTokens;
         _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns);
     }
-    
-    
+
+
     public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax)
     {
         string name = classDeclarationSyntax.Identifier.ToString();
-        _staticParserBuilder  = new StaticParserBuilder(_lexerGeneratorTokens);
-        
+        _staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
+
         ParserSyntaxWalker walker = new(name, _lexerName, _outputType, _staticParserBuilder);
 
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model;
         GeneratorLogger.Log($"\nfound {_rules.Count} rules");
         var staticParser = GenerateStaticParser(_staticParserBuilder.Model, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
-        
+
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
-        
+
         return root.ToString();
-        
-        
+
+
     }
 
     private string GetRootRule(ClassDeclarationSyntax classDeclarationSyntax)
@@ -75,9 +75,9 @@ public class ParserBuilderGenerator
     private string GenerateStaticParser(List<Rule> rules, string startingNonTerminal)
     {
         StringBuilder builder = new();
-    StringBuilder visitors = new StringBuilder();
+        StringBuilder visitors = new StringBuilder();
         var helpers = GenerateHelpers();
-    
+
         StringBuilder parsers = new StringBuilder();
         foreach (var rulesByHead in rules.GroupBy(x => x.Head))
         {
@@ -86,9 +86,9 @@ public class ParserBuilderGenerator
             for (int i = 0; i < ruleForHead.Count(); i++)
             {
                 visitors.Append(name).Append("_").Append(i).AppendLine(",");
-                GenerateRule(ruleForHead[i],parsers,i);    
+                GenerateRule(ruleForHead[i], parsers, i);
             }
-               
+
         }
 
         foreach (var zeroOrMoreParser in _zeroOrMoreParsers)
@@ -96,33 +96,38 @@ public class ParserBuilderGenerator
             GenerateZeroOrMore(zeroOrMoreParser.Value, parsers);
         }
 
+        foreach (var oneOrMoreParser in _oneOrMoreParsers)
+        {
+            GenerateOneOrMore(oneOrMoreParser.Value, parsers);
+        }
+
         foreach (var terminalParser in _terminalParsers)
         {
-            GenerateTerminal(terminalParser.Value,parsers);
+            GenerateTerminal(terminalParser.Value, parsers);
         }
 
         var missings = rules.Select(x => new NonTerminalClause(x.Head)).ToList();
-                    
+
 
 
 
         foreach (var nonTerminalParser in _nonTerminalParsers)
         {
-            GenerateNonTerminal(nonTerminalParser.Value,parsers);
+            GenerateNonTerminal(nonTerminalParser.Value, parsers);
             missings = missings.Where(x => x.Name != nonTerminalParser.Key).ToList();
         }
 
-        
+
 
         // generate parser for non terminals that are not used in rules ( ex : root non terminal )
         if (missings.Count > 0)
         {
             foreach (var missing in missings)
             {
-                GenerateNonTerminal(missing,parsers);
+                GenerateNonTerminal(missing, parsers);
             }
         }
-    
+
         var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ParserTemplate),
             additional: new Dictionary<string, string>()
             {
@@ -131,17 +136,17 @@ public class ParserBuilderGenerator
                 { "NAMESPACE", _namespace },
                 { "VISITORS", visitors.ToString()}
             });
-    
+
         return parser;
     }
-    
+
     private string GenerateHelpers()
     {
         // STATIC : read resource
         var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.HelpersTemplate));
         return content;
     }
-    
+
     private void GenerateTerminal(TerminalClause terminalClause, StringBuilder builder)
     {
         string content = "";
@@ -150,21 +155,21 @@ public class ParserBuilderGenerator
             if (terminalClause.IsExplicit)
             {
                 // STATIC : beware non alphanumeric chars in terminalClause.Name
-              content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExplicitTerminalParserTemplate),terminalClause.Name);   
+                content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExplicitTerminalParserTemplate), terminalClause.Name);
             }
             else
             {
                 content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalParserTemplate), terminalClause.Name);
             }
         }
-    
+
         builder.AppendLine(content).AppendLine();
     }
-    
+
     private void GenerateNonTerminal(NonTerminalClause nonTerminalClause, StringBuilder builder)
     {
         if (_ruleParsers.TryGetValue(nonTerminalClause.Name, out var rules))
-        {            
+        {
             StringBuilder calls = new();
 
             var allLeaders = rules.SelectMany(r => r.Leaders)
@@ -204,38 +209,65 @@ public class ParserBuilderGenerator
             ;
         }
     }
-    
-    private void GenerateZeroOrMore(ZeroOrMoreClause zeroOrMoreClause, StringBuilder builder)
+
+    private string GenerateInnerClauseCallForMany(ManyClause clause, int index)
     {
         string call = "";
-        switch(zeroOrMoreClause.Clause)
+        switch (clause.manyClause)
         {
             case TerminalClause terminalClause:
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplateForMany), zeroOrMoreClause.Clause.Name,
-                        additional: new Dictionary<string, string>() { { "INDEX", "inner" } });
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseForManyTemplate), clause.manyClause.Name,
+                        additional: new Dictionary<string, string>() { { "INDEX", index.ToString() } });
                     AddClause(terminalClause);
                     break;
                 }
             case NonTerminalClause nonTerminalClause:
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplateForMany), zeroOrMoreClause.Clause.Name,
-                        additional: new Dictionary<string, string>() { { "INDEX", "inner" } });
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseForManyTemplate), clause.manyClause.Name,
+                        additional: new Dictionary<string, string>() { { "INDEX", index.ToString() } });
                     AddClause(nonTerminalClause);
                     break;
                 }
-                
+
             default:
                 {
-                    throw new NotImplementedException("zero or more clause not implemented for " + zeroOrMoreClause.Clause.GetType().Name);
+                    throw new NotImplementedException("zero or more clause not implemented for " + clause.manyClause.GetType().Name);
                 }
         }
+        return call;
+    }
+
+    private void GenerateZeroOrMore(ZeroOrMoreClause zeroOrMoreClause, StringBuilder builder)
+    {
+        string call = GenerateInnerClauseCallForMany(zeroOrMoreClause, 0);
+
 
         var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreParserTemplate), zeroOrMoreClause.Name,
             additional: new Dictionary<string, string>()
             {
                 {"CALL", call },
-                {"INNER_CLAUSE_NAME", zeroOrMoreClause.Clause.Name}
+                {"INNER_CLAUSE_NAME", zeroOrMoreClause.manyClause.Name}
+            });
+        builder.AppendLine(content).AppendLine();
+    }
+
+    private void GenerateOneOrMore(OneOrMoreClause oneOrMoreClause, StringBuilder builder)
+    {
+        string call = "";
+
+        string firstcall = GenerateInnerClauseCallForMany(oneOrMoreClause, 0);
+
+        string manycall = GenerateInnerClauseCallForMany(oneOrMoreClause, 1);
+
+
+
+        var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.OneOrMoreParserTemplate), oneOrMoreClause.Name,
+            additional: new Dictionary<string, string>()
+            {
+                {"FIRSTCALL", firstcall },
+                {"MANYCALL", manycall },
+                {"INNER_CLAUSE_NAME", oneOrMoreClause.manyClause.Name}
             });
         builder.AppendLine(content).AppendLine();
     }
@@ -251,40 +283,58 @@ public class ParserBuilderGenerator
             {
                 children += ", ";
             }
-    
+
             children += $"r{i}.Root";
             var clause = rule.Clauses[i];
-            
+
             if (clause != null)
             {
                 string call = "";
-                if (clause is TerminalClause terminalClause)
+                switch (clause)
                 {
-                    // STATIC : later , manage discarded tokens
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
-                        additional:new Dictionary<string,string>()
+
+                    case TerminalClause terminalClause:
                         {
+                            // STATIC : later , manage discarded tokens
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
+                                additional: new Dictionary<string, string>()
+                                {
                             {"INDEX",i.ToString()}
-                        });
-                    AddClause(terminalClause);
-                }
-    
-                if (clause is NonTerminalClause nonTerminalClause)
-                {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), nonTerminalClause.Name,
-                        additional:new Dictionary<string,string>() {{"INDEX",i.ToString()}});
-                    AddClause(nonTerminalClause);
-                }
-                if (clause is ZeroOrMoreClause zeroOrMoreClause)
-                {
-                    // TODO : generate zero or more clause call                    
-                        call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreClauseTemplate), zeroOrMoreClause.Name,
-                        additional:new Dictionary<string,string>() {{"INDEX",i.ToString()}});
-                    AddClause(zeroOrMoreClause);
+                                });
+                            AddClause(terminalClause);
+                            break;
+                        }
+
+                    case NonTerminalClause nonTerminalClause:
+                        {
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), nonTerminalClause.Name,
+                                additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                            AddClause(nonTerminalClause);
+                            break;
+                        }
+                    case ZeroOrMoreClause zeroOrMoreClause:
+                        {
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ZeroOrMoreClauseTemplate), zeroOrMoreClause.Name,
+                            additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                            AddClause(zeroOrMoreClause);
+                            break;
+                        }
+                    case OneOrMoreClause oneOrMoreClause:
+                        {
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.OneOrMoreClauseTemplate), oneOrMoreClause.Name,
+                            additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                            AddClause(oneOrMoreClause);
+                            break;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException("clause class not implemented for " + clause.GetType().Name);
+                        }
                 }
                 clausesBuilder.AppendLine(call).AppendLine();
             }
         }
+
 
         var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleParserTemplate), rule.Name,
             additional: new Dictionary<string, string>()
@@ -299,11 +349,11 @@ public class ParserBuilderGenerator
         builder.AppendLine(content);
     }
 
-    
+
 
     private void AddRule(Rule rule)
     {
-        List<Rule> parsers =  new List<Rule>();
+        List<Rule> parsers = new List<Rule>();
         if (_ruleParsers.ContainsKey(rule.Name))
         {
             parsers = _ruleParsers[rule.Name];
@@ -311,7 +361,7 @@ public class ParserBuilderGenerator
         parsers.Add(rule);
         _ruleParsers[rule.Name] = parsers;
     }
-    
+
     private void AddClause(TerminalClause terminalClause)
     {
         if (!_terminalParsers.ContainsKey(terminalClause.Name))
@@ -319,7 +369,7 @@ public class ParserBuilderGenerator
             _terminalParsers.Add(terminalClause.Name, terminalClause);
         }
     }
-    
+
     private void AddClause(NonTerminalClause nonTerminalClause)
     {
         if (!_nonTerminalParsers.ContainsKey(nonTerminalClause.Name))
@@ -347,16 +397,16 @@ public class ParserBuilderGenerator
 
     public string GenerateStaticVisitor()
     {
-        
+
         StringBuilder builder = new();
         StringBuilder visitors = new StringBuilder();
-        
+
         foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
         {
-               var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count());
+            var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count());
             visitors.AppendLine(nonTerminalVisitor);
             for (int i = 0; i < rulesByHead.Count(); i++)
-           {
+            {
                 var rule = rulesByHead.ToList()[i];
                 var ruleVisitor = GenerateRuleVisitor(rule, i);
                 visitors.AppendLine(ruleVisitor);
@@ -372,11 +422,20 @@ public class ParserBuilderGenerator
             }
         });
 
+        _rules.SelectMany(_rules => _rules.Clauses).ToList().ForEach(clause =>
+        {
+            if (clause is OneOrMoreClause oneOrMoreClause)
+            {
+                var zeroOrMoreVisitor = GenerateOneOrMoreVisitor(oneOrMoreClause, 0);
+                visitors.AppendLine(zeroOrMoreVisitor);
+            }
+        });
+
         var parser = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.VisitorTemplate),
             additional: new Dictionary<string, string>()
-            {                
+            {
                 { "VISITORS", visitors.ToString() },
-                { "NAMESPACE", _namespace }                
+                { "NAMESPACE", _namespace }
             });
 
         return parser;
@@ -399,7 +458,7 @@ public class ParserBuilderGenerator
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalVisitorTemplate), name,
             additional: new Dictionary<string, string>() {
             {"VISITORS", cases.ToString()}
-            }); 
+            });
 
         return content;
     }
@@ -408,27 +467,60 @@ public class ParserBuilderGenerator
     {
         string clauseVisitor = "";
         string outputType = "";
-        if (zeroOrMore.Clause is TerminalClause terminalClause)
+        if (zeroOrMore.manyClause is TerminalClause terminalClause)
         {
             outputType = $"Token<{_lexerName}>";
-            
+
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
                 additional: new Dictionary<string, string>()
-                {                    
+                {
                         {"INDEX","i"}
                 });
         }
-        if (zeroOrMore.Clause is NonTerminalClause nonTerminalClause)
+        if (zeroOrMore.manyClause is NonTerminalClause nonTerminalClause)
         {
             outputType = _outputType;
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
-                {                    
+                {
                         {"INDEX","Child"}
                 });
         }
 
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.ZeroOrMoreVisitorTemplate), zeroOrMore.Name,
+            additional: new Dictionary<string, string>() {
+            {"VISITOR", clauseVisitor},
+            {"CLAUSE_OUTPUT", outputType },
+            });
+
+        return content;
+    }
+
+    private string GenerateOneOrMoreVisitor(OneOrMoreClause oneOrMore, int count)
+    {
+        string clauseVisitor = "";
+        string outputType = "";
+        if (oneOrMore.manyClause is TerminalClause terminalClause)
+        {
+            outputType = $"Token<{_lexerName}>";
+
+            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {
+                        {"INDEX","i"}
+                });
+        }
+        if (oneOrMore.manyClause is NonTerminalClause nonTerminalClause)
+        {
+            outputType = _outputType;
+            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
+                additional: new Dictionary<string, string>()
+                {
+                        {"INDEX","Child"}
+                });
+        }
+
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.OneOrMoreVisitorTemplate), oneOrMore.Name,
             additional: new Dictionary<string, string>() {
             {"VISITOR", clauseVisitor},
             {"CLAUSE_OUTPUT", outputType },
@@ -462,7 +554,15 @@ public class ParserBuilderGenerator
             }
             if (clause is ZeroOrMoreClause zeroOrMoreClause)
             {
-                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitZeroOrMoreTemplate), zeroOrMoreClause.Name,
+                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitManyTemplate), zeroOrMoreClause.Name,
+                    additional: new Dictionary<string, string>()
+                    {
+                        {"INDEX",i.ToString()}
+                    });
+            }
+            if (clause is OneOrMoreClause oneOrMoreClause)
+            {
+                clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitManyTemplate), oneOrMoreClause.Name,
                     additional: new Dictionary<string, string>()
                     {
                         {"INDEX",i.ToString()}
@@ -495,7 +595,7 @@ public class ParserBuilderGenerator
     public string GenerateEntryPoint()
     {
         var root = _staticParserBuilder.ParserOPtions.StartingNonTerminal;
-        var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional:new Dictionary<string, string>()
+        var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
             {"ROOT",root } //TODO
         });

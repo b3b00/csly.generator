@@ -1,7 +1,7 @@
  
 // parse non terminal <#NAME#>
 var r<#INDEX#> = ParseNonTerminal_<#NAME#>(tokens, currentPosition);
-innerResult = rinner;
+innerResult = r<#INDEX#>;
 stillOk = innerResult != null && !innerResult.IsError && currentPosition < tokens.Count;
 if (stillOk)
 {

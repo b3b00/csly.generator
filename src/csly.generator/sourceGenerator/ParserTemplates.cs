@@ -18,10 +18,9 @@ internal enum ParserTemplates
     ZeroOrMoreParserTemplate,
     OneOrMoreParserTemplate,
     OneOrMoreClauseTemplate,
-    ZeroOrMoreClauseTemplate,
-    ZeroOrMoreParserTemplateForMany,
-    NonTerminalClauseTemplateForMany,
-    TerminalClauseTemplateForMany
+    ZeroOrMoreClauseTemplate,        
+    NonTerminalClauseForManyTemplate,
+    TerminalClauseForManyTemplate
 }
 
 internal enum VisitorTemplates
@@ -32,6 +31,7 @@ internal enum VisitorTemplates
     NonTerminalVisitorTemplate,
     RuleVisitorTemplate,
     VisitorTemplate,
-    CallVisitZeroOrMoreTemplate,
-    ZeroOrMoreVisitorTemplate
+    CallVisitManyTemplate,
+    ZeroOrMoreVisitorTemplate,
+    OneOrMoreVisitorTemplate
 }   

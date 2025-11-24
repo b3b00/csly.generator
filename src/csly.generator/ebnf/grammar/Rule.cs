@@ -77,7 +77,7 @@ namespace ebnf.grammar
                                 contains = true;
                                 break;
                             case ManyClause many:
-                                contains |= many.Clause is GroupClause;
+                                contains |= many.manyClause is GroupClause;
                                 break;
                             case OptionClause option:
                                 contains |= option.Clause is GroupClause;

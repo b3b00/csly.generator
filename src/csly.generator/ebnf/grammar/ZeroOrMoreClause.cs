@@ -6,17 +6,17 @@ namespace ebnf.grammar
     public sealed class ZeroOrMoreClause : ManyClause
     {
         
-        public override string Name { get => "ZeroOrMore"+Clause.Name; set { } }
+        public override string Name { get => $"ZeroOrMore_{manyClause.Name}"; set { } }
 
         public ZeroOrMoreClause(IClause clause)
         {
-            Clause = clause;
+            manyClause = clause;
         }
 
         [ExcludeFromCodeCoverage]
         public override string ToString()
         {
-            return Clause + "*";
+            return manyClause + "*";
         }
 
         public override bool MayBeEmpty()
@@ -26,7 +26,7 @@ namespace ebnf.grammar
 
         public override string Dump()
         {
-            return $"{Clause.Dump()}*";
+            return $"{manyClause.Dump()}*";
         }
     }
 }

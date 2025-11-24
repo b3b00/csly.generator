@@ -134,9 +134,9 @@ namespace csly.ebnf.builder
                     }
                 }
             }
-            else if (first is ZeroOrMoreClause zeroOrMoreClause)
+            else if (first is ManyClause manyClause)
             {
-                var innerFirst = zeroOrMoreClause.Clause;
+                var innerFirst = manyClause.manyClause;
                 if (innerFirst is TerminalClause termInner)
                 {
                     rule.Leaders.Add(termInner.Name);
@@ -171,6 +171,7 @@ namespace csly.ebnf.builder
                     }
                 }
             }
+
      
         }
 

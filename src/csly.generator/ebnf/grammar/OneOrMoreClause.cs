@@ -7,18 +7,18 @@ namespace ebnf.grammar
     public sealed class OneOrMoreClause : ManyClause
     {
 
-        public override string Name { get => "OneOrMore" + Clause.Name; set { } }
+        public override string Name { get => $"OneOrMore_{manyClause.Name}"; set { } }
 
         public OneOrMoreClause(IClause clause)
         {
-            Clause = clause;
+            manyClause = clause;
         }
 
 
         [ExcludeFromCodeCoverage]
         public override string ToString()
         {
-            return Clause + "+";
+            return manyClause + "+";
         }
 
         public override bool MayBeEmpty()
@@ -28,7 +28,7 @@ namespace ebnf.grammar
 
         public override string Dump()
         {
-            return $"{Clause.Dump()}+";
+            return $"{manyClause.Dump()}+";
         }
     }
 }

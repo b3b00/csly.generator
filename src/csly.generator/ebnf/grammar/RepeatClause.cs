@@ -12,7 +12,7 @@ namespace ebnf.grammar
         bool IsRangeRepetition => MaxRepetitionCount !=  MinRepetitionCount;
         public RepeatClause(IClause clause, int minNumber, int maxNumber)
         {
-            Clause = clause;
+            manyClause = clause;
             MinRepetitionCount = minNumber; 
             MaxRepetitionCount = maxNumber;
         }
@@ -21,7 +21,7 @@ namespace ebnf.grammar
         public override string ToString()
         {
            
-                return $"{Clause}{DumpRange()}";
+                return $"{manyClause}{DumpRange()}";
            
         }
 
@@ -44,7 +44,7 @@ namespace ebnf.grammar
 
         public override string Dump()
         {
-            return $"{Clause.Dump()}{DumpRange()}";
+            return $"{manyClause.Dump()}{DumpRange()}";
         }
     }
 }
