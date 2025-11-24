@@ -5,7 +5,7 @@ Console.WriteLine("Hello, World!");
 
 var instance = new ExtParser();
 var main = new ExtParserMain(instance);
-var result = main.Parse("A B B B C");
+var result = main.Parse("A B B B D C");
 if (result.IsOk)
 {
     Console.WriteLine("Parsed: " + result.Result);

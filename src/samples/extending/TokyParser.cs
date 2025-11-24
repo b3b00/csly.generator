@@ -18,10 +18,11 @@ namespace extending
             return a.Value;
         }
 
-        [Production("bs : B+")]
-        public string Bs(List<Token<Toky>> bs)
+        [Production("bs : B* D")]
+        public string Bs(List<Token<Toky>> bs, Token<Toky> d)
         {
-            return "Bs { " + string.Join(", ", bs.Select(b => b.Value)) + " }";
+            string bees = bs.Count > 0 ? "Bs { " + string.Join(", ", bs.Select(b => b.Value)) + " }" : "no Bees";
+            return $"{bees}, {d.Value}";
         }
 
         [Production("c : C")]

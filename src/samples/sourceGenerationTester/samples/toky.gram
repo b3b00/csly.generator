@@ -7,7 +7,8 @@ public enum Toky
 [AlphaId] ID,
     [Keyword("A")] A,
     [Keyword("B")] B,
-    [Keyword("C")] C
+    [Keyword("C")] C,
+    [Keyword("C")] D
 }
 
 
@@ -27,10 +28,11 @@ public enum Toky
             return a.Value;
         }
 
-        [Production("bs : B+")]
-        public string Bs(List<Token<Toky>> bs)
+       [Production("bs : B* D")]
+        public string Bs(List<Token<Toky>> bs, Token<Toky> d)
         {
-            return "Bs { " + string.Join(", ", bs.Select(b => b.Value)) + " }";
+            string bees = bs.Count > 0 ? "🐝{ " + string.Join(", ", bs.Select(b => b.Value)) + " }" : "no 🐝";
+            return $"{bees}, {d.Value}";
         }
 
         [Production("c : C")]
