@@ -180,11 +180,11 @@ public class CslyParserGenerator : IIncrementalGenerator
                     try
                     {                        
                         StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
-                        var lexer = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
+                        var t = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
                             declarationsByName, staticLexerBuilder);
                         StaticLexerGenerator staticLexerGenerator =
                             new StaticLexerGenerator(staticLexerBuilder);
-                        var t = staticLexerGenerator.Generate();
+                        //var t = staticLexerGenerator.Generate();
 
                         var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}

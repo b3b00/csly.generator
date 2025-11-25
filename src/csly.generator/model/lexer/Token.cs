@@ -46,6 +46,7 @@ public class Token<T> where T:struct, Enum
     public Token(T token, ReadOnlyMemory<char> value, LexerPosition position, 
         CommentType commentType = CommentType.Single, int? channel = null, bool isWhiteSpace = false, char decimalSeparator = '.' )
     {
+        
         IsWhiteSpace = isWhiteSpace;
         IsEOS = false;
         TokenID = token;

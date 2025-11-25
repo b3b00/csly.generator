@@ -15,7 +15,7 @@ public class <#PARSER#>Main
     public ParseResult<<#LEXER#>, <#OUTPUT#>> Parse(string source)
         {
             // lexing
-            Static<#LEXER#> scanner = new Static<#LEXER#>();
+            <#LEXER#>_FsmLexer scanner = new <#LEXER#>_FsmLexer();
             var lexerResult = scanner.Scan(source.AsSpan());
             
             if (lexerResult.IsError)

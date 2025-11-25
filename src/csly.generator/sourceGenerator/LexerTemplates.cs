@@ -9,5 +9,9 @@ internal enum LexerTemplates
     OtherStartTemplate,
     NextSugarTemplate,
     IdentifierTemplate,
-    IntTemplate
+    IntTemplate,
+    FsmTemplate,
+    StateTemplate,
+    TransitionTemplate,
+    StateCallTemplate
 }

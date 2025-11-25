@@ -1,5 +1,7 @@
-﻿using System;
+﻿using csly.ebnf.models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace csly.generator.model.lexer
@@ -13,6 +15,51 @@ namespace csly.generator.model.lexer
         public GenericToken Type => _type;
         public string Name => _name;
         public string[] Args => _args;
+
+        public string Arg0 => Args != null && Args.Any() ? Args.First().Trim(new[] { '"' }) : null;
+
+        public IEnumerable<char[]> IdentifierStartPatterns()
+        {
+            if (Args == null || Args.Length > 0)
+            {
+                return ParseIdentifierPattern(Args[1]).ToList();
+            }
+            return Enumerable.Empty<char[]>();
+        }
+
+        public IEnumerable<char[]> IdentifierTailPatterns()
+        {
+            if (Args == null || Args.Length > 1)
+            {
+                return ParseIdentifierPattern(Args[2]).ToList();
+            }
+            return Enumerable.Empty<char[]>();
+        }
+
+        private static IEnumerable<char[]> ParseIdentifierPattern(string pattern)
+        {
+            var index = 0;
+            while (index < pattern.Length)
+            {
+                if (index <= pattern.Length - 3 && pattern[index + 1] == '-')
+                {
+                    if (pattern[index] < pattern[index + 2])
+                    {
+                        yield return new[] { pattern[index], pattern[index + 2] };
+                    }
+                    else
+                    {
+                        yield return new[] { pattern[index + 2], pattern[index] };
+                    }
+
+                    index += 3;
+                }
+                else
+                {
+                    yield return new[] { pattern[index++] };
+                }
+            }
+        }
 
         public Lexeme(GenericToken type, string name, params string[] args)
         {

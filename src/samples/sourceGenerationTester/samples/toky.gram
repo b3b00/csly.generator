@@ -11,7 +11,11 @@ public enum Toky
     [Keyword("D")] D,
     [Keyword("X")] X,
     [Keyword("Y")] Y,
-    [Keyword("Z")] Z
+    [Keyword("Z")] Z,
+    [Sugar("+")] PLUS,
+    [Sugar("++")] INC,
+    [Sugar("=")] ASSIGN,
+    [Sugar("==")] EQUALS,
 }
 
 

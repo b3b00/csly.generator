@@ -40,7 +40,19 @@ namespace csly.generator.sourceGenerator
 
         public string Generate()
         {
+
+
+            var sugars = _lexerBuilder.Lexemes.Where(x => x.Type == GenericToken.SugarToken);
+
+            var byPrefix = sugars.GroupBy(x => x.Arg0[0]);
+
+            var otherLexemes = _lexerBuilder.Lexemes.Except(sugars).ToList();
+
             var starts = _lexerBuilder.Lexemes.Select(lexeme => GenerateStart(lexeme)).Where(content => content != null).ToList();
+
+
+
+
             var o = _lexerBuilder.Lexemes.SelectMany(lexeme => GenerateOther(lexeme));
             var others = o.Where(content => content != null).ToList();
             var startsIf = string.Join("else ", starts);
@@ -83,7 +95,7 @@ namespace csly.generator.sourceGenerator
             }
             if (lexeme.Type == GenericToken.Identifier)
             {
-                var startPatterns = ParseIdentifierPattern(lexeme.Args[1]).ToList();
+                var startPatterns = lexeme.IdentifierStartPatterns();
 
                 var cond = string.Join(" || ", startPatterns.Select(pattern =>
                 {
@@ -164,7 +176,7 @@ namespace csly.generator.sourceGenerator
             }
             if (lexeme.Type == GenericToken.Identifier)
             {
-                var followPatterns = ParseIdentifierPattern(lexeme.Args[1]).ToList();
+                var followPatterns = lexeme.IdentifierTailPatterns() ;
                 var cond = string.Join(" || ", followPatterns.Select(pattern =>
                 {
                     if (pattern.Length == 2)
