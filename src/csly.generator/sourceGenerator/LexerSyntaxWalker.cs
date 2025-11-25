@@ -11,17 +11,15 @@ namespace csly.generator.sourceGenerator;
 
 internal class LexerSyntaxWalker : CslySyntaxWalker
 {
-    StringBuilder _builder = new();
 
     private string _lexerName = "";
     private readonly Dictionary<string, SyntaxNode> _declarationsByName;
     private readonly LexerBuilderGenerator _generator;
     private readonly StaticLexerBuilder _staticLexerBuilder;
 
-    public LexerSyntaxWalker(StringBuilder builder, string lexerName, Dictionary<string, SyntaxNode> declarationsByName, LexerBuilderGenerator generator, StaticLexerBuilder staticLexerBuilder)
+    public LexerSyntaxWalker(string lexerName, Dictionary<string, SyntaxNode> declarationsByName, LexerBuilderGenerator generator, StaticLexerBuilder staticLexerBuilder)
     {
         _staticLexerBuilder = staticLexerBuilder;
-        _builder = builder;
         _lexerName = lexerName;
         _declarationsByName = declarationsByName;
         _generator = generator;
@@ -231,7 +229,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
 
                         _staticLexerBuilder.Add(type, name, arguments.ToArray());
 
-                        _builder.AppendLine($@".{attributeName}({_lexerName}.{name} {GetAttributeArgs(attributeSyntax)})");
                         var channel = GetChannelArg(attributeSyntax);
                         AddChannel(attributeSyntax);
                     }
@@ -241,13 +238,9 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                     }
                     else if (attributeName == "Push")
                     {
-                        _builder.AppendLine(
-                            $".PushToMode({GetAttributeArgs(attributeSyntax, withLeadingComma: false)})");
                     }
                     else if (attributeName == "Pop")
                     {
-                        _builder.AppendLine(
-                            $".PopMode()");
                     }
 
                     AddLabels(labels);
@@ -262,7 +255,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
     {
         if (modes.Any())
         {
-            _builder.AppendLine($"        .WithModes({string.Join(", ", modes)})");
         }
     }
 
@@ -272,7 +264,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         {
             foreach (var label in labels)
             {
-                _builder.AppendLine($"        .WithLabel({label.lang}, {label.label})");
             }
         }
     }
@@ -282,7 +273,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         var channel = GetChannelArg(attributeSyntax);
         if (channel != null)
         {
-            _builder.AppendLine($"     .OnChannel({channel})");
         }
     }
 
@@ -292,8 +282,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         if (arg0 is LiteralExpressionSyntax literal &&
             literal.Kind() == SyntaxKind.StringLiteralExpression)
         {
-            _builder.AppendLine(
-                $@".Regex({_lexerName}.{name} {GetAttributeArgs(attributeSyntax)})");
         }
         else
         {
@@ -364,32 +352,26 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                             {
                                 case "IgnoreWS":
                                     {
-                                        _builder.AppendLine($".IgnoreWhiteSpace({argument.Expression.ToString()})");
                                         break;
                                     }
                                 case "IgnoreEOL":
                                     {
-                                        _builder.AppendLine($".IgnoreEol({argument.Expression.ToString()})");
                                         break;
                                     }
                                 case "WhiteSpace":
                                     {
-                                        _builder.AppendLine($".UseWhiteSpaces({argument.Expression.ToString()})");
                                         break;
                                     }
                                 case "KeyWordIgnoreCase":
                                     {
-                                        _builder.AppendLine($".IgnoreKeywordCase({argument.Expression.ToString()})");
                                         break;
                                     }
                                 case "IndentationAWare":
                                     {
-                                        _builder.AppendLine($".IsIndentationAware({argument.Expression.ToString()})");
                                         break;
                                     }
                                 case "Indentation":
                                     {
-                                        _builder.AppendLine($".UseIndentations({argument.Expression.ToString()})");
                                         break;
                                     }
                             }
@@ -424,8 +406,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                                                 var tokenid =
                                                     (callbackAttribute.ArgumentList.Arguments[0].Expression as
                                                         CastExpressionSyntax).Expression.ToString();
-                                                _builder.AppendLine(
-                                                    $".WithCallback({tokenid},( token => {typeName}.{method.Identifier.ToString()}(token)))");
                                             }
                                         }
                                     }
