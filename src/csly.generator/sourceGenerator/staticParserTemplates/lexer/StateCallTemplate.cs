@@ -26,6 +26,6 @@
         }        
     }
     if (!continueScanning) {
-        return $"error @ {_currentPosition.ToString()}";
+        return $"error @ {_currentPosition.ToString()} on character '{source[_currentPosition.Index]}'";
     }
 }

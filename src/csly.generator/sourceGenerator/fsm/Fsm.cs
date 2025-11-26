@@ -46,7 +46,7 @@ internal class Transition
 
 
 internal class Fsm
-{      
+{
 
     private Dictionary<int, State> _states = new Dictionary<int, State>();
 
@@ -64,7 +64,7 @@ internal class Fsm
 
 
     int _currentState = 0;
-    private Dictionary<string,string> _keywords = new Dictionary<string, string>();
+    private Dictionary<string, string> _keywords = new Dictionary<string, string>();
 
     public Fsm()
     {
@@ -72,13 +72,13 @@ internal class Fsm
         startState.Name = "start";
         AddState(startState);
         _currentState = startState.Id;
-        
+
     }
 
     public void AddState(State state)
     {
         _states[state.Id] = state;
-        if (!string.IsNullOrEmpty(state.Name)) 
+        if (!string.IsNullOrEmpty(state.Name))
         {
             _statesByName[state.Name] = state;
         }
@@ -101,9 +101,7 @@ internal class Fsm
         }
     }
 
-    private int GetNewState()     {
-        return _states.Count;
-    }
+    private int GetNewState() => _states.Count;
 
     public void End(string tokenName)
     {
@@ -129,8 +127,8 @@ internal class Fsm
     {
         int id = GetNewState();
         State state = new State(id);
-        _states[id] = state;        
-        TransitionTo(state.Id, input);        
+        _states[id] = state;
+        TransitionTo(state.Id, input);
     }
 
     private Transition GetTransition(char input)
@@ -160,18 +158,15 @@ internal class Fsm
         }
     }
 
-    public void TransitionTo(int target, char input)
+    public void TransitionTo(int newStateId, char input)
     {
-        var newStateId = GetNewState();
-        State state = new State(newStateId);
-        _states[newStateId] = state;
         Transition transition = new Transition(newStateId, (ch) => ch == input, $"ch == '{input}'");
         if (!_transitions.ContainsKey(_currentState))
         {
             _transitions[_currentState] = new List<Transition>();
-        }        
+        }
         _transitions[_currentState].Add(transition);
-        _currentState = target;
+        _currentState = newStateId;
     }
 
     public void SafeTransition(char input)
@@ -192,7 +187,7 @@ internal class Fsm
         int id = GetNewState();
         State state = new State(id);
         _states[id] = state;
-        RangeTransitionTo(state.Id, start, end);        
+        RangeTransitionTo(state.Id, start, end);
         return id;
     }
 
@@ -302,7 +297,7 @@ internal class Fsm
 
     public int ConstantTransition(string constant)
     {
-        var c = constant[0];        
+        var c = constant[0];
         for (var i = 0; i < constant.Length; i++)
         {
             c = constant[i];
@@ -333,7 +328,7 @@ internal class Fsm
 
     internal void AddFactory(string tokenName, string factory)
     {
-        if (!_factories.ContainsKey(tokenName)) 
+        if (!_factories.ContainsKey(tokenName))
         {
             _factories[tokenName] = factory;
         }
@@ -342,5 +337,18 @@ internal class Fsm
     #endregion
 
 
-}
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var state in _states.Values)
+        {
+            sb.AppendLine($"State {state.Id} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName}");
+            foreach (var transition in GetTransitions(state.Id))
+            {
+                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {transition.TargetState}");
+            }
 
+        }
+        return sb.ToString();
+    }
+}

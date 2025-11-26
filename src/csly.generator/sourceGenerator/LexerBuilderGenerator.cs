@@ -57,6 +57,7 @@ internal class LexerBuilderGenerator
                 case model.lexer.GenericToken.SugarToken:
                     {
                         fsm.ConstantTransition(lexem.Arg0);
+                        fsm.End(lexem.Name);
                         break;
                     }
                 case model.lexer.GenericToken.Int:
