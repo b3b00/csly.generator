@@ -40,6 +40,8 @@ internal class LexerBuilderGenerator
     public const string inIntState = "InInt";
     public const string inDoubleState = "InDouble";
     public const string inIdentifierState = "InIdentifier";
+    public const string inStringState = "InString";
+    public const string inEscapedStringState = "InEscapedString";
 
 
 
@@ -142,6 +144,27 @@ internal class LexerBuilderGenerator
                                 fsm.RangeTransitionTo(inIdentifierState, pattern[0], pattern[1]);
                             }
                         }
+                        break;
+                    }
+                    case model.lexer.GenericToken.String:
+                    {
+                        char delim  = '"';
+                        char escape = '\\';
+                        if (lexem.Args.Length == 2)
+                        {
+                            delim = lexem.Args[0].Trim('"')[0];
+                            escape = lexem.Args[1].Trim('"')[0];
+                        }
+
+                        fsm.Transition(delim);
+                        fsm.Mark(inStringState);
+                        fsm.ExceptTransitionTo(inStringState,$"{delim}{escape}");
+                        fsm.Transition(escape);
+                        fsm.Mark(inEscapedStringState);
+                        fsm.AnyTransitionTo(inStringState);
+                        fsm.Transition(delim);
+                        
+                        fsm.End(lexem.Name);
                         break;
                     }
                 default:

@@ -75,6 +75,24 @@ internal class Fsm
 
     }
 
+    private string EscapeChar(char ch)
+    {
+        switch (ch)
+        {
+            case '\n':
+                return "\\n";
+            case '\r':
+                return "\\r";
+            case '\t':
+                return "\\t";
+            case '\\':
+                return "\\\\";       
+            case '\'':
+                return "\\'";
+        }
+        return ch.ToString();
+            }
+
     public void AddState(State state)
     {
         _states[state.Id] = state;
@@ -101,7 +119,11 @@ internal class Fsm
         }
     }
 
-    private int GetNewState() => _states.Count;
+    private int GetNewState()
+    {
+        int id = _states.Count;        
+        return id;
+    }
 
     public void End(string tokenName)
     {
@@ -129,6 +151,37 @@ internal class Fsm
         State state = new State(id);
         _states[id] = state;
         TransitionTo(state.Id, input);
+    }
+
+    public void AnyTransition()
+    {
+        int id = GetNewState();
+        State state = new State(id);
+        _states[id] = state;
+        AnyTransitionTo(state.Id);
+    }
+
+    public void AnyTransitionTo(int targetStateId)
+    {
+        Transition transition = new Transition(targetStateId, (ch) => true, "true");
+        if (!_transitions.ContainsKey(_currentState))
+        {
+            _transitions[_currentState] = new List<Transition>();
+        }
+        _transitions[_currentState].Add(transition);
+        _currentState = targetStateId;
+    }
+
+    public void AnyTransitionTo(string targetState)
+    {
+        if (_statesByName.TryGetValue(targetState, out var state))
+        {
+            AnyTransitionTo(state.Id);
+        }
+        else
+        {
+            throw new Exception($"State '{targetState}' not found.");
+        }
     }
 
     private Transition GetTransition(char input)
@@ -160,7 +213,7 @@ internal class Fsm
 
     public void TransitionTo(int newStateId, char input)
     {
-        Transition transition = new Transition(newStateId, (ch) => ch == input, $"ch == '{input}'");
+        Transition transition = new Transition(newStateId, (ch) => ch == input, $"ch == '{EscapeChar(input)}'");
         if (!_transitions.ContainsKey(_currentState))
         {
             _transitions[_currentState] = new List<Transition>();
@@ -205,7 +258,7 @@ internal class Fsm
 
     public int RangeTransitionTo(int target, char start, char end)
     {
-        Transition transition = new Transition(target, (ch) => ch >= start && ch <= end, $"ch >= '{start}' && ch <= '{end}'");
+        Transition transition = new Transition(target, (ch) => ch >= start && ch <= end, $"ch >= '{EscapeChar(start)}' && ch <= '{EscapeChar(end)}'");
         if (!_transitions.ContainsKey(_currentState))
         {
             _transitions[_currentState] = new List<Transition>();
@@ -238,7 +291,7 @@ internal class Fsm
 
     public int MultiRangeTransitionTo(int target, params (char start, char end)[] ranges)
     {
-        var cond = String.Join(" || ", ranges.Select(x => $"ch >= '{x.start}' && ch <= '{x.end}'"));
+        var cond = String.Join(" || ", ranges.Select(x => $"ch >= '{EscapeChar(x.start)}' && ch <= '{EscapeChar(x.end)}'"));
 
         Transition transition = new Transition(target, (ch) =>
         {
@@ -260,7 +313,7 @@ internal class Fsm
         return target;
     }
 
-    public int ExceptTransition(char except)
+    public int ExceptTransition(string except)
     {
         int id = GetNewState();
         State state = new State(id);
@@ -268,7 +321,7 @@ internal class Fsm
         return ExceptTransitionTo(state.Id, except);
     }
 
-    public int ExceptTransitionTo(string targetStateName, char except)
+    public int ExceptTransitionTo(string targetStateName, string except)
     {
         if (_statesByName.TryGetValue(targetStateName, out var state))
         {
@@ -280,12 +333,19 @@ internal class Fsm
         }
     }
 
-    public int ExceptTransitionTo(int target, char except)
+    public int ExceptTransitionTo(int target, string except)
     {
-        var newStateId = GetNewState();
-        State state = new State(newStateId);
-        _states[newStateId] = state;
-        Transition transition = new Transition(newStateId, (ch) => ch != except, $"ch != '{except}'");
+        if (_states.ContainsKey(target) == false)
+        {
+            var newStateId = GetNewState();
+            State state = new State(newStateId);
+            _states[newStateId] = state;
+            target = newStateId;
+        }
+        var chars = except.ToCharArray();
+        string cond = string.Join(" && ", chars.Select(x => $"ch != '{EscapeChar(x)}'"));
+
+        Transition transition = new Transition(target, (ch) => chars.All(x => x != ch), cond);
         if (!_transitions.ContainsKey(_currentState))
         {
             _transitions[_currentState] = new List<Transition>();

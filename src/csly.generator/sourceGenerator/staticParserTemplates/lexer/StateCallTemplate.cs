@@ -15,9 +15,8 @@
             {
                 factory = _defaultFactory;
             }
-            var token = factory(match<#STATE#>);
-            Console.WriteLine($"Found token: {token}");
-            tokens.Add(token);
+            var token = factory(match<#STATE#>);            
+            AddToken(token);
                 _currentMatch = null;
             //consume whit spaces on token boundaries
             ConsumeWhitSpace(source);
@@ -29,7 +28,7 @@
         if (_currentPosition.Index >= source.Length)
         {            
             _currentPosition.Index++; // to avoid infinite loop on end of source
-            tokens.Add(new Token<<#LEXER#>>());
+            AddToken(new Token<<#LEXER#>>());
         }
         else
         {

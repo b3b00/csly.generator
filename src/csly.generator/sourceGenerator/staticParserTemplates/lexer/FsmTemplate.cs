@@ -63,8 +63,15 @@ private Factory _defaultFactory;
 
     public LexerResult<<#LEXER#>> Scan(ReadOnlySpan<char> source) {
         _currentPosition = new LexerPosition(0,0,0);
-        _startPosition = new LexerPosition(0,0,0);
-        List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
+_startPosition = new LexerPosition(0,0,0);
+List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
+
+
+        void AddToken(Token<<#LEXER#>> token) {    
+            tokens.Add(token);
+            Console.WriteLine($"Found token: {token}");
+        }
+
         while (_currentPosition.Index <= source.Length)
         {
             

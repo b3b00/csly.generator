@@ -18,6 +18,8 @@ public enum Toky
     [Sugar("==")] EQUALS,
     [Int] INT,
     [Double] DOUBLE,
+    [String] STRING_1,
+    [String("'","\\")] STRING_2,
 }
 
 
