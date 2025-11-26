@@ -65,6 +65,7 @@ internal class LexerBuilderGenerator
                         var next = fsm.RangeTransition('0', '9');
                         fsm.Mark("InInt");
                         fsm.RangeTransitionTo("InInt", '0', '9');
+                        fsm.End(lexem.Name);
                         break;
                     }
                 case model.lexer.GenericToken.Double:

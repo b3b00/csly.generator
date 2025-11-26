@@ -16,6 +16,8 @@ public enum Toky
     [Sugar("++")] INC,
     [Sugar("=")] ASSIGN,
     [Sugar("==")] EQUALS,
+    [Int] INT,
+    [Double] DOUBLE,
 }
 
 
