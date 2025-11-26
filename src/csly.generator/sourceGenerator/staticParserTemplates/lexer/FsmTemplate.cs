@@ -17,7 +17,14 @@ public class <#LEXER#>_FsmLexer
 
     private LexerPosition _startPosition { get; set; }
 
-    
+    private char GetChar(ReadOnlySpan<char> source, LexerPosition position)
+    {
+        if (position.Index >= source.Length)
+        {
+            return '\0';
+        }
+        return source[position.Index];
+    }
 
     private Dictionary<string,<#LEXER#>> _keywords = new Dictionary<string,<#LEXER#>>()        
     {
@@ -58,7 +65,7 @@ private Factory _defaultFactory;
         _currentPosition = new LexerPosition(0,0,0);
         _startPosition = new LexerPosition(0,0,0);
         List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
-        while (_currentPosition.Index < source.Length)
+        while (_currentPosition.Index <= source.Length)
         {
             
             

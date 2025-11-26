@@ -26,6 +26,14 @@
         }        
     }
     if (!continueScanning) {
-        return $"error @ {_currentPosition.ToString()} on character '{source[_currentPosition.Index]}'";
+        if (_currentPosition.Index >= source.Length)
+        {            
+            _currentPosition.Index++; // to avoid infinite loop on end of source
+            tokens.Add(new Token<<#LEXER#>>());
+        }
+        else
+        {
+            return $"error @ {_currentPosition.ToString()} on character '{source[_currentPosition.Index]}'";
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿public (bool ok, int newState, FsmMatch<<#LEXER#>> match) scanState_<#STATE_ID#>(LexerPosition position, ReadOnlySpan<char> source) {
     bool isEnd = <#IS_END#>;
-    char ch = source[position.Index];
+    char ch = GetChar(source, position);
 
     <#TRANSITIONS#>
     
