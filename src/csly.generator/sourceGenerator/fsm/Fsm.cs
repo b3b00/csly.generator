@@ -56,7 +56,15 @@ internal class Fsm
 
     public List<State> States => _states.Values.ToList();
 
+    public Dictionary<string, string> Keywords => _keywords;
+
+
+    private Dictionary<string, string> _factories = new Dictionary<string, string>();
+    public Dictionary<string, string> Factories => _factories;
+
+
     int _currentState = 0;
+    private Dictionary<string,string> _keywords = new Dictionary<string, string>();
 
     public Fsm()
     {
@@ -316,6 +324,19 @@ internal class Fsm
     internal State GetState(int targetState)
     {
         return _states[targetState];
+    }
+
+    internal void AddKeyword(string arg0, string name)
+    {
+        _keywords[arg0] = name;
+    }
+
+    internal void AddFactory(string tokenName, string factory)
+    {
+        if (!_factories.ContainsKey(tokenName)) 
+        {
+            _factories[tokenName] = factory;
+        }
     }
 
     #endregion

@@ -75,10 +75,23 @@ internal class LexerBuilderGenerator
                         fsm.End(lexem.Name);
                         break;
                     }
+                case model.lexer.GenericToken.KeyWord:
+                    {
+                        
+                        fsm.AddKeyword(lexem.Arg0, lexem.Name);
+                        break;
+                    }
                 case model.lexer.GenericToken.Identifier:
                     {
                         var startPattern = lexem.IdentifierStartPatterns();
-
+                        fsm.AddFactory(lexem.Name, @$"match =>
+        {{
+            if (_keywords.TryGetValue(match.Value.ToString(), out var keywordToken))
+            {{
+                return new Token<{_staticLexerBuilder.LexerName}>(keywordToken, match.Value, match.Position);
+            }}
+            return new Token<{_staticLexerBuilder.LexerName}>(match.Token, match.Value, match.Position);
+        }}");
 
                         var cond = string.Join(" || ", startPattern.Select(pattern =>
                         {
@@ -145,7 +158,7 @@ internal class LexerBuilderGenerator
     {
         var statesCode = string.Join("\n", fsm.States.Select(state => Generate(fsm, state)));
 
-        var statesCall = string.Join("\n", fsm.States.Select(state =>
+        var statesCall = string.Join("\n else ", fsm.States.Select(state =>
         {
             return _templateEngine.ApplyTemplate(nameof(LexerTemplates.StateCallTemplate), additional: new Dictionary<string, string>()
             {
@@ -154,8 +167,19 @@ internal class LexerBuilderGenerator
             });
         }));
 
+        var keywords = string.Join(",\n", fsm.Keywords.Select(kvp =>
+        {
+            return $@"{{ ""{kvp.Key}"", {_staticLexerBuilder.LexerName}.{kvp.Value} }}";
+        }));
+        var factories = string.Join("\n",fsm.Factories.Select(kvp =>
+        {
+            return $@"_tokenFactories.Add({_staticLexerBuilder.LexerName}.{kvp.Key},{kvp.Value});";
+        }));
+
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
+            {"KEYWORDS", keywords },
+            {"FACTORIES", factories },
             { "STATES", statesCode },
             { "STATE_CALLS", statesCall }
         });

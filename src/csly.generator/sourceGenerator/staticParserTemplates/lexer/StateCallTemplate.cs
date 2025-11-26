@@ -1,14 +1,31 @@
 ﻿if (_currentState == <#STATE#>)
 {
-    var (ok, newState, match) = scanState_<#STATE#>(_currentPosition, source);
-    if(ok)
+    var(ok<#STATE#>, newState<#STATE#>, match<#STATE#>) = scanState_<#STATE#>(_currentPosition, source);
+    bool continueScanning = false;
+    if (ok<#STATE#>)
     {
-        if (match != null && match.IsDone)
+        continueScanning = true;
+        if (match<#STATE#> != null && match<#STATE#>.IsDone)
         {
-            tokens.Add(new Token<Toky>(match.Token, match.Value, match.Position));
+            
+            // TODO : call action if any
+            Func<FsmMatch<Toky>, Token<Toky>> factory;
+
+            if (!_tokenFactories.TryGetValue(match<#STATE#>.Token, out factory))
+            {
+                factory = _defaultFactory;
+            }
+            var token = factory(match<#STATE#>);
+            Console.WriteLine($"Found token: {token}");
+            tokens.Add(token);
+                _currentMatch = null;
+            //consume whit spaces on token boundaries
+            ConsumeWhitSpace(source);
+
             _startPosition = new LexerPosition(_currentPosition.Index, _currentPosition.Line, _currentPosition.Column);
-        }
-        continue;
+        }        
     }
-    return "error !";
+    if (!continueScanning) {
+        return $"error @ {_currentPosition.ToString()}";
+    }
 }

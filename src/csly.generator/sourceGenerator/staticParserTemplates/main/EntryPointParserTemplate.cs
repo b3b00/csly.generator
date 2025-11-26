@@ -7,6 +7,8 @@ public class <#PARSER#>Main
 
     private readonly <#PARSER#> _instance;
 
+    public <#LEXER#>_FsmLexer Lexer => new <#LEXER#>_FsmLexer();
+
     public <#PARSER#>Main(<#PARSER#> instance)
         {
         _instance = instance;

@@ -17,6 +17,8 @@ internal class StaticLexerBuilder
     private readonly string _nameSpace;
     public string NameSpace => _nameSpace;
 
+    
+
     public StaticLexerBuilder(string lexerName, string nameSpace)
     {
         _lexerName = lexerName;
