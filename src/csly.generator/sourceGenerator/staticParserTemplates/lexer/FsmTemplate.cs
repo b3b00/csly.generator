@@ -68,8 +68,7 @@ List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
         void AddToken(Token<<#LEXER#>> token) {    
-            tokens.Add(token);
-            Console.WriteLine($"Found token: {token}");
+            tokens.Add(token);            
         }
 
         while (_currentPosition.Index <= source.Length)

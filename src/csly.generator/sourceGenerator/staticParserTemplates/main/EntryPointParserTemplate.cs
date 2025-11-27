@@ -24,15 +24,7 @@ public class <#PARSER#>Main
             {        
                 return new ParseResult<<#LEXER#>, <#OUTPUT#>>(lexerResult.Error);
             }
-else {
-    int count = lexerResult.Tokens.Count;
-    Console.WriteLine($"Lexing successful. {lexerResult.Tokens.Count} Tokens:");
-    for (int i = 0; i < count; i++)
-    {
-        var token = lexerResult.Tokens[i];
-        Console.WriteLine($"#{i}: {token.ToString()}");
-    }
-}
+
 
 // parsing
 var parser = new Static<#PARSER#>();
