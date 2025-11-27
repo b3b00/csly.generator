@@ -56,6 +56,8 @@ namespace ebnf.grammar
         public string I18n { get; set; }
 
 
+        #region helpers
+
         public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> parseTerminal(List<Token<EbnfTokenGeneric>> tokens, EbnfTokenGeneric expected, int position,
                 bool discarded = false)
         {
@@ -107,6 +109,8 @@ namespace ebnf.grammar
             return result;
         }
 
+        #endregion
+
 
 
         ///////////////////////////////////////
@@ -117,6 +121,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -124,6 +129,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -234,6 +240,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -241,6 +248,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -273,6 +281,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -280,6 +289,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -312,6 +322,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -319,6 +330,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -334,6 +346,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r2 = ParseTerminal_INT(tokens, position);
             if (r2.IsError)
@@ -341,6 +354,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -356,6 +370,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r4 = ParseTerminal_INT(tokens, position);
             if (r4.IsError)
@@ -363,6 +378,7 @@ namespace ebnf.grammar
                 return r4;
             }
             position = r4.EndingPosition;
+
 
 
 
@@ -395,6 +411,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -402,6 +419,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -417,6 +435,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r2 = ParseTerminal_INT(tokens, position);
             if (r2.IsError)
@@ -424,6 +443,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -456,6 +476,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -463,6 +484,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -495,6 +517,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -502,6 +525,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -541,6 +565,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -601,6 +626,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -627,6 +653,7 @@ namespace ebnf.grammar
         public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseRule_clause_9(List<Token<EbnfTokenGeneric>> tokens, int position)
         {
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
+
 
 
             // parse terminal STRING
@@ -657,6 +684,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal STRING
             var r0 = ParseTerminal_STRING(tokens, position);
             if (r0.IsError)
@@ -664,6 +692,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -696,6 +725,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LPAREN
             var r0 = ParseTerminal_LPAREN(tokens, position);
             if (r0.IsError)
@@ -714,6 +744,7 @@ namespace ebnf.grammar
                 return r1;
             }
             position = r1.EndingPosition;
+
 
 
 
@@ -757,6 +788,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal ONEORMORE
             var r1 = ParseTerminal_ONEORMORE(tokens, position);
             if (r1.IsError)
@@ -792,6 +824,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -835,6 +868,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal LCURLY
             var r1 = ParseTerminal_LCURLY(tokens, position);
             if (r1.IsError)
@@ -842,6 +876,7 @@ namespace ebnf.grammar
                 return r1;
             }
             position = r1.EndingPosition;
+
 
 
 
@@ -857,6 +892,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal DASH
             var r3 = ParseTerminal_DASH(tokens, position);
             if (r3.IsError)
@@ -868,6 +904,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r4 = ParseTerminal_INT(tokens, position);
             if (r4.IsError)
@@ -875,6 +912,7 @@ namespace ebnf.grammar
                 return r4;
             }
             position = r4.EndingPosition;
+
 
 
 
@@ -918,6 +956,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal LCURLY
             var r1 = ParseTerminal_LCURLY(tokens, position);
             if (r1.IsError)
@@ -929,6 +968,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r2 = ParseTerminal_INT(tokens, position);
             if (r2.IsError)
@@ -936,6 +976,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -979,6 +1020,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal OPTION
             var r1 = ParseTerminal_OPTION(tokens, position);
             if (r1.IsError)
@@ -1007,6 +1049,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LPAREN
             var r0 = ParseTerminal_LPAREN(tokens, position);
             if (r0.IsError)
@@ -1029,6 +1072,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal RPAREN
             var r2 = ParseTerminal_RPAREN(tokens, position);
             if (r2.IsError)
@@ -1036,6 +1080,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -1068,6 +1113,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LPAREN
             var r0 = ParseTerminal_LPAREN(tokens, position);
             if (r0.IsError)
@@ -1090,6 +1136,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal RPAREN
             var r2 = ParseTerminal_RPAREN(tokens, position);
             if (r2.IsError)
@@ -1097,6 +1144,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -1129,6 +1177,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LPAREN
             var r0 = ParseTerminal_LPAREN(tokens, position);
             if (r0.IsError)
@@ -1151,6 +1200,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal RPAREN
             var r2 = ParseTerminal_RPAREN(tokens, position);
             if (r2.IsError)
@@ -1158,6 +1208,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -1173,6 +1224,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r4 = ParseTerminal_INT(tokens, position);
             if (r4.IsError)
@@ -1180,6 +1232,7 @@ namespace ebnf.grammar
                 return r4;
             }
             position = r4.EndingPosition;
+
 
 
 
@@ -1195,6 +1248,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r6 = ParseTerminal_INT(tokens, position);
             if (r6.IsError)
@@ -1202,6 +1256,7 @@ namespace ebnf.grammar
                 return r6;
             }
             position = r6.EndingPosition;
+
 
 
 
@@ -1234,6 +1289,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LPAREN
             var r0 = ParseTerminal_LPAREN(tokens, position);
             if (r0.IsError)
@@ -1256,6 +1312,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal RPAREN
             var r2 = ParseTerminal_RPAREN(tokens, position);
             if (r2.IsError)
@@ -1263,6 +1320,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -1278,6 +1336,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal INT
             var r4 = ParseTerminal_INT(tokens, position);
             if (r4.IsError)
@@ -1285,6 +1344,7 @@ namespace ebnf.grammar
                 return r4;
             }
             position = r4.EndingPosition;
+
 
 
 
@@ -1317,6 +1377,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LPAREN
             var r0 = ParseTerminal_LPAREN(tokens, position);
             if (r0.IsError)
@@ -1339,6 +1400,7 @@ namespace ebnf.grammar
 
 
 
+
             // parse terminal RPAREN
             var r2 = ParseTerminal_RPAREN(tokens, position);
             if (r2.IsError)
@@ -1346,6 +1408,7 @@ namespace ebnf.grammar
                 return r2;
             }
             position = r2.EndingPosition;
+
 
 
 
@@ -1378,6 +1441,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal LCROG
             var r0 = ParseTerminal_LCROG(tokens, position);
             if (r0.IsError)
@@ -1396,6 +1460,7 @@ namespace ebnf.grammar
                 return r1;
             }
             position = r1.EndingPosition;
+
 
 
 
@@ -1428,6 +1493,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -1454,6 +1520,7 @@ namespace ebnf.grammar
         public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseRule_choices_1(List<Token<EbnfTokenGeneric>> tokens, int position)
         {
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
+
 
 
             // parse terminal STRING
@@ -1484,6 +1551,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -1491,6 +1559,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -1534,6 +1603,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal STRING
             var r0 = ParseTerminal_STRING(tokens, position);
             if (r0.IsError)
@@ -1541,6 +1611,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -1651,6 +1722,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -1677,6 +1749,7 @@ namespace ebnf.grammar
         public SyntaxParseResult<EbnfTokenGeneric, GrammarNode> ParseRule_groupclause_1(List<Token<EbnfTokenGeneric>> tokens, int position)
         {
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
+
 
 
             // parse terminal STRING
@@ -1707,6 +1780,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal IDENTIFIER
             var r0 = ParseTerminal_IDENTIFIER(tokens, position);
             if (r0.IsError)
@@ -1714,6 +1788,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -1746,6 +1821,7 @@ namespace ebnf.grammar
             var result = new SyntaxParseResult<EbnfTokenGeneric, GrammarNode>();
 
 
+
             // parse terminal STRING
             var r0 = ParseTerminal_STRING(tokens, position);
             if (r0.IsError)
@@ -1753,6 +1829,7 @@ namespace ebnf.grammar
                 return r0;
             }
             position = r0.EndingPosition;
+
 
 
 
@@ -2300,32 +2377,6 @@ namespace ebnf.grammar
 
             var expectedTokens = new List<LeadingToken<EbnfTokenGeneric>>() { new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER), new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING) };
 
-            var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
-            {
-            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
-            };
-            if (r0Leadings.Any(x => x.Match(token)))
-            {
-                var r0 = ParseRule_choices_0(tokens, position);
-                if (r0.IsOk)
-                {
-                    return r0;
-                }
-                results.Add(r0);
-            }
-            var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
-                    {
-            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
-                    };
-            if (r1Leadings.Any(x => x.Match(token)))
-            {
-                var r1 = ParseRule_choices_1(tokens, position);
-                if (r1.IsOk)
-                {
-                    return r1;
-                }
-                results.Add(r1);
-            }
             var r2Leadings = new LeadingToken<EbnfTokenGeneric>[]
                     {
             new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
@@ -2352,6 +2403,34 @@ namespace ebnf.grammar
                 }
                 results.Add(r3);
             }
+
+            var r0Leadings = new LeadingToken<EbnfTokenGeneric>[]
+            {
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.IDENTIFIER)
+            };
+            if (r0Leadings.Any(x => x.Match(token)))
+            {
+                var r0 = ParseRule_choices_0(tokens, position);
+                if (r0.IsOk)
+                {
+                    return r0;
+                }
+                results.Add(r0);
+            }
+            var r1Leadings = new LeadingToken<EbnfTokenGeneric>[]
+                    {
+            new LeadingToken<EbnfTokenGeneric>(EbnfTokenGeneric.STRING)
+                    };
+            if (r1Leadings.Any(x => x.Match(token)))
+            {
+                var r1 = ParseRule_choices_1(tokens, position);
+                if (r1.IsOk)
+                {
+                    return r1;
+                }
+                results.Add(r1);
+            }
+            
 
 
             result.IsError = true;
@@ -2473,5 +2552,8 @@ namespace ebnf.grammar
             result.AddErrors(results.SelectMany(x => x.Errors != null ? x.GetErrors() : allExpected).ToList());
             return result;
         }
+
+
+
     }
 }

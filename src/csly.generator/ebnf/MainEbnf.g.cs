@@ -22,8 +22,10 @@ namespace ebnf.grammar
 
         public ParseResult<EbnfTokenGeneric, GrammarNode> Parse(string source)
         {
+            Console.WriteLine($"Parsing rule {source}");
             // lexing
             StaticEbnfTokenGeneric scanner = new StaticEbnfTokenGeneric();
+            Console.WriteLine("\t1. Lexing...");
             var lexerResult = scanner.Scan(source.AsSpan());
 
             if (lexerResult.IsError)
@@ -33,6 +35,7 @@ namespace ebnf.grammar
 
             // parsing
             var parser = new StaticRuleParser();
+            Console.WriteLine("\t2. Anlysing...");
             var result = parser.ParseNonTerminal_rule(lexerResult.Tokens, 0);
             if (result.IsOk)
             {

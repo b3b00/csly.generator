@@ -6,6 +6,7 @@ public enum Toky
 {
     [AlphaId] ID,
     [Keyword("A")] A,
+    [Keyword("AA")] AA,
     [Keyword("B")] B,
     [Keyword("C")] C,
     [Keyword("D")] D,
@@ -20,6 +21,12 @@ public enum Toky
     [Double] DOUBLE,
     [String] STRING_1,
     [String("'","\\")] STRING_2,
+    [Push("brackets")]
+    [Sugar(">")] GT,
+    [Mode("brackets")]
+    [Sugar(".")] DOT,
+    [Pop()]
+    [Sugar("<")] LT,
 }
 
 
@@ -33,10 +40,10 @@ public enum Toky
             return option + " " + a + " " + bs + " " + c;
         }
 
-        [Production("a : A")]
+        [Production("a : [A | AA ]")]
         public string A(Token<Toky> a)
         {
-            return "ah ah";
+            return a.TokenId == Toky.A ? "ah ah" : "ah ah ah";
         }
 
         [Production("bs : B* D")]

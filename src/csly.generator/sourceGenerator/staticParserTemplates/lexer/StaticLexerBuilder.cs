@@ -1,6 +1,7 @@
 ﻿using csly.generator.model.lexer;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 internal class StaticLexerBuilder
 {
@@ -31,8 +32,10 @@ internal class StaticLexerBuilder
         _lexemes.Add(lexeme);
     }
 
-    public void Add(GenericToken type, string name, params string[] args)
+    public void Add(GenericToken type, string name, List<string> modes, params string[] args)
     {
-        AddLexeme(new Lexeme(type, name, args));
+        var lexem = new Lexeme(type, name, args);
+        lexem.Modes = modes != null && modes.Any() ? modes : new List<string>() { "default"};        
+        AddLexeme(lexem);
     }
 }

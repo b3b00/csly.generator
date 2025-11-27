@@ -227,20 +227,23 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                             }
                         }
 
-                        _staticLexerBuilder.Add(type, name, arguments.ToArray());
+                        _staticLexerBuilder.Add(type, name, modes, arguments.ToArray());
 
                         var channel = GetChannelArg(attributeSyntax);
                         AddChannel(attributeSyntax);
                     }
                     else if (attributeName == "Lexeme")
                     {
-                        VisitLexemeAttribute(attributeSyntax, name);
+                        VisitLexemeAttribute(attributeSyntax, name, modes);
                     }
                     else if (attributeName == "Push")
                     {
+                        var args = GetAttributeArgs(attributeSyntax);
+                        ;
                     }
                     else if (attributeName == "Pop")
                     {
+                        ;
                     }
 
                     AddLabels(labels);
@@ -276,7 +279,7 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         }
     }
 
-    private void VisitLexemeAttribute(AttributeSyntax attributeSyntax, string name)
+    private void VisitLexemeAttribute(AttributeSyntax attributeSyntax, string name, List<string> modes)
     {
         var arg0 = attributeSyntax.ArgumentList.Arguments[0].Expression;
         if (arg0 is LiteralExpressionSyntax literal &&
@@ -296,36 +299,36 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                     // todo : manage identifier f(method) in {alphaid, alphanumdahsid, alphanumid, customid}
                     if (method == "Keyword")
                     {
-                        _staticLexerBuilder.Add(GenericToken.KeyWord, name,
+                        _staticLexerBuilder.Add(GenericToken.KeyWord, name, modes,
                             GetAttributeArgsArray(attributeSyntax, skip).ToArray());
                     }
                     else if (method == "Sugar")
                     {
-                        _staticLexerBuilder.Add(GenericToken.SugarToken, name,
+                        _staticLexerBuilder.Add(GenericToken.SugarToken, name, modes,
                             GetAttributeArgsArray(attributeSyntax, skip).ToArray());
                     }
                     else if (method == "AlphaId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
-                            name,
+                            name, modes,
                             new[] {"a-zA-Z","a-zA-Z"});
                     }
                     else if (method == "AlphaNumId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
-                            name,
+                            name, modes,
                             new[] { "a-zA-Z", "a-zA-Z0-9" });
                     }
                     else if (method == "AlphaNumDashId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
-                            name,
+                            name, modes,
                             new[] { "_a-zA-Z", "-_a-zA-Z0-9" });
                     }                    
                     else
                     {
                         GenericToken lexemeType = (GenericToken)Enum.Parse(typeof(GenericToken),member.Name.Identifier.Text);                         
-                        _staticLexerBuilder.Add(lexemeType, name, GetAttributeArgsArray(attributeSyntax, 1).ToArray());
+                        _staticLexerBuilder.Add(lexemeType, name, modes, GetAttributeArgsArray(attributeSyntax, 1).ToArray());
                     }
                 }
             }

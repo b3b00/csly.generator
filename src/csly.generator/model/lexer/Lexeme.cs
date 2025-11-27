@@ -18,6 +18,8 @@ namespace csly.generator.model.lexer
 
         public string Arg0 => Args != null && Args.Any() ? Args.First().Trim(new[] { '"' }) : null;
 
+        public List<string> Modes { get; internal set; }
+
         public IEnumerable<char[]> IdentifierStartPatterns()
         {
             if (Args == null || Args.Length > 0)
@@ -31,7 +33,7 @@ namespace csly.generator.model.lexer
         {
             if (Args == null || Args.Length > 1)
             {
-                return ParseIdentifierPattern(Args[2]).ToList();
+                return ParseIdentifierPattern(Args[1]).ToList();
             }
             return Enumerable.Empty<char[]>();
         }

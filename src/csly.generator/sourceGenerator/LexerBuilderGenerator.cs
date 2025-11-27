@@ -31,6 +31,8 @@ internal class LexerBuilderGenerator
 
         var fsm = GenerateFSM(staticLexerBuilder);
 
+        string dump = fsm.ToString();
+        System.IO.File.WriteAllText($"C:\\tmp\\generation\\{name}_fsm.txt", dump);
         return Generate(fsm);
 
     }

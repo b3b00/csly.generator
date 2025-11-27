@@ -33,6 +33,10 @@ public class ParserOPtions {
 
     public Rule Parse(string ruleString)
     {
+        if (ruleString.Contains("|"))
+        {
+            ;
+        }
             (string head, string[] clauses) result = (null,null);
             if (ruleString != null)
             {

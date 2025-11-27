@@ -211,6 +211,45 @@ namespace csly.ebnf.builder
                         }
                     }
                 }
+                else if (first is ChoiceClause choiceClause)
+                {
+                    foreach (var choice in choiceClause.Choices)
+                    {
+                        if (choice is TerminalClause termChoice)
+                        {
+                            rule.Leaders.Add(termChoice.Name);
+                            if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
+                            {
+                                if (!existingLeaders.Contains(termChoice.Name))
+                                {
+                                    existingLeaders.Add(termChoice.Name);
+                                }
+                            }
+                            else
+                            {
+                                leadersForNTs[rule.Head] = new List<string> { termChoice.Name };
+                            }
+                        }
+                        else if (choice is NonTerminalClause ntChoice)
+                        {
+                            // get leaders for nt
+                            if (leadersForNTs.ContainsKey(ntChoice.Name))
+                            {
+                                var ntLeaders = leadersForNTs[ntChoice.Name];
+                                rule.Leaders.AddRange(ntLeaders);
+                            }
+                            else
+                            {
+                                ComputeLeadersForNonTerminal(ntChoice.Name, leadersForNTs);
+                                if (leadersForNTs.ContainsKey(ntChoice.Name))
+                                {
+                                    var ntLeaders = leadersForNTs[ntChoice.Name];
+                                    rule.Leaders.AddRange(ntLeaders);
+                                }
+                            }
+                        }
+                    }                 
+                }
                 i++;
             }
             while (first.MayBeEmpty() && i < rule.Clauses.Count);

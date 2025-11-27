@@ -21,9 +21,10 @@ public class ParserBuilderGenerator
 
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
-    private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();
+    private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();    
     private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();
     private Dictionary<string, OptionClause> _optionParsers = new();
+    private Dictionary<string, ChoiceClause> _choiceParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
 
@@ -108,6 +109,11 @@ public class ParserBuilderGenerator
 
         }
 
+        foreach (var choiceParser in _choiceParsers)
+        {
+            GenerateChoice(choiceParser.Value, parsers);
+        }
+
         foreach (var zeroOrMoreParser in _zeroOrMoreParsers)
         {
             GenerateZeroOrMore(zeroOrMoreParser.Value, parsers);
@@ -127,6 +133,8 @@ public class ParserBuilderGenerator
         {
             GenerateTerminal(terminalParser.Value, parsers);
         }
+
+
 
         var missings = rules.Select(x => new NonTerminalClause(x.Head)).ToList();
 
@@ -161,6 +169,8 @@ public class ParserBuilderGenerator
 
         return parser;
     }
+
+
 
     private string GenerateHelpers()
     {
@@ -232,6 +242,59 @@ public class ParserBuilderGenerator
         }
     }
 
+    private void GenerateChoice(ChoiceClause choiceClause, StringBuilder builder)
+    {
+        StringBuilder callsBuilder = new StringBuilder();
+        for (int i = 0; i < choiceClause.Choices.Count; i++)
+        {
+            var innerClause = choiceClause.Choices[i];
+            if (innerClause != null)
+            {
+                string call = "";
+                if (innerClause is TerminalClause terminalClause)
+                {
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
+                                additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                    AddClause(terminalClause);
+                }
+                else if (innerClause is NonTerminalClause nonTerminalClause)
+                {
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), nonTerminalClause.Name,
+                                additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                    AddClause(nonTerminalClause);
+                }
+                callsBuilder.AppendLine(call).AppendLine();
+            }
+        }
+
+        var expected = string.Join(",",choiceClause.Choices.Select(c =>
+        {
+            if (c is TerminalClause tc)
+            {
+                return $"new LeadingToken<{_lexerName}>({_lexerName}.{tc.Name})";
+            }
+            else if (c is NonTerminalClause ntc)
+            {
+                if (_ruleParsers.TryGetValue(ntc.Name, out var rules))
+                {
+                    var leaders = rules.SelectMany(r => r.Leaders).Distinct()
+                        .Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})");
+                    return string.Join(", ", leaders);
+                }
+            }
+            return "";
+        }));
+
+        var content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ChoiceParserTemplate), choiceClause.Name,
+            additional: new Dictionary<string, string>()
+            {
+                {"CHOICECALLLIST", callsBuilder.ToString() },
+                {"CHOICE_COUNT", (choiceClause.Choices.Count - 1).ToString() },
+                {"EXPECTEDTOKENS", expected}
+            });
+        builder.AppendLine(content).AppendLine();
+    }
+
     #region many
 
     private string GenerateInnerClauseCallForMany(IClause innerClause, int index)
@@ -294,6 +357,8 @@ public class ParserBuilderGenerator
             });
         builder.AppendLine(content).AppendLine();
     }
+
+    
 
     #endregion
 
@@ -482,6 +547,14 @@ public class ParserBuilderGenerator
         if (!_oneOrMoreParsers.ContainsKey(oneOrMoreClause.Name))
         {
             _oneOrMoreParsers[oneOrMoreClause.Name] = oneOrMoreClause;
+        }
+    }
+
+    private void AddClause(ChoiceClause choiceClause)
+    {
+        if (!_choiceParsers.ContainsKey(choiceClause.Name))
+        {
+            _choiceParsers[choiceClause.Name] = choiceClause;
         }
     }
 
