@@ -24,7 +24,10 @@ internal enum ParserTemplates
     OptionClauseTemplate,
     TerminalClauseForOptionTemplate,
     NonTerminalClauseForOptionTemplate,
-    ChoiceParserTemplate
+    ChoiceParserTemplate,
+    ChoiceClauseTemplate,
+    TerminalClauseInChoiceTemplate,
+    NonTerminalClauseInChoiceTemplate
 }
 
 internal enum VisitorTemplates
@@ -39,5 +42,7 @@ internal enum VisitorTemplates
     ZeroOrMoreVisitorTemplate,
     OneOrMoreVisitorTemplate,
     CallVisitOptionTemplate,
-    OptionVisitorTemplate
+    OptionVisitorTemplate,
+    CallVisitChoiceTemplate,
+    TerminalChoiceVisitorTemplate
 }   

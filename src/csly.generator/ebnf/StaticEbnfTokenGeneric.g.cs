@@ -88,7 +88,6 @@ namespace ebnf.grammar
             void AddToken(Token<EbnfTokenGeneric> token)
             {
                 tokens.Add(token);
-                Console.WriteLine($"Found token: {token}");
             }
 
             while (_currentPosition.Index <= source.Length)

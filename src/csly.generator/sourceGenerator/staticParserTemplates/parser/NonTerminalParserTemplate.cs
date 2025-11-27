@@ -8,11 +8,11 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<T
         var expectedTokens = new List<LeadingToken<<#LEXER#>>>() { <#EXPECTEDTOKENS#> };
 
         <#CALLS#>
-
-        result = results.OrderByDescending(r => r.EndingPosition).FirstOrDefault(r => r.IsOk);
-        if (result != null && result.IsOk)
+        
+        var okResult = results.OrderByDescending(r => r.EndingPosition).FirstOrDefault(r => r.IsOk);
+        if (okResult != null && okResult.IsOk)
         {
-            return result;
+            return okResult;
         }
 
     result.IsError = true;

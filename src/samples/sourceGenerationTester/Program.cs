@@ -33,6 +33,7 @@ public partial class Program
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
         string path = "c:/tmp/generation/";
+        Directory.CreateDirectory(path);
 
         File.WriteAllText(Path.Combine(path, "Toky.cs"), parser);
 

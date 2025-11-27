@@ -253,13 +253,13 @@ public class ParserBuilderGenerator
                 string call = "";
                 if (innerClause is TerminalClause terminalClause)
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseInChoiceTemplate), terminalClause.Name,
                                 additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
                     AddClause(terminalClause);
                 }
                 else if (innerClause is NonTerminalClause nonTerminalClause)
                 {
-                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseTemplate), nonTerminalClause.Name,
+                    call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseInChoiceTemplate), nonTerminalClause.Name,
                                 additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
                     AddClause(nonTerminalClause);
                 }
@@ -464,6 +464,17 @@ public class ParserBuilderGenerator
                             AddClause(optionClause);
                             break;
                         }
+                    case ChoiceClause choiceClause:
+                        {
+                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ChoiceClauseTemplate), choiceClause.Name,
+                            additional: new Dictionary<string, string>() {
+                                { "INDEX", i.ToString() },
+                                {"NOT_EMPTY","false"}
+                            });
+                            AddClause(choiceClause);
+                            break;
+                        }
+
                     default:
                         {
                             throw new NotImplementedException("clause class not implemented for " + clause.GetType().Name);
@@ -604,6 +615,15 @@ public class ParserBuilderGenerator
             }
         });
 
+        _rules.SelectMany(_rules => _rules.Clauses).ToList().ForEach(clause =>
+        {
+            if (clause is ChoiceClause choiceClause)
+            {
+                var zeroOrMoreVisitor = GenerateChoiceVisitor(choiceClause, 0);
+                visitors.AppendLine(zeroOrMoreVisitor);
+            }
+        });
+
         var parser = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.VisitorTemplate),
             additional: new Dictionary<string, string>()
             {
@@ -740,6 +760,19 @@ public class ParserBuilderGenerator
         return content;
     }
 
+    private string GenerateChoiceVisitor(ChoiceClause choiceClause, int count)
+    {
+        if (choiceClause.IsTerminalChoice)
+        {
+            var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.TerminalChoiceVisitorTemplate), choiceClause.Name);
+            return content;
+        }
+        else
+        {
+            return $"// TODO : non terminal choice visitor {choiceClause.Name}";
+        }
+    }
+
     private string GenerateRuleVisitor(Rule rule, int index)
     {
         StringBuilder visitors = new StringBuilder();
@@ -792,6 +825,17 @@ public class ParserBuilderGenerator
                             {
                         {"INDEX",i.ToString()}
                             });
+                        break;
+                    }
+                    case ChoiceClause choiceClause:
+                    {
+                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitChoiceTemplate), choiceClause.Name,
+                            additional: new Dictionary<string, string>()
+                            {
+                        {"INDEX",i.ToString()},
+                                {"NODE_TYPE",choiceClause.IsTerminalChoice ? "SyntaxLeaf" : "SyntaxNode"}
+                            });
+                        break;
                         break;
                     }
                 default:

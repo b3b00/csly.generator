@@ -31,28 +31,13 @@ public enum Toky
 
 
 [ParserRoot("root")]
-public class ExtParser {
-    [Production("root : theThing")]
-    public string Root(string theThing) => theThing;
-
-    [Production("theThing : A")]
-    public string TheThingSingle(Token<Toky> a) => "Got a single A!";
-
-    [Production("theThing : A  A")]
-    public string TheThing(Token<Toky> a1, Token<Toky> a2) => "Got two A's!";
-
-    
-}
-
-
-/*[ParserRoot("root")]
     public class ExtParser
     {
 
         [Production("root : a bs c")]
-        public string Root(string option, string a, string bs, string c)
+        public string Root(string a, string bs, string c)
         {
-            return option + " " + a + " " + bs + " " + c;
+            return a + " " + bs + " " + c;
         }
 
         [Production("a : [A | AA ]")]
@@ -80,7 +65,7 @@ public class ExtParser {
             string ex = x.IsEmpty ? "" : "ex ";
             return $"{ex}why zee";
         }
-    }*/
+    }
 
 [ParserGenerator]
 public partial class Tokynou : AbstractParserGenerator<Toky, ExtParser, string>

@@ -4,7 +4,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseChoice_<#NAME#>(List<Token<
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
         var token = tokens[position];
 
-    <CHOICECALLLIST#>        
+    <#CHOICECALLLIST#>        
 
     var results = new List<SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>>();
 

@@ -112,7 +112,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                     if (!classDeclarationSyntax.BaseList.Types.Any(x => x.Type.ToString().StartsWith("AbstractParserGenerator<")))
                     {
-                        string inheriance = string.Join(", ",classDeclarationSyntax.BaseList.Types.Select(x => $"[{x.Type.ToString()}]"));
+                        string inheritance = string.Join(", ",classDeclarationSyntax.BaseList.Types.Select(x => $"[{x.Type.ToString()}]"));
                         context.ReportDiagnostic(Diagnostic.Create(
                             new DiagnosticDescriptor(
                                 CslyGeneratorErrors.MISSING_INHERITANCE,
@@ -120,7 +120,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                                 "Parser generator {0} does not inherit from AbstractParserGenerator [2] : {1}",
                                 "csly",
                                 DiagnosticSeverity.Error,
-                                true), classDeclarationSyntax.GetLocation(), classDeclarationSyntax.Identifier.Text, inheriance));
+                                true), classDeclarationSyntax.GetLocation(), classDeclarationSyntax.Identifier.Text, inheritance));
                     }
                     
                     
@@ -184,7 +184,6 @@ public class CslyParserGenerator : IIncrementalGenerator
                             declarationsByName, staticLexerBuilder);
                         StaticLexerGenerator staticLexerGenerator =
                             new StaticLexerGenerator(staticLexerBuilder);
-                        //var t = staticLexerGenerator.Generate();
 
                         var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}

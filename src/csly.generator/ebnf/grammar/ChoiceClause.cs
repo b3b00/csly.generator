@@ -6,7 +6,7 @@ namespace ebnf.grammar
 {
     public sealed class ChoiceClause : AbstractClause
     {
-
+        public string Name => Choices.Select(c => c.Name).Aggregate((x, y) => x + "_OR_" + y);
         public bool IsDiscarded { get; set; } = false;
         public bool IsTerminalChoice => Choices.Select(c => c is TerminalClause).Aggregate((x, y) => x && y);
         public bool IsNonTerminalChoice => Choices.Select(c => c is NonTerminalClause).Aggregate((x, y) => x && y);
