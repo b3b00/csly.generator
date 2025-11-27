@@ -34,10 +34,10 @@ public enum Toky
     public class ExtParser
     {
 
-        [Production("root : a b")]
-        public string Root(string a, string b)
+        [Production("root : a b g")]
+        public string Root(string a, string b, string g)
         {
-            return a + " " + b;
+            return a + " - " + b + " - " + g;
         }
 
         [Production("a : [A | AA ]")]
@@ -55,25 +55,11 @@ public enum Toky
         [Production("b2 : D")]
         public string B2(Token<Toky> d) => "🦆";
 
-
-        [Production("bs : B* D")]
-        public string Bs(List<Token<Toky>> bs, Token<Toky> d)
+        [Production("g : GT ( a X ) LT")]
+        public string G(Token<Toky> gt, Group<Toky,string> g, Token<Toky> lt)
         {
-            string bees = bs.Count > 0 ? $"{bs.Count} 🐝" : "no 🐝";
-            return $"{bees}, lady di";
-        }
-
-        [Production("c : C")]
-        public string C(Token<Toky> c)
-        {
-            return "si!";
-        }
-
-        [Production("option : X? Y Z")]
-        public string Option(Token<Toky> x, Token<Toky> y, Token<Toky> z)
-        {
-            string ex = x.IsEmpty ? "" : "ex ";
-            return $"{ex}why zee";
+            var inGroup = g.Value(0)+" , "+g.Token(1).Value;
+            return $"brackets( {inGroup} )";
         }
     }
 

@@ -25,6 +25,7 @@ public class ParserBuilderGenerator
     private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();
     private Dictionary<string, OptionClause> _optionParsers = new();
     private Dictionary<string, ChoiceClause> _choiceParsers = new();
+    private Dictionary<string, GroupClause> _groupParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
 
@@ -474,6 +475,11 @@ public class ParserBuilderGenerator
                             AddClause(choiceClause);
                             break;
                         }
+                        case GroupClause groupClause:
+                        {                            
+                            AddClause(groupClause);
+                            break;
+                        }
 
                     default:
                         {
@@ -569,6 +575,14 @@ public class ParserBuilderGenerator
         }
     }
 
+    private void AddClause(GroupClause groupClause)
+    {
+        if (!_groupParsers.ContainsKey(groupClause.Name))
+        {
+            _groupParsers[groupClause.Name] = groupClause;
+        }
+    }
+
 
     public string GenerateStaticVisitor()
     {
@@ -578,7 +592,8 @@ public class ParserBuilderGenerator
 
         foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
         {
-            var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count());
+            bool isGroup = rulesByHead.Count() == 1 && rulesByHead.ToList()[0].IsSubRule;
+            var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count(), isGroup);
             visitors.AppendLine(nonTerminalVisitor);
             for (int i = 0; i < rulesByHead.Count(); i++)
             {
@@ -634,7 +649,7 @@ public class ParserBuilderGenerator
         return parser;
     }
 
-    private string GenerateNonTerminalVisitor(string name, int count)
+    private string GenerateNonTerminalVisitor(string name, int count, bool isGroup)
     {
         StringBuilder cases = new StringBuilder();
         for (int i = 0; i < count; i++)
@@ -647,10 +662,12 @@ public class ParserBuilderGenerator
                 });
             cases.AppendLine(caseTemplate);
         }
+        string outputType = isGroup ? $"Group<{_lexerName},{_outputType}> " : _outputType;
 
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalVisitorTemplate), name,
             additional: new Dictionary<string, string>() {
-            {"VISITORS", cases.ToString()}
+            {"VISITORS", cases.ToString()},
+                {"OUTPUT_TYPE",  outputType}
             });
 
         return content;
@@ -866,13 +883,34 @@ public class ParserBuilderGenerator
             args += $"arg{i}";
         }
 
+        string returnValue = "";
+        string returnType = "";
+        if (rule.IsSubRule)
+        {
+            returnType = $"Group<{_lexerName}, {_outputType}>";
+            StringBuilder groupReturnValue = new StringBuilder();
+            groupReturnValue.AppendLine($"var group = new Group<{_lexerName}, {_outputType}>();");
+            for (int i = 0; i < rule.Clauses.Count; i++)
+            {
+                var clause = rule.Clauses[i];
+                groupReturnValue.AppendLine($"group.Add(\"{clause.Name}\",arg{i});");
+            }
+            groupReturnValue.AppendLine($"return group;");
+            returnValue = groupReturnValue.ToString();
+        }
+        else
+        {
+            returnType = _outputType;
+            returnValue = $"return _instance.{rule.MethodName}({args});";
+        }
+
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.RuleVisitorTemplate), rule.Name,
             additional: new Dictionary<string, string>()
             {
                 {"INDEX",index.ToString() },
                 {"VISITORS", visitors.ToString() },
-                {"VISITOR", rule.MethodName },
-                {"ARGS", args }
+                {"RETURN", returnValue },
+                {"RETURN_TYPE", returnType }
             });
 
         return content;

@@ -18,7 +18,8 @@ namespace ebnf.grammar
 
 
         public List<IClause> Clauses { get; set; }
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name {get => "GROUP_" + String.Join("_", Clauses.Select(c => c.Name)); set { } }
+            
 
         [ExcludeFromCodeCoverage]
         public bool MayBeEmpty()

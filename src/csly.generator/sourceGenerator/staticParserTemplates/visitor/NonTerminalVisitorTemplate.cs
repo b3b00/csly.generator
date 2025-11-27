@@ -1,4 +1,5 @@
-﻿public <#OUTPUT#> Visit<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+﻿
+public <#OUTPUT_TYPE#> Visit<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
 {
     switch (node.Visitor)
     {
@@ -6,5 +7,5 @@
         default:
                 throw new NotImplementedException($"Visitor {node.Visitor} not implemented");
     }
-    return default(<#OUTPUT#>);
+    return default;
 }

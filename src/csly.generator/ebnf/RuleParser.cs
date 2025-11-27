@@ -22,6 +22,7 @@ namespace ebnf.grammar
         [Production("rule : IDENTIFIER COLON clauses")]
         public GrammarNode Root(Token<EbnfTokenGeneric> name, Token<EbnfTokenGeneric> discarded, GrammarNode clauses)
         {
+            
             var rule = new Rule();
             rule.NonTerminalName = name.Value;
             rule.Clauses = (clauses as ClauseSequence).Clauses;

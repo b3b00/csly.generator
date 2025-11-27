@@ -1,5 +1,6 @@
 using System.Linq;
 using csly.ebnf.builder;
+using ebnf.grammar;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.generator.sourceGenerator;
@@ -99,7 +100,23 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                     // STATIC : parse rule 
                     GeneratorLogger.Log($"\nparsing rule >>{ruleString}<<");
                     var rule = _staticParserBuilder.Parse(ruleString,node.Identifier.Text);      
+                    for(int i = 0; i< rule.Clauses.Count; i++)
+                    {
+                        var clause = rule.Clauses[i];
+                        if (clause is GroupClause group)
+                        {
+                            Rule subRule = new Rule()
+                            {
+                                Clauses = group.Clauses,
+                                IsSubRule = true,
+                                NonTerminalName = group.Name
+                            };
+                            _staticParserBuilder.Model.Add(subRule);
+                            rule.Clauses[i] = new NonTerminalClause(subRule.NonTerminalName);
+                        }
+                    }
                     _staticParserBuilder.Model.Add(rule);
+                    
                     GeneratorLogger.Log($"\nparsed rule >>{rule.Dump()}<<");
                 }
             }
