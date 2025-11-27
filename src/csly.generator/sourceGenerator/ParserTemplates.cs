@@ -44,5 +44,7 @@ internal enum VisitorTemplates
     CallVisitOptionTemplate,
     OptionVisitorTemplate,
     CallVisitChoiceTemplate,
-    TerminalChoiceVisitorTemplate
+    TerminalChoiceVisitorTemplate,
+    NonTerminalChoiceVisitorTemplate,
+    NonTerminalChoiceVisitorCall
 }   

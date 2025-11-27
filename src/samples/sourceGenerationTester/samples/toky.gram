@@ -34,17 +34,27 @@ public enum Toky
     public class ExtParser
     {
 
-        [Production("root : a bs c")]
-        public string Root(string a, string bs, string c)
+        [Production("root : a b")]
+        public string Root(string a, string b)
         {
-            return a + " " + bs + " " + c;
+            return a + " " + b;
         }
 
         [Production("a : [A | AA ]")]
         public string A(Token<Toky> a)
         {
-            return a.TokenID == Toky.A ? "ah ah" : "ah ah ah";
+            return a.TokenID == Toky.A ? "ah ah" : "aah aah";
         }
+
+        [Production("b : [b1 | b2]")]
+        public string B(string b) => b;
+
+        [Production("b1 : B")]
+        public string B1(Token<Toky> b) => "🐝";
+        
+        [Production("b2 : D")]
+        public string B2(Token<Toky> d) => "🦆";
+
 
         [Production("bs : B* D")]
         public string Bs(List<Token<Toky>> bs, Token<Toky> d)

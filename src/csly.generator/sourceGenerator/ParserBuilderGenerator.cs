@@ -619,8 +619,8 @@ public class ParserBuilderGenerator
         {
             if (clause is ChoiceClause choiceClause)
             {
-                var zeroOrMoreVisitor = GenerateChoiceVisitor(choiceClause, 0);
-                visitors.AppendLine(zeroOrMoreVisitor);
+                var choiceVisitor = GenerateChoiceVisitor(choiceClause, 0);
+                visitors.AppendLine(choiceVisitor);
             }
         });
 
@@ -769,7 +769,18 @@ public class ParserBuilderGenerator
         }
         else
         {
-            return $"// TODO : non terminal choice visitor {choiceClause.Name}";
+            var choices = string.Join("\n",choiceClause.Choices.Select((c, i) =>
+            {
+                var caseTemplate = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalChoiceVisitorCall),
+                    c.Name);                    
+                return caseTemplate;
+            }));
+            var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalChoiceVisitorTemplate), choiceClause.Name, additional:
+                new Dictionary<string, string>()
+                {
+                    { "CHOICES", choices }
+                });
+            return content;
         }
     }
 
