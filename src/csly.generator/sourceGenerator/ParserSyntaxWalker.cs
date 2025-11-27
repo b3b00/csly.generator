@@ -97,7 +97,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                 else
                 {
                     var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
-                    // STATIC : parse rule 
+                    
                     GeneratorLogger.Log($"\nparsing rule >>{ruleString}<<");
                     var rule = _staticParserBuilder.Parse(ruleString,node.Identifier.Text);      
                     for(int i = 0; i< rule.Clauses.Count; i++)
@@ -112,7 +112,21 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                                 NonTerminalName = group.Name
                             };
                             _staticParserBuilder.Model.Add(subRule);
-                            rule.Clauses[i] = new NonTerminalClause(subRule.NonTerminalName);
+                            rule.Clauses[i] = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };
+                        }
+                        if (clause is ManyClause many)
+                        {
+                            if (many.manyClause is GroupClause mg)
+                            {
+                                Rule subRule = new Rule()
+                                {
+                                    Clauses = mg.Clauses,
+                                    IsSubRule = true,
+                                    NonTerminalName = mg.Name
+                                };
+                                _staticParserBuilder.Model.Add(subRule);
+                                many.manyClause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };                                
+                            }
                         }
                     }
                     _staticParserBuilder.Model.Add(rule);

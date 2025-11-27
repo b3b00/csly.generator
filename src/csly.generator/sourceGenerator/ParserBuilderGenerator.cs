@@ -313,10 +313,13 @@ public class ParserBuilderGenerator
             case NonTerminalClause nonTerminalClause:
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseForManyTemplate), innerClause.Name,
-                        additional: new Dictionary<string, string>() { { "INDEX", index.ToString() } });
+                        additional: new Dictionary<string, string>() { 
+                            { "INDEX", index.ToString() },
+                            {"IS_GROUP", nonTerminalClause.IsGroup.ToString().ToLower() }
+                        });
                     AddClause(nonTerminalClause);
                     break;
-                }
+                }                
             default:
                 {
                     throw new NotImplementedException("many clause not implemented for " + innerClause.GetType().Name);
@@ -688,12 +691,12 @@ public class ParserBuilderGenerator
                 });
         }
         if (zeroOrMore.manyClause is NonTerminalClause nonTerminalClause)
-        {
-            outputType = _outputType;
+        {            
+            outputType = nonTerminalClause.IsGroup ? $"Group<{_lexerName},{_outputType}>" : _outputType;
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
                 {
-                        {"INDEX","Child"}
+                        {"INDEX","i"}
                 });
         }
 
@@ -722,11 +725,11 @@ public class ParserBuilderGenerator
         }
         if (oneOrMore.manyClause is NonTerminalClause nonTerminalClause)
         {
-            outputType = _outputType;
+            outputType = nonTerminalClause.IsGroup ? $"Group<{_lexerName},{_outputType}>" : _outputType;
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
                 {
-                        {"INDEX","Child"}
+                        {"INDEX","i"}
                 });
         }
 

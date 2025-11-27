@@ -6,8 +6,8 @@ stillOk = innerResult != null && !innerResult.IsError && currentPosition < token
 if (stillOk)
 {
     currentPosition = innerResult.EndingPosition;
-    manyNode.IsManyValues = { !nonTerminalClause.IsGroup};
-    manyNode.IsManyGroups = { nonTerminalClause.IsGroup};
+    manyNode.IsManyValues = !<#IS_GROUP#>;
+    manyNode.IsManyGroups = <#IS_GROUP#> ;
     manyNode.IsManyTokens = false;
     //manyNode.Add(innerResult.Root);
 }

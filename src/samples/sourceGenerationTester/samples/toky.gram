@@ -55,11 +55,12 @@ public enum Toky
         [Production("b2 : D")]
         public string B2(Token<Toky> d) => "🦆";
 
-        [Production("g : GT ( a X ) LT")]
-        public string G(Token<Toky> gt, Group<Toky,string> g, Token<Toky> lt)
+        [Production("g : GT ( a X )+ LT")]
+        public string G(Token<Toky> gt, List<Group<Toky,string>> gs, Token<Toky> lt)
         {
-            var inGroup = g.Value(0)+" , "+g.Token(1).Value;
-            return $"brackets( {inGroup} )";
+            
+            var groups = string.Join(" , ",gs.Select(g => "("+g.Value(0)+" , "+g.Token(1).Value+")"));
+            return $"brackets( {groups} )";
         }
     }
 
