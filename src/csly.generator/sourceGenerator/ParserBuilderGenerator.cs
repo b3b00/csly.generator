@@ -907,6 +907,10 @@ public class ParserBuilderGenerator
             for (int i = 0; i < rule.Clauses.Count; i++)
             {
                 var clause = rule.Clauses[i];
+                if (clause is TerminalClause term && term.Discarded)
+                {
+                    continue;
+                }
                 groupReturnValue.AppendLine($"group.Add(\"{clause.Name}\",arg{i});");
             }
             groupReturnValue.AppendLine($"return group;");
