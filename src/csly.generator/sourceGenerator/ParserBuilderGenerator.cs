@@ -53,6 +53,9 @@ public class ParserBuilderGenerator
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model.Rules;
 
+        ExpressionRulesGenerator expressionRulesGenerator = new();
+        expressionRulesGenerator.Generate(_staticParserBuilder.Model);
+
 
         GeneratorLogger.Log($"\nfound {_rules.Count} rules");
         var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOPtions.StartingNonTerminal);

@@ -44,7 +44,7 @@ namespace csly.ebnf.builder
 
         public int Precedence { get; set; }
 
-        public Operation(string methodName, Affix affix, Associativity associativity, string tokenName, int precedence)
+        public Operation(string methodName, string tokenName, Affix affix, Associativity associativity,  int precedence)
         {
             MethodName = methodName;
             Affix = affix;

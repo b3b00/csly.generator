@@ -90,7 +90,50 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         {
             if (attribute.Name.ToString() == "Operation")
             {
-             // TODO : build Operation and add to Model             
+                var args = GetAttributeArgsArray(attribute, skip: 0);
+                
+                string tokenName = args[0].Trim(new[] { '"' });
+                string infixArg = args[1].Trim(new[] { '"' }).Replace("Affix.", "");
+                Affix affix = (Affix)System.Enum.Parse(typeof(Affix), infixArg);
+                string associativityArg = args[2].Trim(new[] { '"' }).Replace("Associativity.", "");
+                Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
+                int precedence = int.Parse(args[3]);
+
+                var operation = new Operation(methodName, tokenName, affix, associativity, precedence);
+
+                _staticParserBuilder.Model.AddOperation(operation);                
+            }
+            if (attribute.Name.ToString() == "Left")
+            {
+                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                string tokenName = args[0].Trim(new[] { '"' });
+                int precedence = int.Parse(args[1]);
+                var operation = new Operation(methodName, tokenName, Affix.InFix, Associativity.Left, precedence);
+                _staticParserBuilder.Model.AddOperation(operation);                
+            }
+            if (attribute.Name.ToString() == "Right")
+            {
+                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                string tokenName = args[0].Trim(new[] { '"' });
+                int precedence = int.Parse(args[1]);
+                var operation = new Operation(methodName, tokenName, Affix.InFix, Associativity.Right, precedence);
+                _staticParserBuilder.Model.AddOperation(operation);
+            }
+            if (attribute.Name.ToString() == "Prefix")
+            {
+                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                string tokenName = args[0].Trim(new[] { '"' });
+                int precedence = int.Parse(args[1]);
+                var operation = new Operation(methodName, tokenName, Affix.PreFix, Associativity.Right, precedence);
+                _staticParserBuilder.Model.AddOperation(operation);
+            }
+            if (attribute.Name.ToString() == "Postfix")
+            {
+                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                string tokenName = args[0].Trim(new[] { '"' });
+                int precedence = int.Parse(args[1]);
+                var operation = new Operation(methodName, tokenName, Affix.PostFix, Associativity.Left, precedence);
+                _staticParserBuilder.Model.AddOperation(operation);
             }
             if (attribute.Name.ToString() == "Production")
             {
