@@ -8,6 +8,6 @@
                 else
     {        
             <#VISITOR#>
-            return arg0;
+            return new <#CLAUSE_OUTPUT#>(arg0);
     }
 }

@@ -758,15 +758,15 @@ public class ParserBuilderGenerator
                 });
             emptyValue = $"new Token<{_lexerName}>() {{ IsEmpty = true }};";
         }
-        if (optionClause.Clause is NonTerminalClause nonTerminalClause)
-        {
-            outputType = $"OptionValue<{_lexerName},{_outputType}>";
+        if (optionClause.Clause is NonTerminalClause nonTerminalClause) { 
+        
+            outputType = $"ValueOption<Group<{_lexerName},{_outputType}>>";
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
                 {
                         {"INDEX","0"}
                 });
-            emptyValue = $"new OptionValue<{_outputType}>()";
+            emptyValue = $"new {outputType}()";
         }
         
 

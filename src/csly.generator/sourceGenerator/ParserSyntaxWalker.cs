@@ -128,6 +128,20 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                                 many.manyClause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };                                
                             }
                         }
+                        if (clause is OptionClause option)
+                        {
+                            if (option.Clause is GroupClause og)
+                            {
+                                Rule subRule = new Rule()
+                                {
+                                    Clauses = og.Clauses,
+                                    IsSubRule = true,
+                                    NonTerminalName = og.Name
+                                };
+                                _staticParserBuilder.Model.Add(subRule);
+                                option.Clause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };                                
+                            }
+                        }
                     }
                     _staticParserBuilder.Model.Add(rule);
                     
