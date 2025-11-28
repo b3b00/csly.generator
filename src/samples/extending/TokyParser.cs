@@ -27,8 +27,9 @@ namespace extending
         [Production("b2 : D")]
         public string B2(Token<Toky> d) => "🦆";
 
-        [Production("g : GT ( a X )+ LT GT ( X a )? LT ")]
-        public string G(Token<Toky> gt, List<Group<Toky, string>> gs, Token<Toky> lt, Token<Toky> gt2, ValueOption<Group<Toky, string>> optionGroup, Token<Toky> lt2)
+        [Production("g : GT[d] ( a X )+ LT[d] GT[d] ( X a )? LT[d] ")]
+        //public string G(Token<Toky> gt, List<Group<Toky, string>> gs, Token<Toky> lt, Token<Toky> gt2, ValueOption<Group<Toky, string>> optionGroup, Token<Toky> lt2)
+        public string G(List<Group<Toky, string>> gs,  ValueOption<Group<Toky, string>> optionGroup)
         {
 
             var groups = string.Join(" , ", gs.Select(g => "(" + g.Value(0) + " , " + g.Token(1).Value + ")"));

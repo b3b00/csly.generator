@@ -807,19 +807,24 @@ public class ParserBuilderGenerator
     private string GenerateRuleVisitor(Rule rule, int index)
     {
         StringBuilder visitors = new StringBuilder();
+
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
             var clause = rule.Clauses[i];
             var clauseVisitor = "";
+            
             switch (clause)
             {
-                case TerminalClause terminalClause:
+                case TerminalClause terminalClause :
                     {
-                        clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
+                        if (!terminalClause.Discarded)
+                        {
+                            clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitTerminalTemplate), terminalClause.Name,
                             additional: new Dictionary<string, string>()
                             {
                         {"INDEX",i.ToString()}
                             });
+                        }
                         break;
                     }
                 case NonTerminalClause nonTerminalClause:
@@ -877,12 +882,18 @@ public class ParserBuilderGenerator
             visitors.AppendLine(clauseVisitor);
         }
         var args = "";
+        bool started = false;
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
-            if (i != 0)
+            if (rule.Clauses[i] is TerminalClause tc && tc.Discarded)
             {
-                args += ", ";
+                continue;
             }
+            if (started)
+            {
+                args += ", ";                
+            }
+            started = true;
             args += $"arg{i}";
         }
 
