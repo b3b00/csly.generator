@@ -55,9 +55,13 @@ namespace csly.ebnf.builder
     }
 
     public class ParserModel {
+
+        private readonly string _lexerName;
+        private readonly string _parserName;
+        private readonly string _outputType;
+
         private readonly List<Rule> _rules  = new List<Rule>();
         private readonly List<Operation> _operations  = new List<Operation>();
-
         private readonly List<Operand> _operands  = new List<Operand>();
 
         public List<Rule> Rules => _rules;
@@ -65,6 +69,17 @@ namespace csly.ebnf.builder
         public List<Operation> Operations => _operations;
 
         public List<Operand> Operands => _operands;
+
+        public string LexerName => _lexerName;
+        public string ParserName => _parserName;
+        public string OutputType => _outputType;
+
+        public ParserModel( string parserName , string lexerName , string outputType )
+        {
+            _parserName = parserName;
+            _lexerName = lexerName;
+            _outputType = outputType;
+        }
 
         public void AddRule(Rule rule)
         {
@@ -87,7 +102,9 @@ namespace csly.ebnf.builder
     {
         public List<string> _tokens { get; set; }
 
-        public ParserModel Model { get; set; } = new ParserModel();
+        private readonly ParserModel _model;
+
+        public ParserModel Model => _model;
 
         public ParserOPtions ParserOPtions { get; set; }
 
@@ -96,8 +113,9 @@ namespace csly.ebnf.builder
         private readonly RuleParser _ruleParser;
 
 
-        public StaticParserBuilder(List<string> tokens)
+        public StaticParserBuilder(List<string> tokens, string parserName, string lexerName, string outputType)
         {
+            _model = new ParserModel(parserName, lexerName, outputType);
             _tokens = tokens;
             ParserOPtions = new ParserOPtions();
             _ruleParser = new RuleParser(_tokens);

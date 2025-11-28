@@ -42,11 +42,11 @@ public class ParserBuilderGenerator
         _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns);
     }
 
-
+    #region generate parser
     public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax)
     {
         string name = classDeclarationSyntax.Identifier.ToString();
-        _staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens);
+        _staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens, name, _lexerName, _outputType);
 
         ParserSyntaxWalker walker = new(name, _lexerName, _outputType, _staticParserBuilder);
 
@@ -298,9 +298,7 @@ public class ParserBuilderGenerator
             });
         builder.AppendLine(content).AppendLine();
     }
-
-    #region many
-
+    
     private string GenerateInnerClauseCallForMany(IClause innerClause, int index)
     {
         string call = "";
@@ -365,12 +363,6 @@ public class ParserBuilderGenerator
         builder.AppendLine(content).AppendLine();
     }
 
-    
-
-    #endregion
-
-    #region options
-
     private void GenerateOption(OptionClause optionClause, StringBuilder builder)
     {
         string call = GenerateInnerClauseCallForOption(optionClause.Clause, 0);
@@ -409,11 +401,19 @@ public class ParserBuilderGenerator
         return call;
     }
 
-    #endregion
+    
 
     private void GenerateRule(Rule rule, StringBuilder builder, int index)
     {
         AddRule(rule);
+
+        if (rule.IsExpressionRule)
+        {
+            GenerateOperationRule(rule, builder, index);
+            return;
+        }
+        GeneratorLogger.Log($"\nGenerating rule parser for rule {rule.Name} : {rule.Dump()}");
+
         StringBuilder clausesBuilder = new StringBuilder();
         string children = "";
         for (int i = 0; i < rule.Clauses.Count; i++)
@@ -507,7 +507,33 @@ public class ParserBuilderGenerator
                 { "INDEX", index.ToString() },
                 { "RULESTRING", $"{rule.Head} : {string.Join(" ", Enumerable.Select<IClause, string>(rule.Clauses, x => x.Name))}" },
             });
+        GeneratorLogger.Log($"\nGenerated rule parser:\n{content}");
         builder.AppendLine(content);
+    }
+
+
+    private void GenerateOperationRule(Rule rule, StringBuilder builder, int index)
+    {
+        GeneratorLogger.Log($"\nGenerating expression rule parser for rule {rule.Name} : {rule.Dump()}");
+        if (rule.IsInfixExpressionRule)
+        {
+            var lower = rule.Clauses[0].Name;
+            var operatorClause = rule.Clauses[1].Name;
+
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionInfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+        {
+                { "HEAD", rule.Head },
+                { "INDEX", index.ToString() },
+            {"AFFIX",rule.ExpressionAffix.ToString() },
+            {"PRECEDENCE", rule.Precedence.ToString() },
+            {"ASSOCIATIVITY", rule.Associativity.ToString() },
+            {"LOWER_PRECEDENCE", lower }, // TODO
+            {"OPERATOR",  operatorClause } // TODO
+        });
+            GeneratorLogger.Log($"\nGenerated infix expression parser:\n{parser}");
+            builder.AppendLine(parser);
+        }
+        // TODO prefix and postfix (and operand ?)
     }
 
     private void AddClause(OptionClause optionClause)
@@ -589,6 +615,9 @@ public class ParserBuilderGenerator
         }
     }
 
+    #endregion
+
+    #region generate visitor
 
     public string GenerateStaticVisitor()
     {
@@ -937,6 +966,10 @@ public class ParserBuilderGenerator
         return content;
     }
 
+    #endregion
+
+    #region generate entry point
+
     public string GenerateEntryPoint()
     {
         var root = _staticParserBuilder.ParserOPtions.StartingNonTerminal;
@@ -946,5 +979,8 @@ public class ParserBuilderGenerator
         });
         return content;
     }
+
+    #endregion
+
 
 }

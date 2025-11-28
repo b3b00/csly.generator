@@ -34,7 +34,7 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
 
     public bool IsEmpty => Children == null || !Children.Any();
 
-    public Affix ExpressionAffix { get; set; }
+    public Affix ExpressionAffix { get; set; } = Affix.NotOperator;
 
 
     public bool Discarded => false;
@@ -44,18 +44,15 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
 
     #region expression syntax nodes
 
-    [JsonIgnore]
-    public OperationMetaData<IN, OUT> Operation { get; set; } = null;
+    public bool IsExpressionNode { get; set; } = false;
 
-    public bool IsExpressionNode => Operation != null;
+    public int Precedence { get; set; } = -1;
 
-    public bool IsBinaryOperationNode => IsExpressionNode && Operation.Affix == Affix.InFix;
-    public bool IsUnaryOperationNode => IsExpressionNode && Operation.Affix != Affix.InFix;
-    public int Precedence => IsExpressionNode ? Operation.Precedence : -1;
+    public Associativity Associativity { get; set; } = Associativity.None;
 
-    public Associativity Associativity =>
-        IsExpressionNode && IsBinaryOperationNode ? Operation.Associativity : Associativity.None;
-
+    public bool IsBinaryOperationNode => IsExpressionNode && ExpressionAffix == Affix.InFix;
+    public bool IsUnaryOperationNode => IsExpressionNode && ExpressionAffix != Affix.InFix;
+    
     public bool IsLeftAssociative => Associativity == Associativity.Left;
 
     public ISyntaxNode<IN, OUT> Left
@@ -116,16 +113,9 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
     {
         StringBuilder builder = new StringBuilder();
         string expressionSuffix = "";
-        if (Operation != null && Operation.IsBinary)
+        if (IsExpressionNode)
         {
-            if (Operation.IsExplicitOperatorToken)
-            {
-                expressionSuffix = Operation.ExplicitOperatorToken;
-            }
-            else
-            {
-                expressionSuffix = Operation.OperatorToken.ToString();
-            }
+            
 
             expressionSuffix = $">{expressionSuffix}<";
         }

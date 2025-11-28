@@ -37,11 +37,14 @@ public enum Toky
     public class ExtParser
     {
 
-        [Production("root : a b g")]
-        public string Root(string a, string b, string g)
+        [Production("root : a b g expr")]
+        public string Root(string a, string b, string g, string expr)
         {
-            return a + " - " + b + " - " + g;
+            return a + " - " + b + " - " + g+ " - " + expr;
         }
+
+        [Production("expr : expressions_ExtParser")] 
+        public string Expr(string expr) => expr;
 
         [Production("a : [A | AA ]")]
         public string A(Token<Toky> a)
@@ -92,7 +95,7 @@ public enum Toky
             return $"( {left} / {right} )";
         }
 
-        [Prefix("MINUS", 100)]
+        [Prefix("MINUS",Associativity.Left,100)]
         public string UMinus(Token<Toky> op, string right)
         {
             return $"( - {right} )";

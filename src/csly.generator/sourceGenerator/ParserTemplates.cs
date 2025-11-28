@@ -16,7 +16,7 @@ internal enum ParserTemplates
     TerminalClauseTemplate,
     TerminalParserTemplate,
     ZeroOrMoreParserTemplate,
-    OneOrMoreParserTemplate,            
+    OneOrMoreParserTemplate,
     NonTerminalClauseForManyTemplate,
     OptionParserTemplate,
     TerminalClauseForManyTemplate,
@@ -27,7 +27,10 @@ internal enum ParserTemplates
     ChoiceParserTemplate,
     ChoiceClauseTemplate,
     TerminalClauseInChoiceTemplate,
-    NonTerminalClauseInChoiceTemplate
+    NonTerminalClauseInChoiceTemplate,
+    ExpressionInfixRuleParser,
+    ExpressionPrefixRuleParser,
+    ExpressionPostfixRuleParser
 }
 
 internal enum VisitorTemplates

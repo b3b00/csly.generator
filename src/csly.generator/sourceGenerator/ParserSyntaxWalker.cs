@@ -123,24 +123,27 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             {
                 var args = GetAttributeArgsArray(attribute, skip: 0);                
                 string tokenName = args[0].Trim(new[] { '"' });
-                int precedence = int.Parse(args[1]);
-                var operation = new Operation(methodName, tokenName, Affix.PreFix, Associativity.Right, precedence);
+                string associativityArg = args[1].Trim(new[] { '"' }).Replace("Associativity.", "");
+                Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
+                int precedence = int.Parse(args[2]);
+                var operation = new Operation(methodName, tokenName, Affix.PreFix, associativity, precedence);
                 _staticParserBuilder.Model.AddOperation(operation);
             }
             if (attribute.Name.ToString() == "Postfix")
             {
                 var args = GetAttributeArgsArray(attribute, skip: 0);                
                 string tokenName = args[0].Trim(new[] { '"' });
-                int precedence = int.Parse(args[1]);
-                var operation = new Operation(methodName, tokenName, Affix.PostFix, Associativity.Left, precedence);
+                string associativityArg = args[1].Trim(new[] { '"' }).Replace("Associativity.", "");
+                Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
+                int precedence = int.Parse(args[2]);
+                var operation = new Operation(methodName, tokenName, Affix.PostFix, associativity, precedence);
                 _staticParserBuilder.Model.AddOperation(operation);
             }
             if (attribute.Name.ToString() == "Production")
             {
 
                 var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
-
-                GeneratorLogger.Log($"\nparsing rule >>{ruleString}<<");
+                
                 var rule = _staticParserBuilder.Parse(ruleString, node.Identifier.Text);
                 for (int i = 0; i < rule.Clauses.Count; i++)
                 {
@@ -191,14 +194,12 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                     _staticParserBuilder.Model.AddOperand(new Operand(rule));
                 }
 
-                GeneratorLogger.Log($"\nparsed rule >>{rule.Dump()}<<");
-
             }
-            // STATIC : operations later
+            
             
             if (!string.IsNullOrEmpty(nodeName))
             {
-                // STATIC : maybe later, or not
+            
             }
         }
     }

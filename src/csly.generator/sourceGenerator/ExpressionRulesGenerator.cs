@@ -1,8 +1,10 @@
 ﻿using csly.ebnf.builder;
+using ebnf.grammar;
 using System;
 using System.Collections.Generic;
+
 using System.Linq;
-using System.Text;
+
 
 namespace csly.generator.sourceGenerator
 {
@@ -15,8 +17,154 @@ namespace csly.generator.sourceGenerator
 
         public void Generate(ParserModel model)
         {
-            var operationsByPrecedence = model.Operations.GroupBy(x => x.Precedence).OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.ToList());
+            var operationsByPrecedence = model.Operations.GroupBy(x => x.Precedence).ToDictionary(x => x.Key, x => x.ToList());
+
+            Dictionary<int, string> ruleNameForPrecedence = new Dictionary<int, string>();
+
+            Dictionary<int, string> ruleNameForLowerPrecedence = new Dictionary<int, string>();
+
+
+            var precedences = operationsByPrecedence.Keys.OrderBy(x => x).ToList();
+
+            List<Rule> expressionRules = new List<Rule>();
+
+            for (int i = 0; i < precedences.Count; i++)
+            {
+                int precedence = precedences[i];
+                string ruleName = $"Expr_Prec_{precedence}";
+                string lowerPrecedenceRuleName;
+
+                if (i < precedences.Count - 1)
+                {
+                    lowerPrecedenceRuleName = $"Expr_Prec_{precedences[i + 1]}";
+                }
+                else
+                {
+                    lowerPrecedenceRuleName = "Expr_Operand";
+                }
+                var rule = GenerateRuleForPrecedence(precedence, operationsByPrecedence[precedence], ruleName, lowerPrecedenceRuleName);
+                expressionRules.Add(rule);
+                var rootRule = new Rule($"expressions_{model.ParserName}", new List<IClause>() { new NonTerminalClause($"Expr_Prec_{precedences[0]}") }, "")
+                {
+                    IsByPassRule = true
+                };
+                
+            }
+            model.Rules.AddRange(expressionRules);
         }
 
+        public Rule GenerateRuleForPrecedence(int precedence, List<Operation> operations, string ruleName, string lowerPrecedenceRuleName)
+        {
+            var affix = operations[0].Affix;
+
+            var rule = new Rule()
+            {
+                NonTerminalName = ruleName,
+                IsExpressionRule = true,
+                ExpressionAffix = affix,
+                Precedence = precedence,
+                Associativity = operations[0].Associativity,
+                IsInfixExpressionRule = affix == Affix.InFix                
+            };
+
+            foreach (var operation in operations)
+            {
+                rule.SetVisitorMethodName(operation.TokenName, operation.MethodName);
+            }
+
+
+            
+
+            switch (affix)
+            {
+                case Affix.InFix:
+                    {
+                        var left = new NonTerminalClause(lowerPrecedenceRuleName);
+                        var right = new NonTerminalClause(ruleName);
+                        IClause operatorClause = null;
+                        if (operations.Count == 1)
+                        {
+                            operatorClause = new TerminalClause(operations[0].TokenName);
+                        }
+                        else
+                        {
+                            List<IClause> choices = new List<IClause>();
+                            choices = operations.Select(x => new TerminalClause(x.TokenName)).Cast<IClause>().ToList();
+                            operatorClause = new ChoiceClause(choices);
+                        }
+                        rule.Clauses = new List<IClause>
+                            {
+                                left,
+                                operatorClause,
+                                right
+                            };
+                        break;
+                    }
+                case Affix.PreFix:
+                    {
+                        var operand = new NonTerminalClause(lowerPrecedenceRuleName);
+                        IClause operatorClause = null;
+                        if (operations.Count == 1)
+                        {
+                            operatorClause = new TerminalClause(operations[0].TokenName);
+                        }
+                        else
+                        {
+                            List<IClause> choices = new List<IClause>();
+                            choices = operations.Select(x => new TerminalClause(x.TokenName)).Cast<IClause>().ToList();
+                            operatorClause = new ChoiceClause(choices);
+                        }
+                        rule.Clauses = new List<IClause>
+                            {
+                                operatorClause,
+                                operand
+                            };
+                        break;
+                    }
+                case Affix.PostFix:
+                    {
+                        var operand = new NonTerminalClause(lowerPrecedenceRuleName);
+                        IClause operatorClause = null;
+                        if (operations.Count == 1)
+                        {
+                            operatorClause = new TerminalClause(operations[0].TokenName);
+                        }
+                        else
+                        {
+                            List<IClause> choices = new List<IClause>();
+                            choices = operations.Select(x => new TerminalClause(x.TokenName)).Cast<IClause>().ToList();
+                            operatorClause = new ChoiceClause(choices);
+                        }
+                        rule.Clauses = new List<IClause>
+                            {
+                                operand,
+                                operatorClause
+                            };
+                        break;
+                    }
+            }
+            return rule;
+        }
+
+        public Rule GenerateRuleForOperands(List<Operand> operands)
+        {
+            if (operands.Count == 0)
+            {
+                return operands[0].Rule;
+            }
+
+            Rule rule = new Rule()
+            {
+                NonTerminalName = "Expr_Operand",
+                IsExpressionRule = true,
+            };
+            rule.Clauses.Add(
+                new ChoiceClause(
+                    operands.Select(x => (IClause)new NonTerminalClause(x.Rule.NonTerminalName)).ToList()
+                )
+            );
+
+            return null;
+        }
     }
 }

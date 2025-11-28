@@ -11,7 +11,7 @@ public interface ISyntaxNode<IN, OUT> where IN : struct, Enum
     string Name { get; }
     
     bool HasByPassNodes { get; set; }
-    
+
     string Dump(string tab);
 
     string ToJson(int index = 0);
