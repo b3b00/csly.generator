@@ -6,36 +6,35 @@ namespace extending
     public class ExtParser
     {
 
-        [Production("root : option a bs c")]
-        public string Root(string option, string a, string bs, string c)
+        [Production("root : a b g")]
+        public string Root(string a, string b, string g)
         {
-            return option + " " + a + " " + bs + " " + c;
+            return a + " - " + b + " - " + g;
         }
 
-        [Production("a : A")]
+        [Production("a : [A | AA ]")]
         public string A(Token<Toky> a)
         {
-            return "ah ah";
+            return a.TokenID == Toky.A ? "ah ah" : "aah aah";
         }
 
-        [Production("bs : B* D")]
-        public string Bs(List<Token<Toky>> bs, Token<Toky> d)
-        {
-            string bees = bs.Count > 0 ? $"{bs.Count} 🐝" : "no 🐝";
-            return $"{bees}, lady di";
-        }
+        [Production("b : [b1 | b2]")]
+        public string B(string b) => b;
 
-        [Production("c : C")]
-        public string C(Token<Toky> c)
-        {
-            return "si!";
-        }
+        [Production("b1 : B")]
+        public string B1(Token<Toky> b) => "🐝";
 
-        [Production("option : X? Y Z")]
-        public string Option(Token<Toky> x, Token<Toky> y, Token<Toky> z)
+        [Production("b2 : D")]
+        public string B2(Token<Toky> d) => "🦆";
+
+        [Production("g : GT ( a X )+ LT GT ( X a )? LT ")]
+        public string G(Token<Toky> gt, List<Group<Toky, string>> gs, Token<Toky> lt, Token<Toky> gt2, ValueOption<Group<Toky, string>> optionGroup, Token<Toky> lt2)
         {
-            string ex = x.IsEmpty ? "" : "ex ";
-            return $"{ex}why zee";
+
+            var groups = string.Join(" , ", gs.Select(g => "(" + g.Value(0) + " , " + g.Token(1).Value + ")"));
+            string opt = "";
+            var og = optionGroup.Match((x) => x.Token(0).Value + " , " + x.Value(1), () => "🫗");            
+            return $"brackets( {groups} ) - ?{{ {og} }}";
         }
     }
 }
