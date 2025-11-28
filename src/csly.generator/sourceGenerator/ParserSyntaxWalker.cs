@@ -88,65 +88,68 @@ public class ParserSyntaxWalker : CslySyntaxWalker
 
         foreach (var attribute in attributes)
         {
+            if (attribute.Name.ToString() == "Operation")
+            {
+             // TODO : build Operation and add to Model             
+            }
             if (attribute.Name.ToString() == "Production")
             {
-                if (IsOperand(node))
+
+                var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
+
+                GeneratorLogger.Log($"\nparsing rule >>{ruleString}<<");
+                var rule = _staticParserBuilder.Parse(ruleString, node.Identifier.Text);
+                for (int i = 0; i < rule.Clauses.Count; i++)
                 {
-                    var rule = GetAttributeArgs(attribute, withLeadingComma: false);                    
-                }
-                else
-                {
-                    var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
-                    
-                    GeneratorLogger.Log($"\nparsing rule >>{ruleString}<<");
-                    var rule = _staticParserBuilder.Parse(ruleString,node.Identifier.Text);      
-                    for(int i = 0; i< rule.Clauses.Count; i++)
+                    var clause = rule.Clauses[i];
+                    if (clause is GroupClause group)
                     {
-                        var clause = rule.Clauses[i];
-                        if (clause is GroupClause group)
+                        Rule subRule = new Rule()
+                        {
+                            Clauses = group.Clauses,
+                            IsSubRule = true,
+                            NonTerminalName = group.Name
+                        };
+                        _staticParserBuilder.Model.AddRule(subRule);
+                        rule.Clauses[i] = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };
+                    }
+                    if (clause is ManyClause many)
+                    {
+                        if (many.manyClause is GroupClause mg)
                         {
                             Rule subRule = new Rule()
                             {
-                                Clauses = group.Clauses,
+                                Clauses = mg.Clauses,
                                 IsSubRule = true,
-                                NonTerminalName = group.Name
+                                NonTerminalName = mg.Name
                             };
-                            _staticParserBuilder.Model.Add(subRule);
-                            rule.Clauses[i] = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };
-                        }
-                        if (clause is ManyClause many)
-                        {
-                            if (many.manyClause is GroupClause mg)
-                            {
-                                Rule subRule = new Rule()
-                                {
-                                    Clauses = mg.Clauses,
-                                    IsSubRule = true,
-                                    NonTerminalName = mg.Name
-                                };
-                                _staticParserBuilder.Model.Add(subRule);
-                                many.manyClause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };                                
-                            }
-                        }
-                        if (clause is OptionClause option)
-                        {
-                            if (option.Clause is GroupClause og)
-                            {
-                                Rule subRule = new Rule()
-                                {
-                                    Clauses = og.Clauses,
-                                    IsSubRule = true,
-                                    NonTerminalName = og.Name
-                                };
-                                _staticParserBuilder.Model.Add(subRule);
-                                option.Clause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };                                
-                            }
+                            _staticParserBuilder.Model.AddRule(subRule);
+                            many.manyClause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };
                         }
                     }
-                    _staticParserBuilder.Model.Add(rule);
-                    
-                    GeneratorLogger.Log($"\nparsed rule >>{rule.Dump()}<<");
+                    if (clause is OptionClause option)
+                    {
+                        if (option.Clause is GroupClause og)
+                        {
+                            Rule subRule = new Rule()
+                            {
+                                Clauses = og.Clauses,
+                                IsSubRule = true,
+                                NonTerminalName = og.Name
+                            };
+                            _staticParserBuilder.Model.AddRule(subRule);
+                            option.Clause = new NonTerminalClause(subRule.NonTerminalName) { IsGroup = true };
+                        }
+                    }
                 }
+                _staticParserBuilder.Model.AddRule(rule);
+                if (IsOperand(node))
+                {
+                    _staticParserBuilder.Model.AddOperand(new Operand(rule));
+                }
+
+                GeneratorLogger.Log($"\nparsed rule >>{rule.Dump()}<<");
+
             }
             // STATIC : operations later
             

@@ -51,11 +51,11 @@ public class ParserBuilderGenerator
         ParserSyntaxWalker walker = new(name, _lexerName, _outputType, _staticParserBuilder);
 
         walker.Visit(classDeclarationSyntax);
-        _rules = _staticParserBuilder.Model;
+        _rules = _staticParserBuilder.Model.Rules;
 
 
         GeneratorLogger.Log($"\nfound {_rules.Count} rules");
-        var staticParser = GenerateStaticParser(_staticParserBuilder.Model, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
+        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();

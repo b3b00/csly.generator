@@ -37,5 +37,26 @@ namespace extending
             var og = optionGroup.Match((x) =>   x.Value(0), () => "🫗");            
             return $"brackets( {groups} ) - ?{{ {og} }}";
         }
+
+        [Operation("PLUS",Affix.InFix,Associativity.Left,10)]
+        public string Plus(string left, Token<Toky> op, string right)
+        {
+            return $"( {left} + {right} )";
+        }
+
+        [Operation("MINUS", Affix.InFix, Associativity.Left, 10)]
+        public string Minus(string left, Token<Toky> op, string right)
+        {
+            return $"( {left} + {right} )";
+        }
+
+        [Operand]
+        [Production("int : INT")]
+        public string intOperand(Token<Toky> intToken)
+        {
+            return intToken.Value;
+        }
+
+
     }
 }

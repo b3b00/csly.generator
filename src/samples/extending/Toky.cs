@@ -14,6 +14,7 @@ public enum Toky
     [Keyword("Y")] Y,
     [Keyword("Z")] Z,
     [Sugar("+")] PLUS,
+    [Sugar("-")] MINUS,
     [Sugar("++")] INC,
     [Sugar("=")] ASSIGN,
     [Sugar("==")] EQUALS,

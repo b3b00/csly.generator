@@ -18,11 +18,76 @@ namespace csly.ebnf.builder
         public bool BroadenTokenWindow { get; set; }
     }
 
+    public class Operand
+    {
+        string MethodName => _rule.MethodName;
+
+        private readonly Rule _rule;
+
+        public Rule Rule => _rule;
+
+        public Operand(Rule rule)
+        {
+            _rule = rule;            
+        }
+    }
+
+    public class Operation
+    {
+        public string MethodName { get; set; }
+
+        public Affix Affix { get; set; }
+
+        public Associativity Associativity { get; set; }
+
+        public string TokenName { get; set; }
+
+        public int Precedence { get; set; }
+
+        public Operation(string methodName, Affix affix, Associativity associativity, string tokenName, int precedence)
+        {
+            MethodName = methodName;
+            Affix = affix;
+            Associativity = associativity;
+            TokenName = tokenName;
+            Precedence = precedence;
+        }
+    }
+
+    public class ParserModel {
+        private readonly List<Rule> _rules  = new List<Rule>();
+        private readonly List<Operation> _operations  = new List<Operation>();
+
+        private readonly List<Operand> _operands  = new List<Operand>();
+
+        public List<Rule> Rules => _rules;
+
+        public List<Operation> Operations => _operations;
+
+        public List<Operand> Operands => _operands;
+
+        public void AddRule(Rule rule)
+        {
+            _rules.Add(rule);
+        }
+
+        public void AddOperation(Operation operation)
+        {
+            _operations.Add(operation);
+        }
+
+        public void AddOperand(Operand operand)
+        {
+            _operands.Add(operand);
+        }
+
+    }
+
     public class StaticParserBuilder
     {
         public List<string> _tokens { get; set; }
 
-        public List<Rule> Model { get; set; } = new List<Rule>();
+        public ParserModel Model { get; set; } = new ParserModel();
 
         public ParserOPtions ParserOPtions { get; set; }
 
@@ -71,7 +136,7 @@ namespace csly.ebnf.builder
             {
                 ComputeLeadersForNonTerminal(sp, nonTerminalLeaders);
             }
-            Model.Where(x => !startingPoints.Contains(x.Head)) .ToList().ForEach(r => ComputeLeadersForNonTerminal(r.Head, nonTerminalLeaders));
+            Model.Rules.Where(x => !startingPoints.Contains(x.Head)) .ToList().ForEach(r => ComputeLeadersForNonTerminal(r.Head, nonTerminalLeaders));
 
 
         }
@@ -83,7 +148,7 @@ namespace csly.ebnf.builder
             {
                 return;
             }
-            var rules = Model.Where(r => r.Head == nonTerminal).ToList();
+            var rules = Model.Rules.Where(r => r.Head == nonTerminal).ToList();
 
 
 
@@ -257,11 +322,11 @@ namespace csly.ebnf.builder
 
         private List<string> FindStartingPoints()
         {
-            var nonTerminals = Model.Select(r => r.Head).Distinct().ToList();
+            var nonTerminals = Model.Rules.Select(r => r.Head).Distinct().ToList();
             // nt from NonTerminals such that
             // ! exist rule from Model such that rule.Clauses contains nt
             return nonTerminals.Where(nt =>
-                !Model.Any(rule => rule.Clauses.OfType<NonTerminalClause>().Any(c => c.Name == nt)))
+                !Model.Rules.Any(rule => rule.Clauses.OfType<NonTerminalClause>().Any(c => c.Name == nt)))
                 .ToList();
         }
     }
