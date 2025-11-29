@@ -49,12 +49,13 @@ namespace expr;
         {
             return $"( {left} / {right} )";
         }
-
+        /*
         [Prefix("MINUS",Associativity.Left,100)]
         public string UMinus(Token<ExprToken> op, string right)
         {
             return $"( - {right} )";
         }
+        */
 
         [Operand]
         [Production("intOperand : INT")]

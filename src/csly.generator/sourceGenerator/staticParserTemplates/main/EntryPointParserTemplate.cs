@@ -31,11 +31,13 @@ var parser = new Static<#PARSER#>();
             var result = parser.ParseNonTerminal_<#ROOT#>(lexerResult.Tokens, 0);
             if (result.IsOk)
             {
-
+                Console.WriteLine("Parsing succeeded.");
+                Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
+                return null;
                 // visiting
-                var visitor = new <#PARSER#>Visitor(_instance);
-                var output = visitor.Visit<#ROOT#>(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
-                return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);
+                //var visitor = new <#PARSER#>Visitor(_instance);
+                //var output = visitor.Visit<#ROOT#>(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+                //return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);
             }
             else
             {

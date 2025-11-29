@@ -525,9 +525,10 @@ public class ParserBuilderGenerator
                 AddClause(operatorChoice);
             }
 
-            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPrefixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionInfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
         {
                 { "HEAD", rule.Head },
+                { "RULESTRING", rule.Dump() },
                 { "INDEX", index.ToString() },
                 {"AFFIX",rule.ExpressionAffix.ToString() },
                 {"PRECEDENCE", rule.Precedence.ToString() },
@@ -542,9 +543,10 @@ public class ParserBuilderGenerator
         {
             var lower = rule.Clauses[1].Name;
             var operatorClause = rule.Clauses[0].Name;
-            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPostfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPrefixRuleParser), rule.Name, additional: new Dictionary<string, string>()
             {
                 { "HEAD", rule.Head },
+                { "RULESTRING", rule.Dump() },
                 { "INDEX", index.ToString() },
                 {"AFFIX",rule.ExpressionAffix.ToString() },
                 {"PRECEDENCE", rule.Precedence.ToString() },
@@ -560,7 +562,7 @@ public class ParserBuilderGenerator
         {
             var lower = rule.Clauses[0].Name;
             var operatorClause = rule.Clauses[1].Name;
-            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionInfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPostfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
             {
                 { "HEAD", rule.Head },
                 { "INDEX", index.ToString() },

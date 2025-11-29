@@ -42,9 +42,17 @@ namespace csly.generator.sourceGenerator
                 {
                     lowerPrecedenceRuleName = "Expr_Operand";
                 }
-                var rule = GenerateRuleForPrecedence(precedence, operationsByPrecedence[precedence], ruleName, lowerPrecedenceRuleName);
+                var rule = GenerateRuleForPrecedence(precedence, operationsByPrecedence[precedence], ruleName, lowerPrecedenceRuleName, i == precedences.Count - 1);
                 expressionRules.Add(rule);
             }
+           
+                var operandRule = GenerateRuleForOperands(model.Operands);
+                if (operandRule != null)
+                {
+                    expressionRules.Add(operandRule);
+                }
+            
+
             var rootRule = new Rule($"{model.ParserName}_expressions", new List<IClause>() { new NonTerminalClause($"Expr_Prec_{precedences[0]}") }, "")
             {
                 IsByPassRule = true
@@ -53,7 +61,7 @@ namespace csly.generator.sourceGenerator
             model.Rules.AddRange(expressionRules);
         }
 
-        public Rule GenerateRuleForPrecedence(int precedence, List<Operation> operations, string ruleName, string lowerPrecedenceRuleName)
+        public Rule GenerateRuleForPrecedence(int precedence, List<Operation> operations, string ruleName, string lowerPrecedenceRuleName, bool isLowest)
         {
             var affix = operations[0].Affix;
 
@@ -148,15 +156,22 @@ namespace csly.generator.sourceGenerator
 
         public Rule GenerateRuleForOperands(List<Operand> operands)
         {
-            if (operands.Count == 0)
+            if (operands.Count == 1)
             {
-                return operands[0].Rule;
+                Rule singleOperandRule = new Rule()
+                {
+                    NonTerminalName = "Expr_Operand",
+                    IsExpressionRule = false, // do not mark as expression rule
+                };
+                singleOperandRule.Clauses.Add(new NonTerminalClause(operands[0].Rule.NonTerminalName));
+
+                return singleOperandRule;
             }
 
             Rule rule = new Rule()
             {
                 NonTerminalName = "Expr_Operand",
-                IsExpressionRule = true,
+                IsExpressionRule = false, // do not mark as expression rule
             };
             rule.Clauses.Add(
                 new ChoiceClause(
