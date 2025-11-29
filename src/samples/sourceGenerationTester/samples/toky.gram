@@ -37,14 +37,13 @@ public enum Toky
     public class ExtParser
     {
 
-        [Production("root : a b g expr")]
-        public string Root(string a, string b, string g, string expr)
+        [Production("root : a b g")]
+        public string Root(string a, string b, string g)
         {
-            return a + " - " + b + " - " + g+ " - " + expr;
+            return a + " - " + b + " - " + g;
         }
 
-        [Production("expr : expressions_ExtParser")] 
-        public string Expr(string expr) => expr;
+        
 
         [Production("a : [A | AA ]")]
         public string A(Token<Toky> a)
@@ -71,42 +70,7 @@ public enum Toky
             return $"brackets( {groups} ) - ?{{ {og} }}";
         }
 
-        [Operation("PLUS",Affix.InFix,Associativity.Left,10)]
-        public string Plus(string left, Token<Toky> op, string right)
-        {
-            return $"( {left} + {right} )";
-        }
-
-        [Operation("MINUS", Affix.InFix, Associativity.Left, 10)]
-        public string Minus(string left, Token<Toky> op, string right)
-        {
-            return $"( {left} + {right} )";
-        }
-
-        [Right("TIMES",50)]
-        public string Times(string left, Token<Toky> op, string right)
-        {
-            return $"( {left} * {right} )";
-        }
-
-        [Right("DIV",50)]
-        public string Divide(string left, Token<Toky> op, string right)
-        {
-            return $"( {left} / {right} )";
-        }
-
-        [Prefix("MINUS",Associativity.Left,100)]
-        public string UMinus(Token<Toky> op, string right)
-        {
-            return $"( - {right} )";
-        }
-
-        [Operand]
-        [Production("intOperand : INT")]
-        public string intOperand(Token<Toky> intToken)
-        {
-            return intToken.Value;
-        }
+        
     }
 
 [ParserGenerator]

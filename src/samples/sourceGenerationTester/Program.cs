@@ -25,7 +25,7 @@ public partial class Program
     {
 
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-        var parser = fs.ReadAllText("/samples/toky.gram");
+        var parser = fs.ReadAllText("/samples/expr.gram");
 
         var result = GenerateSource(parser, "SimpleParser");
 
@@ -35,7 +35,7 @@ public partial class Program
         string path = "c:/tmp/generation/";
         Directory.CreateDirectory(path);
 
-        File.WriteAllText(Path.Combine(path, "Toky.cs"), parser);
+        File.WriteAllText(Path.Combine(path, "Expr.cs"), parser);
 
         foreach (var file in contents)
         {

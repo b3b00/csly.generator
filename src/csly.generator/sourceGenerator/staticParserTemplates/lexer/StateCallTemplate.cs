@@ -9,7 +9,7 @@
         {
             
             // TODO : call action if any
-            Func<FsmMatch<Toky>, Token<Toky>> factory;
+            Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
 
             if (!_tokenFactories.TryGetValue(match<#STATE#>.Token, out factory))
             {

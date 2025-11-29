@@ -21,7 +21,7 @@ public class ParserBuilderGenerator
 
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
-    private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();    
+    private Dictionary<string, ZeroOrMoreClause> _zeroOrMoreParsers = new();
     private Dictionary<string, OneOrMoreClause> _oneOrMoreParsers = new();
     private Dictionary<string, OptionClause> _optionParsers = new();
     private Dictionary<string, ChoiceClause> _choiceParsers = new();
@@ -55,7 +55,7 @@ public class ParserBuilderGenerator
 
         ExpressionRulesGenerator expressionRulesGenerator = new();
         expressionRulesGenerator.Generate(_staticParserBuilder.Model);
-
+        _staticParserBuilder.ComputeLeaders();
 
         GeneratorLogger.Log($"\nfound {_rules.Count} rules");
         var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
@@ -78,7 +78,7 @@ public class ParserBuilderGenerator
         {
             var rules = _rules.Where(x => x.Head == nt.Name).ToList();
             nt.SetMayBeEmpty(rules.Exists(x => x.MayBeEmpty));
-        }        
+        }
     }
 
 
@@ -271,7 +271,7 @@ public class ParserBuilderGenerator
             }
         }
 
-        var expected = string.Join(",",choiceClause.Choices.Select(c =>
+        var expected = string.Join(",", choiceClause.Choices.Select(c =>
         {
             if (c is TerminalClause tc)
             {
@@ -298,7 +298,7 @@ public class ParserBuilderGenerator
             });
         builder.AppendLine(content).AppendLine();
     }
-    
+
     private string GenerateInnerClauseCallForMany(IClause innerClause, int index)
     {
         string call = "";
@@ -314,13 +314,13 @@ public class ParserBuilderGenerator
             case NonTerminalClause nonTerminalClause:
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseForManyTemplate), innerClause.Name,
-                        additional: new Dictionary<string, string>() { 
+                        additional: new Dictionary<string, string>() {
                             { "INDEX", index.ToString() },
                             {"IS_GROUP", nonTerminalClause.IsGroup.ToString().ToLower() }
                         });
                     AddClause(nonTerminalClause);
                     break;
-                }                
+                }
             default:
                 {
                     throw new NotImplementedException("many clause not implemented for " + innerClause.GetType().Name);
@@ -401,7 +401,7 @@ public class ParserBuilderGenerator
         return call;
     }
 
-    
+
 
     private void GenerateRule(Rule rule, StringBuilder builder, int index)
     {       
@@ -454,7 +454,7 @@ public class ParserBuilderGenerator
                     case ManyClause manyClause:
                         {
                             call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ManyClauseTemplate), manyClause.Name,
-                            additional: new Dictionary<string, string>() { 
+                            additional: new Dictionary<string, string>() {
                                 { "INDEX", i.ToString() },
                                 {"NOT_EMPTY",(!manyClause.MayBeEmpty()).ToString().ToLower()}
                             });
@@ -481,8 +481,8 @@ public class ParserBuilderGenerator
                             AddClause(choiceClause);
                             break;
                         }
-                        case GroupClause groupClause:
-                        {                            
+                    case GroupClause groupClause:
+                        {
                             AddClause(groupClause);
                             break;
                         }
@@ -513,7 +513,7 @@ public class ParserBuilderGenerator
 
 
     private void GenerateOperationRule(Rule rule, StringBuilder builder, int index)
-    {       
+    {
         GeneratorLogger.Log($"\nGenerating expression rule parser for rule {rule.Name} : {rule.Dump()}");
         if (rule.IsInfixExpressionRule)
         {
@@ -569,9 +569,13 @@ public class ParserBuilderGenerator
             {"ASSOCIATIVITY", rule.Associativity.ToString() },
             {"LOWER_PRECEDENCE", lower }, // TODO
             {"OPERATOR",  operatorClause }
-            }); 
-            GeneratorLogger.Log($"\nGenerated postfix expression parser:\n{parser}");   
+            });
+            GeneratorLogger.Log($"\nGenerated postfix expression parser:\n{parser}");
             builder.AppendLine(parser);
+        }
+        else
+        {
+            GeneratorLogger.Log($"\nExpression affix {rule.ExpressionAffix} not handled yet. This must be the expression root rule");
         }
     }
 
@@ -762,7 +766,7 @@ public class ParserBuilderGenerator
                 });
         }
         if (zeroOrMore.manyClause is NonTerminalClause nonTerminalClause)
-        {            
+        {
             outputType = nonTerminalClause.IsGroup ? $"Group<{_lexerName},{_outputType}>" : _outputType;
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
@@ -829,8 +833,9 @@ public class ParserBuilderGenerator
                 });
             emptyValue = $"new Token<{_lexerName}>() {{ IsEmpty = true }};";
         }
-        if (optionClause.Clause is NonTerminalClause nonTerminalClause) { 
-        
+        if (optionClause.Clause is NonTerminalClause nonTerminalClause)
+        {
+
             outputType = $"ValueOption<Group<{_lexerName},{_outputType}>>";
             clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitNonTerminalTemplate), nonTerminalClause.Name,
                 additional: new Dictionary<string, string>()
@@ -839,7 +844,7 @@ public class ParserBuilderGenerator
                 });
             emptyValue = $"new {outputType}()";
         }
-        
+
 
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.OptionVisitorTemplate), optionClause.Name,
             additional: new Dictionary<string, string>() {
@@ -860,10 +865,10 @@ public class ParserBuilderGenerator
         }
         else
         {
-            var choices = string.Join("\n",choiceClause.Choices.Select((c, i) =>
+            var choices = string.Join("\n", choiceClause.Choices.Select((c, i) =>
             {
                 var caseTemplate = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalChoiceVisitorCall),
-                    c.Name);                    
+                    c.Name);
                 return caseTemplate;
             }));
             var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.NonTerminalChoiceVisitorTemplate), choiceClause.Name, additional:
@@ -876,17 +881,17 @@ public class ParserBuilderGenerator
     }
 
     private string GenerateRuleVisitor(Rule rule, int index)
-    {
+    {        
         StringBuilder visitors = new StringBuilder();
 
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
             var clause = rule.Clauses[i];
             var clauseVisitor = "";
-            
+
             switch (clause)
             {
-                case TerminalClause terminalClause :
+                case TerminalClause terminalClause:
                     {
                         if (!terminalClause.Discarded)
                         {
@@ -934,7 +939,7 @@ public class ParserBuilderGenerator
                             });
                         break;
                     }
-                    case ChoiceClause choiceClause:
+                case ChoiceClause choiceClause:
                     {
                         clauseVisitor = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitChoiceTemplate), choiceClause.Name,
                             additional: new Dictionary<string, string>()
@@ -947,7 +952,7 @@ public class ParserBuilderGenerator
                     }
                 default:
                     {
-                                               throw new NotImplementedException("clause visitor not implemented for " + clause.GetType().Name);
+                        throw new NotImplementedException("clause visitor not implemented for " + clause.GetType().Name);
                     }
             }
             visitors.AppendLine(clauseVisitor);
@@ -962,7 +967,7 @@ public class ParserBuilderGenerator
             }
             if (started)
             {
-                args += ", ";                
+                args += ", ";
             }
             started = true;
             args += $"arg{i}";

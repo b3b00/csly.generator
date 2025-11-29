@@ -44,12 +44,12 @@ namespace csly.generator.sourceGenerator
                 }
                 var rule = GenerateRuleForPrecedence(precedence, operationsByPrecedence[precedence], ruleName, lowerPrecedenceRuleName);
                 expressionRules.Add(rule);
-                var rootRule = new Rule($"expressions_{model.ParserName}", new List<IClause>() { new NonTerminalClause($"Expr_Prec_{precedences[0]}") }, "")
-                {
-                    IsByPassRule = true
-                };
-                
             }
+            var rootRule = new Rule($"{model.ParserName}_expressions", new List<IClause>() { new NonTerminalClause($"Expr_Prec_{precedences[0]}") }, "")
+            {
+                IsByPassRule = true
+            };
+            expressionRules.Add(rootRule);
             model.Rules.AddRange(expressionRules);
         }
 
