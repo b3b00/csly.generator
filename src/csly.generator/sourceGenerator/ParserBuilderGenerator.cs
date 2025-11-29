@@ -404,7 +404,7 @@ public class ParserBuilderGenerator
     
 
     private void GenerateRule(Rule rule, StringBuilder builder, int index)
-    {
+    {       
         AddRule(rule);
 
         if (rule.IsExpressionRule)
@@ -513,27 +513,66 @@ public class ParserBuilderGenerator
 
 
     private void GenerateOperationRule(Rule rule, StringBuilder builder, int index)
-    {
+    {       
         GeneratorLogger.Log($"\nGenerating expression rule parser for rule {rule.Name} : {rule.Dump()}");
         if (rule.IsInfixExpressionRule)
         {
             var lower = rule.Clauses[0].Name;
             var operatorClause = rule.Clauses[1].Name;
 
-            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionInfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            if (rule.Clauses[1] is ChoiceClause operatorChoice)
+            {
+                AddClause(operatorChoice);
+            }
+
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPrefixRuleParser), rule.Name, additional: new Dictionary<string, string>()
         {
                 { "HEAD", rule.Head },
                 { "INDEX", index.ToString() },
-            {"AFFIX",rule.ExpressionAffix.ToString() },
-            {"PRECEDENCE", rule.Precedence.ToString() },
-            {"ASSOCIATIVITY", rule.Associativity.ToString() },
-            {"LOWER_PRECEDENCE", lower }, // TODO
-            {"OPERATOR",  operatorClause } // TODO
+                {"AFFIX",rule.ExpressionAffix.ToString() },
+                {"PRECEDENCE", rule.Precedence.ToString() },
+                {"ASSOCIATIVITY", rule.Associativity.ToString() },
+                {"LOWER_PRECEDENCE", lower }, // TODO
+                {"OPERATOR",  operatorClause } // TODO
         });
             GeneratorLogger.Log($"\nGenerated infix expression parser:\n{parser}");
             builder.AppendLine(parser);
         }
-        // TODO prefix and postfix (and operand ?)
+        else if (rule.ExpressionAffix == Affix.PreFix)
+        {
+            var lower = rule.Clauses[1].Name;
+            var operatorClause = rule.Clauses[0].Name;
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPostfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            {
+                { "HEAD", rule.Head },
+                { "INDEX", index.ToString() },
+                {"AFFIX",rule.ExpressionAffix.ToString() },
+                {"PRECEDENCE", rule.Precedence.ToString() },
+                {"ASSOCIATIVITY", rule.Associativity.ToString() },
+                {"LOWER_PRECEDENCE", lower }, // TODO
+                {"OPERATOR",  operatorClause }
+            });
+            GeneratorLogger.Log($"\nGenerated prefix expression parser:\n{parser}");
+            builder.AppendLine(parser);
+
+        }
+        else if (rule.ExpressionAffix == Affix.PostFix)
+        {
+            var lower = rule.Clauses[0].Name;
+            var operatorClause = rule.Clauses[1].Name;
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionInfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            {
+                { "HEAD", rule.Head },
+                { "INDEX", index.ToString() },
+                {"AFFIX",rule.ExpressionAffix.ToString() },
+            {"PRECEDENCE", rule.Precedence.ToString() },
+            {"ASSOCIATIVITY", rule.Associativity.ToString() },
+            {"LOWER_PRECEDENCE", lower }, // TODO
+            {"OPERATOR",  operatorClause }
+            }); 
+            GeneratorLogger.Log($"\nGenerated postfix expression parser:\n{parser}");   
+            builder.AppendLine(parser);
+        }
     }
 
     private void AddClause(OptionClause optionClause)
