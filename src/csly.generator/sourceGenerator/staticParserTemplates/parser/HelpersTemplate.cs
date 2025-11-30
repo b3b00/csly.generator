@@ -6,7 +6,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminal(List<Token<<#LEXER
     {
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
         var token = tokens[position];
-    result.IsError = expected != tokens[position].TokenID;
+    result.IsError = token.IsEOS || expected != token.TokenID;
     result.EndingPosition = !result.IsError ? position + 1 : position;
 
     if (result.IsError)
