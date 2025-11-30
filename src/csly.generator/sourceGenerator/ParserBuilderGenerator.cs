@@ -1,12 +1,13 @@
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using csly.ebnf.builder;
 using ebnf.grammar;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace csly.generator.sourceGenerator;
 
@@ -884,8 +885,15 @@ public class ParserBuilderGenerator
 
     private string GenerateRuleVisitor(Rule rule, int index)
     {        
-        StringBuilder visitors = new StringBuilder();
+        if (rule.IsExpressionRule && rule.IsInfixExpressionRule)
+        {
+            return GenerateInfixExpressionVisitor(rule, index);
+        }
 
+        GeneratorLogger.Log($"\nGenerating rule visitor for rule {rule.Name} : {rule.Dump()}");
+
+        StringBuilder visitors = new StringBuilder();
+        
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
             var clause = rule.Clauses[i];
@@ -958,6 +966,10 @@ public class ParserBuilderGenerator
                     }
             }
             visitors.AppendLine(clauseVisitor);
+            if (rule.IsByPassRule)
+            {
+                break;
+            }
         }
         var args = "";
         bool started = false;
@@ -996,8 +1008,19 @@ public class ParserBuilderGenerator
         }
         else
         {
+            if (string.IsNullOrEmpty(rule.MethodName))
+            {
+                Console.WriteLine($"Warning: rule {rule.Name} has no associated method name for visitor generation. maube bypass node ? {rule.IsByPassRule}");
+            }
             returnType = _outputType;
-            returnValue = $"return _instance.{rule.MethodName}({args});";
+            if (rule.IsByPassRule)
+            {
+                returnValue = $"return arg0;";
+            }
+            else
+            {
+                returnValue = $"return _instance.{rule.MethodName}({args});";
+            }
         }
 
         var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.RuleVisitorTemplate), rule.Name,
@@ -1008,10 +1031,69 @@ public class ParserBuilderGenerator
                 {"RETURN", returnValue },
                 {"RETURN_TYPE", returnType }
             });
-
+        GeneratorLogger.Log($"\nGenerated rule visitor for rule {rule.Name} : \n{rule.Dump()}");
+        GeneratorLogger.Log($"\n{content}");
+        GeneratorLogger.Log("==============================");
         return content;
     }
 
+
+    private string GenerateInfixExpressionVisitor(Rule rule, int index)
+    {
+        GeneratorLogger.Log($"\nGenerating infix expression visitor for rule {rule.Name} : {rule.Dump()}");
+
+        var operatorClause = rule.Clauses[1];
+        StringBuilder returnBuilder = new StringBuilder();
+
+        if (operatorClause is ChoiceClause operatorChoice)
+        {
+            returnBuilder.AppendLine("switch(arg1.TokenID) {");
+            foreach (var choice in operatorChoice.Choices)
+            {
+                if (choice is TerminalClause terminalChoice)
+                {
+                    if (rule.TokenToVisitorMethodName.TryGetValue(terminalChoice.Name, out var methodName))
+                    {
+                        returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
+{{
+    return _instance.{methodName}(arg0, arg1, arg2);    
+    break;
+}}");
+                    }
+                }
+            }
+            returnBuilder.AppendLine(@$"
+default: {{
+throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented for precedence {rule.Precedence}"");
+        }}
+}}");
+        }
+        else if (rule.Clauses[1] is TerminalClause terminalClause)
+        {
+            if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
+            {
+                returnBuilder.AppendLine(@$" case <#LEXER#>.{terminalClause.Name} :
+{{
+    return _instance.{methodName}(arg0, arg1, arg2);    
+    break;
+}}");
+            }
+        }
+
+            var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.InfixExpressionVisitorTemplate), rule.Name,
+                additional: new Dictionary<string, string>()
+                {
+                {"LEFT_NAME", rule.Clauses[0].Name },
+                {"RIGHT_NAME", rule.Clauses[2].Name },
+                {"INDEX",index.ToString() },
+                {"METHOD_NAME", rule.MethodName }, // TODO there may are multiple methods for the same rule
+                {"LOWER_PRECEDENCE_VISITOR", rule.Clauses[0].Name },
+                {"RETURN_TYPE", _outputType },
+                    {"RETURN", returnBuilder.ToString() },
+                });
+        GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
+        return content;
+    }
     #endregion
 
     #region generate entry point

@@ -21,9 +21,9 @@ namespace expr;
     public class ExprParser
     {
     [Production("root : ExprParser_expressions")]
-        public string Root(string left, Token<ExprToken> op, string right)
+        public string Root(string value)
         {
-            return right;
+            return value;
         }
 
     [Operation("PLUS",Affix.InFix,Associativity.Left,10)]

@@ -72,7 +72,8 @@ namespace csly.generator.sourceGenerator
                 ExpressionAffix = affix,
                 Precedence = precedence,
                 Associativity = operations[0].Associativity,
-                IsInfixExpressionRule = affix == Affix.InFix                
+                IsInfixExpressionRule = affix == Affix.InFix,
+                IsByPassRule = true
             };
 
             foreach (var operation in operations)
@@ -106,6 +107,7 @@ namespace csly.generator.sourceGenerator
                                 operatorClause,
                                 right
                             };
+                        rule.OperatorVisitors = operations.ToDictionary(x => x.TokenName, x => x.MethodName);
                         break;
                     }
                 case Affix.PreFix:
@@ -162,6 +164,7 @@ namespace csly.generator.sourceGenerator
                 {
                     NonTerminalName = "Expr_Operand",
                     IsExpressionRule = false, // do not mark as expression rule
+                    IsByPassRule = true // this is not a visitable rule
                 };
                 singleOperandRule.Clauses.Add(new NonTerminalClause(operands[0].Rule.NonTerminalName));
 

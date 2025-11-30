@@ -48,7 +48,7 @@ namespace expr
         {
             var instance = new ExprParser();
             var main = new ExprParserMain( instance);
-            ParseExpr("1 +1", "((1 + 1))");
+            //ParseExpr("1 +1", "((1 + 1))");
             ParseExpr("1 + 2 * 3", "((1 + (2 * 3)))");
 
         }

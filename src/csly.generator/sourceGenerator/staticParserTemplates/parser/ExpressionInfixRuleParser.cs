@@ -21,7 +21,21 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
 
     if (r1.IsError)
     {
-        return r0;
+
+        // TODO node name
+        var leftTree = new SyntaxNode<<#LEXER#>, string>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, string>>() { r0.Root },
+        "<#HEAD#>_<#INDEX#>");
+        leftTree.ExpressionAffix = Affix.<#AFFIX#>;
+        leftTree.Precedence = <#PRECEDENCE#>;
+        leftTree.Associativity = Associativity.<#ASSOCIATIVITY#>;
+        leftTree.IsExpressionNode = true;
+        leftTree.IsByPassNode = true;
+        result.Root = leftTree;
+        result.IsError = false;
+        result.EndingPosition = r0.EndingPosition;
+
+        return result;
+
     }
     position = r1.EndingPosition;
 
@@ -38,7 +52,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
 
     // TODO node name
     var tree = new SyntaxNode<<#LEXER#>, string>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, string>>() { r0.Root, r1.Root, r2.Root },
-        "Expr_Prec_10_0");
+        "<#HEAD#>_<#INDEX#>");
     tree.ExpressionAffix = Affix.<#AFFIX#>;
     tree.Precedence = <#PRECEDENCE#>;
     tree.Associativity = Associativity.<#ASSOCIATIVITY#>;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using csly.ebnf.builder;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -103,6 +104,7 @@ namespace ebnf.grammar
         public bool ForcedName { get; set; }
         public Associativity Associativity { get; internal set; }
         public int Precedence { get; internal set; }
+        public Dictionary<string, string> OperatorVisitors{ get; internal set; }
 
         public string GetVisitorMethodName(string token)
         {
@@ -135,7 +137,8 @@ namespace ebnf.grammar
 
         public string Dump()
         {
-            return $"Rule: {NonTerminalName} : {string.Join(" ",Clauses.Select(x => x.Dump()))}";
+            return $"Rule: {NonTerminalName} : {string.Join(" ",Clauses.Select(x => x.Dump()))} subrule:{IsSubRule}, bypass:{IsByPassRule}, expression: {IsExpressionRule} ";
+
         }
     }
 }
