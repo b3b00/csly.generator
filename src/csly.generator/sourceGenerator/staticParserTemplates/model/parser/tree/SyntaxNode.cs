@@ -120,7 +120,7 @@ public class SyntaxNode<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
             expressionSuffix = $">{expressionSuffix}<";
         }
         
-        builder.AppendLine($"{tab}+ {Name}>>{Visitor}<< {(IsByPassNode ? "===":"")}");
+        builder.AppendLine($"{tab}+ NODE {Name}>>{Visitor}<< {(IsByPassNode ? "===":"")}");
         
         foreach (var child in Children)
         {

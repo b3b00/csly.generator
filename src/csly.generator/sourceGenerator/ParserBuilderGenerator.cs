@@ -674,7 +674,9 @@ public class ParserBuilderGenerator
         foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
         {
             bool isGroup = rulesByHead.Count() == 1 && rulesByHead.ToList()[0].IsSubRule;
-            var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count(), isGroup);
+            bool isExpressionRule = rulesByHead.ToList().All(x => x.IsExpressionRule);
+            bool isByPassRule = rulesByHead.ToList().All(x => x.IsByPassRule);
+            var nonTerminalVisitor = GenerateNonTerminalVisitor(rulesByHead.Key, rulesByHead.Count(), isGroup, isExpressionRule, isByPassRule);
             visitors.AppendLine(nonTerminalVisitor);
             for (int i = 0; i < rulesByHead.Count(); i++)
             {
@@ -730,18 +732,30 @@ public class ParserBuilderGenerator
         return parser;
     }
 
-    private string GenerateNonTerminalVisitor(string name, int count, bool isGroup)
-    {
+    private string GenerateNonTerminalVisitor(string name, int count, bool isGroup, bool isExpressionRule, bool isByPassRule)
+    {       
         StringBuilder cases = new StringBuilder();
-        for (int i = 0; i < count; i++)
+        if (isByPassRule)
         {
-            var caseTemplate = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitRuleTemplate),
-                additional: new Dictionary<string, string>()
-                {
+            return $@"public string Visit{name}(SyntaxNode<ExprToken, string> node)
+{{
+    
+        return Visit{name}_0(node);
+
+}}";
+        }
+        else
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var caseTemplate = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.CallVisitRuleTemplate),
+                    additional: new Dictionary<string, string>()
+                    {
                     {"NAME",name },
                     {"INDEX",i.ToString() }
-                });
-            cases.AppendLine(caseTemplate);
+                    });
+                cases.AppendLine(caseTemplate);
+            }
         }
         string outputType = isGroup ? $"Group<{_lexerName},{_outputType}> " : _outputType;
 
@@ -750,7 +764,7 @@ public class ParserBuilderGenerator
             {"VISITORS", cases.ToString()},
                 {"OUTPUT_TYPE",  outputType}
             });
-
+        GeneratorLogger.Log($"\nGenerated non terminal visitor **{name}**:\n{content}");
         return content;
     }
 

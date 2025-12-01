@@ -21,7 +21,7 @@ public class SyntaxLeaf<IN, OUT> : ISyntaxNode<IN, OUT> where IN : struct, Enum
     
     public string Dump(string tab)
     {
-        return $"{tab}+ {Token.TokenID.ToString()} : {Token.Value} @{Token.PositionInTokenFlow}";
+        return $"{tab}+ LEAF {Token.TokenID.ToString()} : {Token.Value} @{Token.PositionInTokenFlow}";
     }
 
     public string ToJson(int index = 0)

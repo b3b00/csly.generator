@@ -7,8 +7,6 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
 {
     var result = new SyntaxParseResult<<#LEXER#>, string>();
 
-
-    // parse non terminal Expr_Prec_50 
     var r0 = ParseNonTerminal_<#LOWER_PRECEDENCE#>(tokens, position);
     if (r0.IsError)
     {
@@ -39,7 +37,6 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
     }
     position = r1.EndingPosition;
 
-    // parse non terminal Expr_Prec_10
     var r2 = ParseNonTerminal_<#HEAD#>(tokens, position); 
     if (r2.IsError)
     {
