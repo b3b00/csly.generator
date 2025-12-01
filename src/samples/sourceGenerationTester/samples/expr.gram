@@ -15,6 +15,9 @@ namespace expr;
         [Sugar("*")] TIMES,
         [Sugar("/")] DIV,
         [Int] INT,
+        [Sugar("(")] LPAREN,
+        [Sugar(")")] RPAREN,
+
     }
 
     [ParserRoot("root")]
@@ -47,7 +50,7 @@ namespace expr;
         [Right("DIV",50)]
         public int Divide(int left, Token<ExprToken> op, int right)
         {
-            return left - right;
+            return left / right;
         }
         
         [Prefix("MINUS",Associativity.Left,100)]
@@ -62,6 +65,13 @@ namespace expr;
         public int intOperand(Token<ExprToken> intToken)
         {
             return intToken.IntValue;
+        }
+
+        [Operand]
+        [Production("parenthesizedOperand : LPAREN ExprParser_expressions RPAREN")]
+        public int parenthesizedOperand(Token<ExprToken> lp, int expr, Token<ExprToken> rp)
+        {
+            return expr;
         }
 
     }

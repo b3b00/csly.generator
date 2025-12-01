@@ -9,5 +9,7 @@ public enum ExprToken
     [Sugar("*")] TIMES,
     [Sugar("/")] DIV,
     [Int] INT,
+    [Sugar("(")] LPAREN,
+    [Sugar(")")] RPAREN,
 }
 

@@ -182,8 +182,8 @@ namespace csly.generator.sourceGenerator
                 Rule singleOperandRule = new Rule()
                 {
                     NonTerminalName = "Expr_Operand",
-                    IsExpressionRule = false, // do not mark as expression rule
-                    IsByPassRule = true // this is not a visitable rule
+                    IsExpressionRule = false,
+                    IsByPassRule = true
                 };
                 singleOperandRule.Clauses.Add(new NonTerminalClause(operands[0].Rule.NonTerminalName));
 
@@ -193,7 +193,8 @@ namespace csly.generator.sourceGenerator
             Rule rule = new Rule()
             {
                 NonTerminalName = "Expr_Operand",
-                IsExpressionRule = false, // do not mark as expression rule
+                IsExpressionRule = false, 
+                IsByPassRule = true, 
             };
             rule.Clauses.Add(
                 new ChoiceClause(
@@ -201,7 +202,7 @@ namespace csly.generator.sourceGenerator
                 )
             );
 
-            return null;
+            return rule;
         }
     }
 }

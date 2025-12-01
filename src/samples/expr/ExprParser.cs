@@ -34,13 +34,13 @@ public class ExprParser
     {
         return left / right;
     }
-    /*
-    [Prefix("MINUS",Associativity.Left,100)]
+
+
+    [Prefix("MINUS", Associativity.Left, 100)]
     public int UMinus(Token<ExprToken> op, int right)
     {
-        return $"( - {right} )";
+        return -right;
     }
-    */
 
     [Operand]
     [Production("intOperand : INT")]
@@ -49,5 +49,11 @@ public class ExprParser
         return intToken.IntValue;
     }
 
+    [Operand]
+    [Production("parenthesizedOperand : LPAREN ExprParser_expressions RPAREN")]
+    public int parenthesizedOperand(Token<ExprToken> lp, int expr, Token<ExprToken> rp)
+    {
+        return expr;
+    }
 }
 
