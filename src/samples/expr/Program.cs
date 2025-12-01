@@ -9,7 +9,7 @@ namespace expr
     public  class Program
     {
 
-        private static void ParseExpr(string source, string expecting = null)
+        private static void ParseExpr(string source, int expecting = -666)
         {
             ExprParser exprInstance = new ExprParser();
             ExprParserMain exprMain = new ExprParserMain(exprInstance);
@@ -19,7 +19,7 @@ namespace expr
             {
                 Console.WriteLine($"\x1b[34mParsing [{source}] succeeded.\x1b[0m");
                 Console.WriteLine($"\x1b[34mParsed value: {exprParsed.Result}\x1b[0m");
-                if (expecting == null)
+                if (expecting == -666)
                 {
                     return;
                 }
@@ -48,8 +48,8 @@ namespace expr
         {
             var instance = new ExprParser();
             var main = new ExprParserMain( instance);
-            //ParseExpr("1 +1", "((1 + 1))");
-            ParseExpr("1 + 2 * 3", "((1 + (2 * 3)))");
+            ParseExpr("1 +1", 2);
+            ParseExpr("1 + 2 * 3", 7);
 
         }
     }

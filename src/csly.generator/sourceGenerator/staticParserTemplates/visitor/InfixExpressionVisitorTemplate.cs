@@ -7,7 +7,7 @@
             return arg0;
         }
 
-        var arg1 = (node.Children[1] as SyntaxLeaf<ExprToken, string>).Token;
+        var arg1 = (node.Children[1] as SyntaxLeaf<ExprToken, <#OUTPUT#>>).Token;
 
     
         var arg2 = Visit<#RIGHT_NAME#>((SyntaxNode<<#LEXER#>, <#OUTPUT#>>)node.Children[2]);

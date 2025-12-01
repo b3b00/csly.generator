@@ -5,7 +5,7 @@
 
 public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(List<Token<<#LEXER#>>> tokens, int position)
 {
-    var result = new SyntaxParseResult<<#LEXER#>, string>();
+    var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
 
     var r0 = ParseNonTerminal_<#LOWER_PRECEDENCE#>(tokens, position);
     if (r0.IsError)
@@ -21,7 +21,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
     {
 
         // TODO node name
-        var leftTree = new SyntaxNode<<#LEXER#>, string>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, string>>() { r0.Root },
+        var leftTree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { r0.Root },
         "<#HEAD#>_<#INDEX#>");
         leftTree.ExpressionAffix = Affix.<#AFFIX#>;
         leftTree.Precedence = <#PRECEDENCE#>;
@@ -45,10 +45,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
     position = r2.EndingPosition;
 
 
-
-
-    // TODO node name
-    var tree = new SyntaxNode<<#LEXER#>, string>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, string>>() { r0.Root, r1.Root, r2.Root },
+    var tree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { r0.Root, r1.Root, r2.Root },
         "<#HEAD#>_<#INDEX#>");
     tree.ExpressionAffix = Affix.<#AFFIX#>;
     tree.Precedence = <#PRECEDENCE#>;

@@ -6,37 +6,37 @@ namespace expr;
 public class ExprParser
 {
     [Production("root : ExprParser_expressions")]
-    public string Root(string value)
+    public int Root(int value)
     {
         return value;
     }
 
     [Operation("PLUS", Affix.InFix, Associativity.Left, 10)]
-    public string Plus(string left, Token<ExprToken> op, string right)
+    public int Plus(int left, Token<ExprToken> op, int right)
     {
-        return $"( {left} + {right} )";
+        return left+right;
     }
 
     [Operation("MINUS", Affix.InFix, Associativity.Left, 10)]
-    public string Minus(string left, Token<ExprToken> op, string right)
+    public int Minus(int left, Token<ExprToken> op, int right)
     {
-        return $"( {left} + {right} )";
+        return left-right;
     }
 
     [Right("TIMES", 50)]
-    public string Times(string left, Token<ExprToken> op, string right)
+    public int Times(int left, Token<ExprToken> op, int right)
     {
-        return $"( {left} * {right} )";
+        return left * right;
     }
 
     [Right("DIV", 50)]
-    public string Divide(string left, Token<ExprToken> op, string right)
+    public int Divide(int left, Token<ExprToken> op, int right)
     {
-        return $"( {left} / {right} )";
+        return left / right;
     }
     /*
     [Prefix("MINUS",Associativity.Left,100)]
-    public string UMinus(Token<ExprToken> op, string right)
+    public int UMinus(Token<ExprToken> op, int right)
     {
         return $"( - {right} )";
     }
@@ -44,9 +44,9 @@ public class ExprParser
 
     [Operand]
     [Production("intOperand : INT")]
-    public string intOperand(Token<ExprToken> intToken)
+    public int intOperand(Token<ExprToken> intToken)
     {
-        return intToken.Value;
+        return intToken.IntValue;
     }
 
 }

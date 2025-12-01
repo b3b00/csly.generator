@@ -9,7 +9,7 @@ using csly.models;
 namespace expr;
 
 [ParserGenerator]
-public partial class Expr : AbstractParserGenerator<ExprToken, ExprParser, string>
+public partial class Expr : AbstractParserGenerator<ExprToken, ExprParser, int>
 {
 }
 

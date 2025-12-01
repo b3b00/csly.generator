@@ -737,7 +737,7 @@ public class ParserBuilderGenerator
         StringBuilder cases = new StringBuilder();
         if (isByPassRule)
         {
-            return $@"public string Visit{name}(SyntaxNode<ExprToken, string> node)
+            return $@"public {_outputType} Visit{name}(SyntaxNode<ExprToken, {_outputType}> node)
 {{
     
         return Visit{name}_0(node);
