@@ -32,7 +32,7 @@ var parser = new Static<#PARSER#>();
             if (result.IsOk)
             {
                 Console.WriteLine("Parsing succeeded.");
-                Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
+                //Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
                 //return null;
                 // visiting
                 var visitor = new <#PARSER#>Visitor(_instance);

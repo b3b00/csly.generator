@@ -43,7 +43,7 @@ namespace csly.generator.sourceGenerator
                     lowerPrecedenceRuleName = "Expr_Operand";
                 }
                 var rule = GenerateRuleForPrecedence(precedence, operationsByPrecedence[precedence], ruleName, lowerPrecedenceRuleName, i == precedences.Count - 1);
-                expressionRules.Add(rule);
+                expressionRules.AddRange(rule);
             }
            
                 var operandRule = GenerateRuleForOperands(model.Operands);
@@ -61,10 +61,10 @@ namespace csly.generator.sourceGenerator
             model.Rules.AddRange(expressionRules);
         }
 
-        public Rule GenerateRuleForPrecedence(int precedence, List<Operation> operations, string ruleName, string lowerPrecedenceRuleName, bool isLowest)
+        public List<Rule> GenerateRuleForPrecedence(int precedence, List<Operation> operations, string ruleName, string lowerPrecedenceRuleName, bool isLowest)
         {
             var affix = operations[0].Affix;
-
+            var rules = new List<Rule>();
             var rule = new Rule()
             {
                 NonTerminalName = ruleName,
@@ -108,6 +108,7 @@ namespace csly.generator.sourceGenerator
                                 right
                             };
                         rule.OperatorVisitors = operations.ToDictionary(x => x.TokenName, x => x.MethodName);
+                        rules.Add(rule);
                         break;
                     }
                 case Affix.PreFix:
@@ -129,6 +130,24 @@ namespace csly.generator.sourceGenerator
                                 operatorClause,
                                 operand
                             };
+                        rule.IsByPassRule = false;
+                        rules.Add(rule);
+
+                        var byPassRule = new Rule()
+                        {
+                            NonTerminalName = ruleName,
+                            IsByPassRule = true,
+                            IsExpressionRule = true,
+                            ExpressionAffix = affix,
+                            Precedence = precedence,
+                            Associativity = operations[0].Associativity,
+                            IsInfixExpressionRule = affix == Affix.InFix,
+                        };
+                        byPassRule.Clauses = new List<IClause>
+                            {
+                                operand
+                            };
+                        rules.Add(byPassRule);
                         break;
                     }
                 case Affix.PostFix:
@@ -153,7 +172,7 @@ namespace csly.generator.sourceGenerator
                         break;
                     }
             }
-            return rule;
+            return rules;
         }
 
         public Rule GenerateRuleForOperands(List<Operand> operands)

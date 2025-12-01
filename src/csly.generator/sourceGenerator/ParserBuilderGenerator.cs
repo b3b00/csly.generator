@@ -1,4 +1,3 @@
-
 using csly.ebnf.builder;
 using ebnf.grammar;
 using Microsoft.CodeAnalysis.CSharp;
@@ -6,7 +5,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace csly.generator.sourceGenerator;
@@ -152,7 +150,7 @@ public class ParserBuilderGenerator
             missings = missings.Where(x => x.Name != nonTerminalParser.Key).ToList();
         }
 
-
+        missings = missings.GroupBy(x => x.Name).Select(x => x.First()).ToList();
 
         // generate parser for non terminals that are not used in rules ( ex : root non terminal )
         if (missings.Count > 0)
@@ -408,7 +406,7 @@ public class ParserBuilderGenerator
     {       
         AddRule(rule);
 
-        if (rule.IsExpressionRule)
+        if (rule.IsExpressionRule && rule.ExpressionAffix != Affix.PreFix) // exclude prefixes 
         {
             GenerateOperationRule(rule, builder, index);
             return;
@@ -542,9 +540,11 @@ public class ParserBuilderGenerator
         }
         else if (rule.ExpressionAffix == Affix.PreFix)
         {
-            var lower = rule.Clauses[1].Name;
-            var operatorClause = rule.Clauses[0].Name;
-            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPrefixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            if (rule.Clauses.Count == 2)
+            {
+                var lower = rule.Clauses[1].Name;
+                var operatorClause = rule.Clauses[0].Name;
+                var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPrefixRuleParser), rule.Name, additional: new Dictionary<string, string>()
             {
                 { "HEAD", rule.Head },
                 { "RULESTRING", rule.Dump() },
@@ -555,9 +555,9 @@ public class ParserBuilderGenerator
                 {"LOWER_PRECEDENCE", lower }, // TODO
                 {"OPERATOR",  operatorClause }
             });
-            GeneratorLogger.Log($"\nGenerated prefix expression parser:\n{parser}");
-            builder.AppendLine(parser);
-
+                GeneratorLogger.Log($"\nGenerated prefix expression parser:\n{parser}");
+                builder.AppendLine(parser);
+            }
         }
         else if (rule.ExpressionAffix == Affix.PostFix)
         {
@@ -903,6 +903,18 @@ public class ParserBuilderGenerator
         {
             return GenerateInfixExpressionVisitor(rule, index);
         }
+        if (rule.IsExpressionRule && rule.ExpressionAffix == Affix.PreFix && rule.IsByPassRule && rule.Clauses.Count == 1)
+        {
+            return $@"
+public int VisitExpr_Prec_100_{index}(SyntaxNode<{_lexerName}, {_outputType}> node)
+    {{        
+        return Visit{rule.Clauses[0].Name}(node.Children[0] as SyntaxNode<ExprToken, int>);
+    }}";
+        }
+        if (rule.ExpressionAffix == Affix.PreFix)
+        {
+            ;   
+        }
 
         GeneratorLogger.Log($"\nGenerating rule visitor for rule {rule.Name} : {rule.Dump()}");
 
@@ -1033,7 +1045,24 @@ public class ParserBuilderGenerator
             }
             else
             {
-                returnValue = $"return _instance.{rule.MethodName}({args});";
+                if (rule.IsExpressionRule && rule.ExpressionAffix == Affix.PreFix)
+                {
+                    StringBuilder operatorSwitch = new StringBuilder();
+                    operatorSwitch.AppendLine("switch(arg0.TokenID) {");
+                    foreach (var op in rule.TokenToVisitorMethodName)
+                    {
+                        operatorSwitch.AppendLine($" case {_lexerName}.{op.Key} :");
+                        operatorSwitch.AppendLine($"\treturn _instance.{op.Value}({args});");
+                        break;
+                    }
+                    operatorSwitch.AppendLine(@$"default: throw new NotImplementedException($""Operator {{arg0.TokenID}} not implemented for precedence {rule.Precedence}"");");
+                    operatorSwitch.AppendLine("}");
+                    returnValue = operatorSwitch.ToString();
+                }
+                else
+                {
+                    returnValue = $"return _instance.{rule.MethodName}({args});";
+                }
             }
         }
 
