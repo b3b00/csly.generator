@@ -169,6 +169,7 @@ namespace csly.generator.sourceGenerator
                                 operand,
                                 operatorClause
                             };
+                        rules.Add(rule);
                         break;
                     }
             }

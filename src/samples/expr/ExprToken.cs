@@ -11,5 +11,6 @@ public enum ExprToken
     [Int] INT,
     [Sugar("(")] LPAREN,
     [Sugar(")")] RPAREN,
+    [Sugar("!")] FACTORIAL,
 }
 

@@ -55,6 +55,8 @@ namespace expr
             ParseExpr("10 / 2 + 3", 8);
             ParseExpr("10 / (2 + 3)", 2);
             ParseExpr("-1 + -1", -2);
+            ParseExpr("5!", 5 * 4 * 3 * 2 * 1);
+            ParseExpr("-5!", -5 * 4 * 3 * 2 * 1);
 
         }
     }

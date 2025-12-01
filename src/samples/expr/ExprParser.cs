@@ -42,6 +42,17 @@ public class ExprParser
         return -right;
     }
 
+    [Postfix("FACTORIAL", Associativity.Left, 110)]
+    public int Factorial(int value, Token<ExprToken> op)
+    {
+        int factorial = 1;
+        for (int i = value; i > 1; i--)
+        {
+            factorial *= i;
+        }
+        return factorial;
+    }
+
     [Operand]
     [Production("intOperand : INT")]
     public int intOperand(Token<ExprToken> intToken)

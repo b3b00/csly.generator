@@ -403,7 +403,7 @@ public class ParserBuilderGenerator
 
 
     private void GenerateRule(Rule rule, StringBuilder builder, int index)
-    {       
+    {
         AddRule(rule);
 
         if (rule.IsExpressionRule && rule.ExpressionAffix != Affix.PreFix) // exclude prefixes 
@@ -563,17 +563,31 @@ public class ParserBuilderGenerator
         {
             var lower = rule.Clauses[0].Name;
             var operatorClause = rule.Clauses[1].Name;
-            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPostfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+            string tokenKind = "ParseTerminal";
+            if (rule.Clauses[1] is ChoiceClause operatorChoice)
             {
+                tokenKind = "ParseChoice";
+                AddClause(operatorChoice);
+            }
+            if (rule.Clauses[1] is TerminalClause singleChoice)
+            {
+                tokenKind = "ParseTerminal";
+                AddClause(singleChoice);
+            }
+
+            var parser = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExpressionPostfixRuleParser), rule.Name, additional: new Dictionary<string, string>()
+        {
                 { "HEAD", rule.Head },
+                { "RULESTRING", rule.Dump() },
                 { "INDEX", index.ToString() },
                 {"AFFIX",rule.ExpressionAffix.ToString() },
-            {"PRECEDENCE", rule.Precedence.ToString() },
-            {"ASSOCIATIVITY", rule.Associativity.ToString() },
-            {"LOWER_PRECEDENCE", lower }, // TODO
-            {"OPERATOR",  operatorClause }
+                {"PRECEDENCE", rule.Precedence.ToString() },
+                {"ASSOCIATIVITY", rule.Associativity.ToString() },
+                {"LOWER_PRECEDENCE", lower },
+                {"OPERATOR",  operatorClause },
+                {"TOKEN_KIND", tokenKind }
             });
-            GeneratorLogger.Log($"\nGenerated postfix expression parser:\n{parser}");
+            GeneratorLogger.Log($"\nGenerated infix expression parser:\n{parser}");
             builder.AppendLine(parser);
         }
         else
@@ -733,7 +747,7 @@ public class ParserBuilderGenerator
     }
 
     private string GenerateNonTerminalVisitor(string name, int count, bool isGroup, bool isExpressionRule, bool isByPassRule)
-    {       
+    {
         StringBuilder cases = new StringBuilder();
         if (isByPassRule)
         {
@@ -898,10 +912,14 @@ public class ParserBuilderGenerator
     }
 
     private string GenerateRuleVisitor(Rule rule, int index)
-    {        
+    {
         if (rule.IsExpressionRule && rule.IsInfixExpressionRule)
         {
             return GenerateInfixExpressionVisitor(rule, index);
+        }
+        if (rule.IsExpressionRule && rule.ExpressionAffix == Affix.PostFix)
+        {
+            return GeneratePostfixExpressionVisitor(rule, index);
         }
         if (rule.IsExpressionRule && rule.ExpressionAffix == Affix.PreFix && rule.IsByPassRule && rule.Clauses.Count == 1)
         {
@@ -911,15 +929,15 @@ public int VisitExpr_Prec_100_{index}(SyntaxNode<{_lexerName}, {_outputType}> no
         return Visit{rule.Clauses[0].Name}(node.Children[0] as SyntaxNode<ExprToken, int>);
     }}";
         }
-        if (rule.ExpressionAffix == Affix.PreFix)
+        if (rule.ExpressionAffix == Affix.PostFix)
         {
-            ;   
+            ;
         }
 
         GeneratorLogger.Log($"\nGenerating rule visitor for rule {rule.Name} : {rule.Dump()}");
 
         StringBuilder visitors = new StringBuilder();
-        
+
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
             var clause = rule.Clauses[i];
@@ -1123,9 +1141,9 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
             }
         }
 
-            var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.InfixExpressionVisitorTemplate), rule.Name,
-                additional: new Dictionary<string, string>()
-                {
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.InfixExpressionVisitorTemplate), rule.Name,
+            additional: new Dictionary<string, string>()
+            {
                 {"LEFT_NAME", rule.Clauses[0].Name },
                 {"RIGHT_NAME", rule.Clauses[2].Name },
                 {"INDEX",index.ToString() },
@@ -1133,7 +1151,59 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                 {"LOWER_PRECEDENCE_VISITOR", rule.Clauses[0].Name },
                 {"RETURN_TYPE", _outputType },
                     {"RETURN", returnBuilder.ToString() },
-                });
+            });
+        GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
+        return content;
+    }
+
+    private string GeneratePostfixExpressionVisitor(Rule rule, int index)
+    {
+        GeneratorLogger.Log($"\nGenerating postfix expression visitor for rule {rule.Name} : {rule.Dump()}");
+
+        var operatorClause = rule.Clauses[1];
+        StringBuilder returnBuilder = new StringBuilder();
+
+        if (operatorClause is ChoiceClause operatorChoice)
+        {
+            returnBuilder.AppendLine("switch(arg1.TokenID) {");
+            foreach (var choice in operatorChoice.Choices)
+            {
+                if (choice is TerminalClause terminalChoice)
+                {
+                    if (rule.TokenToVisitorMethodName.TryGetValue(terminalChoice.Name, out var methodName))
+                    {
+                        returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
+{{
+    return _instance.{methodName}(arg0, arg1);    
+    break;
+}}");
+                    }
+                }
+            }
+            returnBuilder.AppendLine(@$"
+default: {{
+throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented for precedence {rule.Precedence}"");
+        }}
+}}");
+        }
+        else if (rule.Clauses[1] is TerminalClause terminalClause)
+        {
+            if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
+            {
+                returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1);");
+            }
+        }
+
+        var content = _templateEngine.ApplyTemplate(nameof(VisitorTemplates.PostfixExpressionVisitorTemplate), rule.Name,
+            additional: new Dictionary<string, string>()
+            {
+                {"LEFT_NAME", rule.Clauses[0].Name },                
+                {"INDEX",index.ToString() },
+                {"METHOD_NAME", rule.MethodName }, // TODO there may are multiple methods for the same rule
+                {"LOWER_PRECEDENCE_VISITOR", rule.Clauses[0].Name },
+                {"RETURN_TYPE", _outputType },
+                    {"RETURN", returnBuilder.ToString() },
+            });
         GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
         return content;
     }
