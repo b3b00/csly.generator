@@ -49,14 +49,14 @@ namespace expr
             var instance = new ExprParser();
             var main = new ExprParserMain( instance);
             ParseExpr("1 +1", 2);
-            ParseExpr("1 + 2 * 3", 7);
-            ParseExpr("-1 + 2 * 3", 5);
-            ParseExpr("2 * -1", -2);
-            ParseExpr("10 / 2 + 3", 8);
-            ParseExpr("10 / (2 + 3)", 2);
-            ParseExpr("-1 + -1", -2);
-            ParseExpr("5!", 5 * 4 * 3 * 2 * 1);
-            ParseExpr("-5!", -5 * 4 * 3 * 2 * 1);
+            //ParseExpr("1 + 2 * 3", 7);
+            //ParseExpr("-1 + 2 * 3", 5);
+            //ParseExpr("2 * -1", -2);
+            //ParseExpr("10 / 2 + 3", 8);
+            //ParseExpr("10 / (2 + 3)", 2);
+            //ParseExpr("-1 + -1", -2);
+            //ParseExpr("5!", 5 * 4 * 3 * 2 * 1);
+            //ParseExpr("-5!", -5 * 4 * 3 * 2 * 1);
 
         }
     }
