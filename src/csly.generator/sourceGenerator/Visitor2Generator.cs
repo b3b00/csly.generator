@@ -47,9 +47,12 @@ namespace csly.generator.sourceGenerator
                 for (int i = 0; i < rulesByHead.Count(); i++)
                 {
                     var r = rulesByHead.ToList()[i];
-                    var prefixCase = $@"case ""{rulesByHead.Key}_{i}"":
+                    if (!r.IsSubRule)
+                    {
+                        var prefixCase = $@"case ""{rulesByHead.Key}_{i}"":
                     return Visit{rulesByHead.Key}(node);";
-                    dispatchers.AppendLine(prefixCase);
+                        dispatchers.AppendLine(prefixCase);
+                    }
                 }
             }
 
@@ -88,9 +91,12 @@ namespace csly.generator.sourceGenerator
                 }
                 else
                 {
-                    var v = GenerateVisitorRule(first, 0);
-                    visitors.AppendLine(v);
-                    continue;
+                    if (!first.IsSubRule)
+                    {
+                        var v = GenerateVisitorRule(first, 0);
+                        visitors.AppendLine(v);
+                        continue;
+                    }
                 }
             }
 
@@ -129,33 +135,51 @@ namespace csly.generator.sourceGenerator
                 {
                     compute.AppendLine($"var arg{i} = VisitTerminal(node,{i});");
                 }
-                else if (clause is ManyClause manynt && manynt.manyClause is NonTerminalClause nt)
+                else if (clause is ManyClause many)
                 {
-                    compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i});");
-                }
-                else if (clause is ManyClause manyt && manyt.manyClause is TerminalClause t)
-                {
-                    compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i});");
+                    if (many.manyClause is NonTerminalClause nt)
+                    {
+                        if (!nt.IsGroup)
+                        {
+                            compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i});");
+                        }
+                        else
+                        {
+                            compute.AppendLine($"var arg{i} = VisitManyGroup(node,{i});");
+                        }
+                    }
+                    else if (many.manyClause is TerminalClause t)
+                    {
+                        compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i});");
+                    }                    
                 }
                 else if (clause is GroupClause)
                 {
-                    compute.AppendLine($"// TODO  : compute group @{i}");
-                }
+                    compute.AppendLine($"var arg{i} = VisitGroup(node, {i});");
+                }                
                 else if (clause is OptionClause option)
-                {
+                        {
                     if (option.Clause is TerminalClause)
                     {
                         compute.AppendLine($"var arg{i} = VisitOptionalTerminal(node,{i});");
                     }
-                    else
+                    else if (option.Clause is NonTerminalClause nt)
                     {
-                        compute.AppendLine($"var arg{i} = VisitOptionalNonTerminal(node,{i});");
-                    }                    
-                }
-                else
-                {
-                    compute.AppendLine($"var arg{i} = VisitNonTerminal(node,{i});");
-                }
+                        if (!nt.IsGroup)
+                        {
+                            compute.AppendLine($"var arg{i} = VisitOptionalNonTerminal(node,{i});");
+                        }
+                        else
+                        {
+                            compute.AppendLine($"var arg{i} = VisitOptionalGroup(node,{i});");
+                        }
+                    }
+
+                        }
+                        else
+                        {
+                            compute.AppendLine($"var arg{i} = VisitNonTerminal(node,{i});");
+                        }
             }
 
             var content = _templateEngine.ApplyTemplate(rule.IsByPassRule ? "ByPassRuleVisitor" : "RuleVisitor", rule.Name,

@@ -28,6 +28,7 @@ namespace expr;
         [Keyword("TEST")] TEST,
         [Keyword("TRUE")] T,
         [Keyword("FALSE")] F,
+        [Keyword("HEAD")] HEAD,
 
 
 
@@ -40,8 +41,8 @@ namespace expr;
 
 Dictionary<string, int> variables = new Dictionary<string, int>();
 
-[Production("root : statement*")]
-        public int root(List<int> statements)
+[Production("root : header statement*")]
+        public int root(int head, List<int> statements)
         {
             return statements.Sum();
         }
@@ -52,7 +53,31 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
             return statement;
         }
 
-        
+        [Production("header : HEAD[d] LPAREN[d] (ID ExprParser_expressions)? (COMMA[d] ID  ExprParser_expressions)* RPAREN[d]")]
+        public int header(ValueOption<Group<ExprToken, int>> firstPair, List<Group<ExprToken, int>> additionalPairs)
+        {
+            firstPair.Match(
+                (x) =>
+                {
+                    var id = x.Token(0);
+                    var expr = x.Value(0);
+                    Console.WriteLine($"HEADER PARAM: {id.Value} with expression value {expr}");
+                    variables[id.Value] = expr; 
+                    return expr;
+                },
+                () => 0
+            );
+
+            foreach (var pair in additionalPairs)
+            {
+                var id = pair.Token(0);
+                var expr = pair.Value(0);
+                Console.WriteLine($"HEADER PARAM: {id.Value} with expression value {expr}");
+                variables[id.Value] = expr;
+            }
+            return 0;
+        }
+
 
 
 [Production("test : TEST[d] LPAREN[d] ID COMMA[d] ExprParser_expressions COMMA[d] INT COMMA[d] [T|F]  RPAREN[d] SEMICOLON?")]

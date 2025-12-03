@@ -19,39 +19,89 @@ private <#OUTPUT#> VisitNonTerminal(SyntaxNode<<#LEXER#>,<#OUTPUT#>> node, int c
             return Dispatch(node.Children[childIndex] as SyntaxNode <<#LEXER#>,<#OUTPUT#>>);
     }
 
- private List<<#OUTPUT#>> VisitManyNonTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+
+
+
+ private List<<#OUTPUT#>> VisitManyNonTerminal(SyntaxNode<<#LEXER#>, int> node, int childIndex)
 {
     List<int> results = new List<int>();
-    var manyNode = node.Children[childIndex] as SyntaxNode<ExprToken, int>;
+    var manyNode = node.Children[childIndex] as SyntaxNode<<#LEXER#>, int>;
     for (int i = 0; i < manyNode.Children.Count; i++)
     {
-        results.Add(Dispatch(manyNode.Children[i] as SyntaxNode<ExprToken, int>));
+        results.Add(Dispatch(manyNode.Children[i] as SyntaxNode<<#LEXER#>, int>));
     }
     return results;
 }
 
-private List<Token<<#LEXER#>>> VisitManyTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+private List<Token<<#LEXER#>>> VisitManyTerminal(SyntaxNode<<#LEXER#>, int> node, int childIndex)
 {
-    List<Token<ExprToken>> results = new List<Token<ExprToken>>();
-    var manyNode = node.Children[childIndex] as SyntaxNode<ExprToken, int>;
+    List<Token<<#LEXER#>>> results = new List<Token<<#LEXER#>>>();
+    var manyNode = node.Children[childIndex] as SyntaxNode<<#LEXER#>, int>;
     for (int i = 0; i < manyNode.Children.Count; i++)
     {
-        results.Add((manyNode.Children[i] as SyntaxLeaf<ExprToken, int>).Token);
+        results.Add((manyNode.Children[i] as SyntaxLeaf<<#LEXER#>, int>).Token);
     }
     return results;
 }
 
-private Token<ExprToken> VisitOptionalTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+private Group<<#LEXER#>, <#OUTPUT#>> VisitGroup(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node, int childIndex)
 {
-    var childNode = node.Children[childIndex] as SyntaxNode<ExprToken, int>;
+    var groupNode = node.Children[childIndex] as SyntaxNode <<#LEXER#>, <#OUTPUT#>>;
+    Group <<#LEXER#>, <#OUTPUT#>> group = new Group<<#LEXER#>, <#OUTPUT#>>();
+    for (int i = 0; i < groupNode.Children.Count; i++)
+    {
+        var subNode = groupNode.Children[i];
+        if (subNode is SyntaxLeaf <<#LEXER#>, <#OUTPUT#>> leaf && !leaf.Discarded)
+        {            
+            var token = leaf.Token;
+            group.Add(leaf.Name, token);
+            continue;
+        }
+        else if (subNode is SyntaxNode <<#LEXER#>, <#OUTPUT#>> child)
+        {
+            group.Add(subNode.Name, Dispatch(child));
+            continue;
+        }
+    }
+    return group;
+}
+
+
+private List<Group<<#LEXER#>, <#OUTPUT#>>> VisitManyGroup(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node, int childIndex)
+{
+    List<Group <<#LEXER#>, int>> results = new List<Group<<#LEXER#>, <#OUTPUT#>>>();
+    var manyNode = node.Children[childIndex] as SyntaxNode <<#LEXER#>, <#OUTPUT#>>;
+    for (int i = 0; i < manyNode.Children.Count; i++)
+    {
+        var grp = VisitGroup(manyNode, i);
+        results.Add(grp);
+    }
+    return results;
+}
+
+private ValueOption<Group<<#LEXER#>, <#OUTPUT#>>> VisitOptionalGroup(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node, int childIndex)
+{
+    OptionSyntaxNode <<#LEXER#>, <#OUTPUT#>> childNode = node.Children[childIndex] as OptionSyntaxNode<<#LEXER#>, <#OUTPUT#>>;
+    if (childNode.Children.Count == 0)
+    {
+        return new ValueOption<Group<<#LEXER#>, <#OUTPUT#>>>();
+    }
+
+    var value = VisitGroup(childNode, 0);
+    return new ValueOption<Group<<#LEXER#>, <#OUTPUT#>>>(value);
+}
+
+private Token<<#LEXER#>> VisitOptionalTerminal(SyntaxNode<<#LEXER#>, int> node, int childIndex)
+{
+    var childNode = node.Children[childIndex] as SyntaxNode<<#LEXER#>, int>;
     if (childNode == null || childNode.Children.Count == 0)
     {
-        return new Token<ExprToken>()
+        return new Token<<#LEXER#>>()
         {
             IsEmpty = true
         };
     }
-    return (childNode.Children[0] as SyntaxLeaf<ExprToken, int>).Token;
+    return (childNode.Children[0] as SyntaxLeaf<<#LEXER#>, int>).Token;
 }
 
 private ValueOption<<#OUTPUT#>> VisitOptionalNonTerminal(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node, int childIndex)
