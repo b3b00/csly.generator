@@ -41,6 +41,29 @@ private List<Token<<#LEXER#>>> VisitManyTerminal(SyntaxNode<ExprToken, int> node
     return results;
 }
 
+private Token<ExprToken> VisitOptionalTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+{
+    var childNode = node.Children[childIndex] as SyntaxNode<ExprToken, int>;
+    if (childNode == null || childNode.Children.Count == 0)
+    {
+        return new Token<ExprToken>()
+        {
+            IsEmpty = true
+        };
+    }
+    return (childNode.Children[0] as SyntaxLeaf<ExprToken, int>).Token;
+}
+
+private ValueOption<int> VisitOptionalNonTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+{
+    if (node.Children.Count <= childIndex)
+    {
+        return new ValueOption<int>();
+    }
+    var value = Dispatch(node.Children[childIndex] as SyntaxNode<ExprToken, int>);
+    return new ValueOption<int>(value);
+}
+
 public <#OUTPUT#> Visit(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
     {
         var squasher = new Squasher<<#LEXER#>, <#OUTPUT#>>();

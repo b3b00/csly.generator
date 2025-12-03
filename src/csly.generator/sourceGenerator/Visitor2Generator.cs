@@ -137,7 +137,14 @@ namespace csly.generator.sourceGenerator
                 }
                 else if (clause is OptionClause option)
                 {
-                    compute.AppendLine($"// TODO  : compute option @{i}");
+                    if (option.Clause is TerminalClause)
+                    {
+                        compute.AppendLine($"var arg{i} = VisitOptionalTerminal(node,{i});");
+                    }
+                    else
+                    {
+                        compute.AppendLine($"var arg{i} = VisitOptionalNonTerminal(node,{i});");
+                    }                    
                 }
                 else
                 {

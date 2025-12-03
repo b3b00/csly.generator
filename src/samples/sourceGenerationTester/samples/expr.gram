@@ -55,9 +55,10 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
         
 
 
-[Production("test : TEST LPAREN ID COMMA ExprParser_expressions COMMA INT COMMA [T|F]  RPAREN SEMICOLON")]
+[Production("test : TEST LPAREN ID COMMA ExprParser_expressions COMMA INT COMMA [T|F]  RPAREN SEMICOLON?")]
         public int test(Token<ExprToken> test, Token<ExprToken> lp, Token<ExprToken> id, Token<ExprToken> comma1, int expr, Token<ExprToken> comma2, Token<ExprToken> expected, Token<ExprToken> comma3, Token<ExprToken> neg, Token<ExprToken> rp, Token<ExprToken> semi)
         {
+            Console.WriteLine("TEST : semi is here ? " + (semi.IsEmpty  ? "NO" : "YES"));
             int expectedValue = expected.IntValue;
             bool isNegated = neg.TokenID == ExprToken.T;
             expectedValue = isNegated ?  -expectedValue : expectedValue;
@@ -80,9 +81,10 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
 
 
 
-        [Production("print : PRINT ID SEMICOLON")]
+        [Production("print : PRINT ID SEMICOLON?")]
         public int print(Token<ExprToken> printTok, Token<ExprToken> id, Token<ExprToken> semi)
         {
+            Console.WriteLine("PRINT : semi is here ? " + (semi.IsEmpty  ? "NO" : "YES"));
             if (variables.TryGetValue(id.Value, out int value))
             {
                 Console.WriteLine($"PRINT: {id.Value} = {value}");
