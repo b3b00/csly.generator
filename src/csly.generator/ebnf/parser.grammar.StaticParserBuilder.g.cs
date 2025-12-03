@@ -347,6 +347,47 @@ namespace csly.ebnf.builder
                 !Model.Rules.Any(rule => rule.Clauses.OfType<NonTerminalClause>().Any(c => c.Name == nt)))
                 .ToList();
         }
+
+        internal List<TerminalClause> GetExplicitTokens()
+        {
+            List<TerminalClause> explicitTokens = new List<TerminalClause>();
+            foreach (var rule in Model.Rules)
+            {
+                foreach (var clause in rule.Clauses)
+                {
+                    if (clause is TerminalClause term && term.IsExplicit)
+                    {
+                        explicitTokens.Add(term);
+                    }
+                    else if (clause is ManyClause many)
+                    {
+                        if (many.manyClause is TerminalClause termMany && termMany.IsExplicit)
+                        {
+                            explicitTokens.Add(termMany);
+                        }
+                    }
+                    else if (clause is OptionClause option)
+                    {
+                        if (option.Clause is TerminalClause termOption && termOption.IsExplicit)
+                        {
+                            explicitTokens.Add(termOption);
+                        }
+                    }
+                    else if (clause is ChoiceClause choice)
+                    {
+                        foreach (var choiceClause in choice.Choices)
+                        {
+                            if (choiceClause is TerminalClause termChoice && termChoice.IsExplicit)
+                            {
+                                    explicitTokens.Add(termChoice);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return explicitTokens;
+        }
     }
 }
 

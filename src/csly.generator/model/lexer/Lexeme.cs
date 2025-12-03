@@ -20,6 +20,8 @@ namespace csly.generator.model.lexer
 
         public List<string> Modes { get; internal set; }
 
+        public bool IsExplicit { get; set; } = false;
+
         public IEnumerable<char[]> IdentifierStartPatterns()
         {
             if (Args == null || Args.Length > 0)
@@ -68,6 +70,15 @@ namespace csly.generator.model.lexer
             _type = type;
             _name = name;
             _args = args;
+        }
+
+        public Lexeme(GenericToken type, string pattern)
+        {
+            _type = type;
+            _name = null;
+            _args = new[] { pattern };
+            Modes = new();
+            IsExplicit = true;
         }
 
         public override string ToString()

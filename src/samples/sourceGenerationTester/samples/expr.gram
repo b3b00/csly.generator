@@ -41,7 +41,7 @@ namespace expr;
 
 Dictionary<string, int> variables = new Dictionary<string, int>();
 
-[Production("root : header statement*")]
+[Production("root : 'GO'[d] header statement*")]
         public int root(int head, List<int> statements)
         {
             return statements.Sum();

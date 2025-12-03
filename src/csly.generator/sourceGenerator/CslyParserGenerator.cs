@@ -181,21 +181,6 @@ public class CslyParserGenerator : IIncrementalGenerator
                     try
                     {                                                
                         lexerGenerator.AnalyseLexer(lexerDecl as EnumDeclarationSyntax, declarationsByName);
-
-                        var t = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
-                            declarationsByName, staticLexerBuilder);
-                        StaticLexerGenerator staticLexerGenerator =
-                            new StaticLexerGenerator(staticLexerBuilder);
-
-                        var staticLexer = @$"
-{string.Join(Environment.NewLine, usings)}
-
-
-   {t}
-";
-
-                        context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
-
                     }
                     catch(Exception e) {                        
                         context.ReportDiagnostic(Diagnostic.Create(
@@ -213,6 +198,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                         new ParserBuilderGenerator(lexerName, parserType, outputType, ns, lexerGenerator.Tokens);
                     try
                     {
+                        
                         var staticParser = parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax);
 
                         string parserCode = $@"
@@ -244,6 +230,39 @@ public class CslyParserGenerator : IIncrementalGenerator
                                 true), classDeclarationSyntax.GetLocation(), parserType, e.Message, e.StackTrace));
                         return;
                     }
+
+                    try
+                    {
+                        // TODO : add explicit tokens if needed
+                        var explicitTokens = parserBuilderGenerator.GetExplicitTokens();
+                        staticLexerBuilder.SetExplicitTokens(explicitTokens);
+                        var t = lexerGenerator.GenerateLexer();
+                        StaticLexerGenerator staticLexerGenerator =
+                            new StaticLexerGenerator(staticLexerBuilder);
+
+                        var staticLexer = @$"
+{string.Join(Environment.NewLine, usings)}
+
+
+   {t}
+";
+
+                        context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
+
+                    }
+                    catch (Exception e)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                CslyGeneratorErrors.LEXER_GENERATION_FAILED,
+                                "lexer generation failed",
+                                "lexer generation failed for {0} : {1}, {2}",
+                                "csly",
+                                DiagnosticSeverity.Error,
+                                true), classDeclarationSyntax.GetLocation(), lexerName, e.Message, e.StackTrace));
+                        return;
+                    }
+
                     // ***********
                     // entry point
 

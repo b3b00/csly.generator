@@ -11,6 +11,13 @@
         if (_keyWords.TryGetValue(value, out var keyword)) {
             tokens.Add(new Token<<#LEXER#>>(keyword, value, previous.Clone()));
         }
+        else if (_explicitKeywords.Contains(match.Value.ToString()))
+        {
+            return new Token<ExprToken>(ExprToken.ID, match.Value, match.Position)
+            {
+                IsExplicit = true
+            };
+        }
         else
         {
             tokens.Add(new Token<<#LEXER#>>(<#LEXER#>.<#NAME#>, value, previous.Clone()));

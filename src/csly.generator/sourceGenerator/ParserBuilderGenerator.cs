@@ -27,6 +27,8 @@ public class ParserBuilderGenerator
     private Dictionary<string, GroupClause> _groupParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
+
+    public StaticParserBuilder StaticParserBuilder => _staticParserBuilder;
     private Visitor2Generator _visitor2Generator;
 
     private List<Rule> _rules = new();
@@ -42,6 +44,8 @@ public class ParserBuilderGenerator
         _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns);
         
     }
+
+    public List<TerminalClause> GetExplicitTokens() => _staticParserBuilder.GetExplicitTokens();
 
     #region generate parser
     public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax)

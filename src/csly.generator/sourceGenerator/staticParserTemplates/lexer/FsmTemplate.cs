@@ -31,6 +31,11 @@ public class <#LEXER#>_FsmLexer
         <#KEYWORDS#>
     };
 
+        private List<string> _explicitKeywords = new List<string>()
+        {
+            <#EXPLICIT_KEYWORDS#>
+        };
+
     private Dictionary<<#LEXER#>, Factory> _tokenFactories = new Dictionary<<#LEXER#>, Factory>();
 
 private Factory _defaultFactory;

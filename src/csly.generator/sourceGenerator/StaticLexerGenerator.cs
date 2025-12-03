@@ -58,11 +58,15 @@ namespace csly.generator.sourceGenerator
             var startsIf = string.Join("else ", starts);
             var othersIf = "else "+string.Join("else ", others);
             var keywords = string.Join(",\n        ", _lexerBuilder.Lexemes
-                .Where(lexeme => lexeme.Type == GenericToken.KeyWord)
+                .Where(lexeme => lexeme.Type == GenericToken.KeyWord && !lexeme.IsExplicit)
                 .Select(lexeme => $"{{ \"{lexeme.Name}\", {_lexerBuilder.LexerName}.{lexeme.Name} }}"));
+            var explicitKeywords = string.Join(", ", _lexerBuilder.Lexemes
+                .Where(lexeme => lexeme.IsExplicit && lexeme.Type == GenericToken.Identifier && lexeme.IsExplicit)
+                .Select(lexeme => lexeme.Name));
             var content = _templateEngine.ApplyTemplate(nameof(LexerTemplates.LexerTemplate), additional: new Dictionary<string, string>()
         {
             { "KEYWORDS", keywords},
+                { "EXPLICIT_KEYWORDS", explicitKeywords},
             {"START_RULES", startsIf },
             {"STATES", string.Join(", ",_states.Select(x => x.ToString())) },
             {"OTHER_STATES", othersIf }

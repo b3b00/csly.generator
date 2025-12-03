@@ -32,8 +32,7 @@ internal class LexerBuilderGenerator
 
     }
 
-    public string GenerateLexer(EnumDeclarationSyntax enumDeclarationSyntax, string outputType,
-        Dictionary<string, SyntaxNode> declarationsByName, StaticLexerBuilder staticLexerBuilder)
+    public string GenerateLexer()
     {       
 
         var fsm = GenerateFSM();
@@ -96,8 +95,14 @@ internal class LexerBuilderGenerator
                     }
                 case model.lexer.GenericToken.KeyWord:
                     {
-                        
-                        fsm.AddKeyword(lexem.Arg0, lexem.Name);
+                        if (lexem.IsExplicit)
+                        {
+                            fsm.AddExplicitKeyword(lexem.Arg0);
+                        }
+                        else
+                        {
+                            fsm.AddKeyword(lexem.Arg0, lexem.Name);
+                        }
                         break;
                     }
                 case model.lexer.GenericToken.Identifier:
@@ -211,6 +216,7 @@ internal class LexerBuilderGenerator
         {
             return $@"{{ ""{kvp.Key}"", {_staticLexerBuilder.LexerName}.{kvp.Value} }}";
         }));
+        var explicitKeywords = string.Join(", ", fsm.ExplicitKeywords.Select(kw => $@"""{kw}"""));
         var factories = string.Join("\n",fsm.Factories.Select(kvp =>
         {
             return $@"_tokenFactories.Add({_staticLexerBuilder.LexerName}.{kvp.Key},{kvp.Value});";
@@ -219,6 +225,7 @@ internal class LexerBuilderGenerator
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
             {"KEYWORDS", keywords },
+            {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
             { "STATE_CALLS", statesCall }

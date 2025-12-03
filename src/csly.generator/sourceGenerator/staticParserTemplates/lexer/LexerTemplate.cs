@@ -19,6 +19,11 @@ public class Static<#LEXER#>
         <#KEYWORDS#>
     };
 
+        private readonly List<string> _explicitKeywords = new List<string>()
+        {
+            <#EXPLICIT_KEYWORDS#>
+        }
+
     public Static<#LEXER#>()
     {
     }

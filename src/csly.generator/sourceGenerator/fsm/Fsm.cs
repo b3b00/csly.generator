@@ -58,6 +58,7 @@ internal class Fsm
 
     public Dictionary<string, string> Keywords => _keywords;
 
+    public List<string> ExplicitKeywords => _explicitKeywords;
 
     private Dictionary<string, string> _factories = new Dictionary<string, string>();
     public Dictionary<string, string> Factories => _factories;
@@ -65,6 +66,8 @@ internal class Fsm
 
     int _currentState = 0;
     private Dictionary<string, string> _keywords = new Dictionary<string, string>();
+
+    private List<string> _explicitKeywords = new List<string>();
 
     public Fsm()
     {
@@ -384,6 +387,11 @@ internal class Fsm
     internal void AddKeyword(string arg0, string name)
     {
         _keywords[arg0] = name;
+    }
+
+    internal void AddExplicitKeyword(string pattern)
+    {
+        _explicitKeywords.Add(pattern);
     }
 
     internal void AddFactory(string tokenName, string factory)
