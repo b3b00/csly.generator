@@ -79,12 +79,16 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
 
         
 
+         [Production("semi : SEMICOLON")]
+        public int Semi(Token<ExprToken> s) {
+            return -1;
+        }
 
 
-        [Production("print : PRINT ID SEMICOLON?")]
-        public int print(Token<ExprToken> printTok, Token<ExprToken> id, Token<ExprToken> semi)
+        [Production("print : PRINT ID semi ?")]
+        public int print(Token<ExprToken> printTok, Token<ExprToken> id, ValueOption<int> semi)
         {
-            Console.WriteLine("PRINT : semi is here ? " + (semi.IsEmpty  ? "NO" : "YES"));
+            Console.WriteLine("PRINT : semi is here ? " + (semi.IsNone  ? "NO" : "YES"));
             if (variables.TryGetValue(id.Value, out int value))
             {
                 Console.WriteLine($"PRINT: {id.Value} = {value}");

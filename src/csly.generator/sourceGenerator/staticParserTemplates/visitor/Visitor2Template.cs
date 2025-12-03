@@ -54,14 +54,16 @@ private Token<ExprToken> VisitOptionalTerminal(SyntaxNode<ExprToken, int> node, 
     return (childNode.Children[0] as SyntaxLeaf<ExprToken, int>).Token;
 }
 
-private ValueOption<int> VisitOptionalNonTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+private ValueOption<<#OUTPUT#>> VisitOptionalNonTerminal(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node, int childIndex)
 {
-    if (node.Children.Count <= childIndex)
+    OptionSyntaxNode <<#LEXER#>, <#OUTPUT#>> childNode = node.Children[childIndex] as OptionSyntaxNode<<#LEXER#>, <#OUTPUT#>>;
+    if (childNode.Children.Count == 0)
     {
-        return new ValueOption<int>();
+        return new ValueOption<<#OUTPUT#>>();
     }
-    var value = Dispatch(node.Children[childIndex] as SyntaxNode<ExprToken, int>);
-    return new ValueOption<int>(value);
+
+    var value = Dispatch(childNode.Children[0] as SyntaxNode <<#LEXER#>, <#OUTPUT#>>);
+    return new ValueOption<<#OUTPUT#>>(value);
 }
 
 public <#OUTPUT#> Visit(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
