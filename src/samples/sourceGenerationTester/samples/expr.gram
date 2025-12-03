@@ -55,8 +55,8 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
         
 
 
-[Production("test : TEST LPAREN ID COMMA ExprParser_expressions COMMA INT COMMA [T|F]  RPAREN SEMICOLON?")]
-        public int test(Token<ExprToken> test, Token<ExprToken> lp, Token<ExprToken> id, Token<ExprToken> comma1, int expr, Token<ExprToken> comma2, Token<ExprToken> expected, Token<ExprToken> comma3, Token<ExprToken> neg, Token<ExprToken> rp, Token<ExprToken> semi)
+[Production("test : TEST[d] LPAREN[d] ID COMMA[d] ExprParser_expressions COMMA[d] INT COMMA[d] [T|F]  RPAREN[d] SEMICOLON?")]
+        public int test(Token<ExprToken> id,  int expr, Token<ExprToken> expected,  Token<ExprToken> neg,  Token<ExprToken> semi)
         {
             Console.WriteLine("TEST : semi is here ? " + (semi.IsEmpty  ? "NO" : "YES"));
             int expectedValue = expected.IntValue;
@@ -153,8 +153,8 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
         }
 
         [Operand]
-        [Production("parenthesizedOperand : LPAREN ExprParser_expressions RPAREN")]
-        public int parenthesizedOperand(Token<ExprToken> lp, int expr, Token<ExprToken> rp)
+        [Production("parenthesizedOperand : LPAREN[d] ExprParser_expressions RPAREN[d]")]
+        public int parenthesizedOperand(int expr)
         {
             return expr;
         }

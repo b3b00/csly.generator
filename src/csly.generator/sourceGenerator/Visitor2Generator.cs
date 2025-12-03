@@ -110,13 +110,19 @@ namespace csly.generator.sourceGenerator
         {
             string args = "";
             StringBuilder compute = new StringBuilder();
+            bool started = false;
             for (int i = 0; i < rule.Clauses.Count; i++)
             {
                 var clause = rule.Clauses[i];
-                if (i > 0)
+                if (clause is TerminalClause terminal && terminal.Discarded)
+                {                    
+                    continue;
+                }
+                if (started)
                 {
                     args += ", ";
                 }
+                started = true;
                 args += $"arg{i}";
 
                 if (clause is TerminalClause || clause is ChoiceClause choice && choice.IsTerminalChoice)
