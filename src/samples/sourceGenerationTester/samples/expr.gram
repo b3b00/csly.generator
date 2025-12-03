@@ -60,7 +60,7 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
                 (x) =>
                 {
                     var id = x.Token(0);
-                    var expr = x.Value(0);
+                    var expr = x.Value(1);
                     Console.WriteLine($"HEADER PARAM: {id.Value} with expression value {expr}");
                     variables[id.Value] = expr; 
                     return expr;
@@ -71,7 +71,7 @@ Dictionary<string, int> variables = new Dictionary<string, int>();
             foreach (var pair in additionalPairs)
             {
                 var id = pair.Token(0);
-                var expr = pair.Value(0);
+                var expr = pair.Value(1);
                 Console.WriteLine($"HEADER PARAM: {id.Value} with expression value {expr}");
                 variables[id.Value] = expr;
             }

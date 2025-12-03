@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace csly.generator.sourceGenerator;
 
@@ -18,21 +19,27 @@ internal class LexerBuilderGenerator
 
     private StaticLexerBuilder _staticLexerBuilder;
 
-    public string GenerateLexer(EnumDeclarationSyntax enumDeclarationSyntax, string outputType,
-        Dictionary<string, SyntaxNode> declarationsByName, StaticLexerBuilder staticLexerBuilder)
+
+
+    public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax, 
+        Dictionary<string, SyntaxNode> declarationsByName)
     {
-        _staticLexerBuilder = staticLexerBuilder;
         string name = enumDeclarationSyntax.Identifier.ToString();
+        _templateEngine = new TemplateEngine(name, "", "", _staticLexerBuilder.NameSpace);
 
-        _templateEngine = new TemplateEngine(name, "", "", staticLexerBuilder.NameSpace);
-
-        LexerSyntaxWalker walker = new(name, declarationsByName, this, staticLexerBuilder);
+        LexerSyntaxWalker walker = new(name, declarationsByName, this, _staticLexerBuilder);
         walker.Visit(enumDeclarationSyntax);
 
-        var fsm = GenerateFSM(staticLexerBuilder);
+    }
 
-        string dump = fsm.ToString();
-        System.IO.File.WriteAllText($"C:\\tmp\\generation\\{name}_fsm.txt", dump);
+    public string GenerateLexer(EnumDeclarationSyntax enumDeclarationSyntax, string outputType,
+        Dictionary<string, SyntaxNode> declarationsByName, StaticLexerBuilder staticLexerBuilder)
+    {       
+
+        var fsm = GenerateFSM();
+
+        //string dump = fsm.ToString();
+        //System.IO.File.WriteAllText($"C:\\tmp\\generation\\{name}_fsm.txt", dump);
         return Generate(fsm);
 
     }
@@ -48,12 +55,18 @@ internal class LexerBuilderGenerator
 
 
     public const int start = -1;
-    
-    public Fsm GenerateFSM(StaticLexerBuilder staticLexerBuilder)
+
+    public LexerBuilderGenerator(StaticLexerBuilder staticLexerBuilder)
+    {
+        _staticLexerBuilder = staticLexerBuilder;
+        
+    }
+
+    public Fsm GenerateFSM()
     {
 
         Fsm fsm = new();
-        foreach(var lexem in staticLexerBuilder.Lexemes)
+        foreach(var lexem in _staticLexerBuilder.Lexemes)
         {
             fsm.GoTo(startState);
             switch (lexem.Type)

@@ -176,10 +176,12 @@ public class CslyParserGenerator : IIncrementalGenerator
                     }); 
                     usings = usings.Distinct().ToList();
 
-                    LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator();
+                    StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
+                    LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator(staticLexerBuilder);
                     try
-                    {                        
-                        StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
+                    {                                                
+                        lexerGenerator.AnalyseLexer(lexerDecl as EnumDeclarationSyntax, declarationsByName);
+
                         var t = lexerGenerator.GenerateLexer(lexerDecl as EnumDeclarationSyntax, outputType,
                             declarationsByName, staticLexerBuilder);
                         StaticLexerGenerator staticLexerGenerator =
