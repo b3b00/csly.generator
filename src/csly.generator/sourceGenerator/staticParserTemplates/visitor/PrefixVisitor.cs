@@ -7,5 +7,5 @@
 
        <#RETURN#>
     }
-    return Dispatch(node.Children[1] as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+    return Dispatch(node.Children[0] as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
 }

@@ -32,11 +32,11 @@ var parser = new Static<#PARSER#>();
             if (result.IsOk)
             {
                 Console.WriteLine("Parsing succeeded.");
-Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
-//return null;
-// visiting
-var visitor = new <#PARSER#>Visitor(_instance);
-                var output = visitor.Visit<#ROOT#>(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+                //Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
+                
+                // visiting
+                var visitor = new <#PARSER#>Visitor2(_instance);
+                var output = visitor.Visit(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
                 return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);
             }
             else

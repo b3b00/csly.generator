@@ -51,13 +51,15 @@ namespace csly.generator.sourceGenerator
                 {
                     expressionRules.Add(operandRule);
                 }
-            
 
-            var rootRule = new Rule($"{model.ParserName}_expressions", new List<IClause>() { new NonTerminalClause($"Expr_Prec_{precedences[0]}") }, "")
+            if (precedences.Any())
             {
-                IsByPassRule = true
-            };
-            expressionRules.Add(rootRule);
+                var rootRule = new Rule($"{model.ParserName}_expressions", new List<IClause>() { new NonTerminalClause($"Expr_Prec_{precedences[0]}") }, "")
+                {
+                    IsByPassRule = true
+                };
+                expressionRules.Add(rootRule);
+            }
             model.Rules.AddRange(expressionRules);
         }
 

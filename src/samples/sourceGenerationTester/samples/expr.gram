@@ -19,16 +19,83 @@ namespace expr;
         [Sugar(")")] RPAREN,
         [Sugar("!")] FACTORIAL,
 
+        [Sugar(";")] SEMICOLON,
+        [Sugar("=")] ASSIGN,
+        [Sugar(",")] COMMA,
+
+        [AlphaNumId] ID,
+        [Keyword("PRINT")] PRINT,
+        [Keyword("TEST")] TEST,
+        [Keyword("TRUE")] T,
+        [Keyword("FALSE")] F,
+
+
+
+
     }
 
     [ParserRoot("root")]
     public class ExprParser
     {
-    [Production("root : ExprParser_expressions")]
-        public int Root(int value)
+
+Dictionary<string, int> variables = new Dictionary<string, int>();
+
+[Production("root : statement*")]
+        public int root(List<int> statements)
         {
-            return value;
+            return statements.Sum();
         }
+
+        [Production("statement : [test|print]")]
+        public int statement_assign(int statement)
+        {
+            return statement;
+        }
+
+        
+
+
+[Production("test : TEST LPAREN ID COMMA ExprParser_expressions COMMA INT COMMA [T|F]  RPAREN SEMICOLON")]
+        public int test(Token<ExprToken> test, Token<ExprToken> lp, Token<ExprToken> id, Token<ExprToken> comma1, int expr, Token<ExprToken> comma2, Token<ExprToken> expected, Token<ExprToken> comma3, Token<ExprToken> neg, Token<ExprToken> rp, Token<ExprToken> semi)
+        {
+            int expectedValue = expected.IntValue;
+            bool isNegated = neg.TokenID == ExprToken.T;
+            expectedValue = isNegated ?  -expectedValue : expectedValue;
+            
+            if (expr != expectedValue)
+            {
+                Console.WriteLine($"\x1b[31mTEST FAILED for variable {id.Value}: got {expr} but was expecting {expectedValue}\x1b[0m");
+            }
+            else
+            {
+                Console.WriteLine($"\x1b[32mTEST SUCCEEDED for variable {id.Value}: got expected value {expectedValue}\x1b[0m");
+            }
+        
+            variables[id.Value] = expr;
+
+            return expr;
+        }
+
+        
+
+
+
+        [Production("print : PRINT ID SEMICOLON")]
+        public int print(Token<ExprToken> printTok, Token<ExprToken> id, Token<ExprToken> semi)
+        {
+            if (variables.TryGetValue(id.Value, out int value))
+            {
+                Console.WriteLine($"PRINT: {id.Value} = {value}");
+            }
+            else
+            {
+                Console.WriteLine($"\x1b[31mERROR: variable {id.Value} is not defined.\x1b[0m");
+            }
+            return 0;
+        }
+
+    #region  Expressions
+
 
     [Operation("PLUS",Affix.InFix,Associativity.Left,10)]
         public int Plus(int left, Token<ExprToken> op, int right)
@@ -85,6 +152,8 @@ namespace expr;
         {
             return expr;
         }
+
+        #endregion
 
     }
 

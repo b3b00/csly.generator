@@ -11,7 +11,37 @@ internal class <#PARSER#>Visitor2
         _instance = instance;
     }
 
-    public <#OUTPUT#> Visit(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+private Token<<#LEXER#>> VisitTerminal(SyntaxNode<<#LEXER#>,<#OUTPUT#>> node, int childIndex) {
+            return (node.Children[childIndex] as SyntaxLeaf<<#LEXER#>,<#OUTPUT#>>).Token;
+    }
+
+private <#OUTPUT#> VisitNonTerminal(SyntaxNode<<#LEXER#>,<#OUTPUT#>> node, int childIndex) {
+            return Dispatch(node.Children[childIndex] as SyntaxNode <<#LEXER#>,<#OUTPUT#>>);
+    }
+
+ private List<<#OUTPUT#>> VisitManyNonTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+{
+    List<int> results = new List<int>();
+    var manyNode = node.Children[childIndex] as SyntaxNode<ExprToken, int>;
+    for (int i = 0; i < manyNode.Children.Count; i++)
+    {
+        results.Add(Dispatch(manyNode.Children[i] as SyntaxNode<ExprToken, int>));
+    }
+    return results;
+}
+
+private List<Token<<#LEXER#>>> VisitManyTerminal(SyntaxNode<ExprToken, int> node, int childIndex)
+{
+    List<Token<ExprToken>> results = new List<Token<ExprToken>>();
+    var manyNode = node.Children[childIndex] as SyntaxNode<ExprToken, int>;
+    for (int i = 0; i < manyNode.Children.Count; i++)
+    {
+        results.Add((manyNode.Children[i] as SyntaxLeaf<ExprToken, int>).Token);
+    }
+    return results;
+}
+
+public <#OUTPUT#> Visit(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
     {
         var squasher = new Squasher<<#LEXER#>, <#OUTPUT#>>();
         node = squasher.Squash(node);

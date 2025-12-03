@@ -27,6 +27,7 @@ public class ParserBuilderGenerator
     private Dictionary<string, GroupClause> _groupParsers = new();
     private Dictionary<string, List<Rule>> _ruleParsers = new();
     private StaticParserBuilder _staticParserBuilder;
+    private Visitor2Generator _visitor2Generator;
 
     private List<Rule> _rules = new();
 
@@ -39,6 +40,7 @@ public class ParserBuilderGenerator
         _namespace = ns;
         _lexerGeneratorTokens = lexerGeneratorTokens;
         _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns);
+        
     }
 
     #region generate parser
@@ -51,6 +53,7 @@ public class ParserBuilderGenerator
 
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model.Rules;
+        _visitor2Generator = new Visitor2Generator(_lexerName, _parserName, _outputType, _namespace, _templateEngine, _staticParserBuilder.Model.Rules);
 
         ExpressionRulesGenerator expressionRulesGenerator = new();
         expressionRulesGenerator.Generate(_staticParserBuilder.Model);
@@ -1221,282 +1224,14 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
         return content;
     }
 
-    #endregion
-
-
-    #region visitor 2
-
-    public string GenerateVisitor2()
+    internal string GenerateVisitor2()
     {
-        StringBuilder builder = new();        
-        
-
-        // DISPATCHERS
-        // case <#LEXER#>.{xxxx} :
-        //   return Visit{NonTerminal}_{index}(node);
-        StringBuilder dispatchers = new StringBuilder();
-        foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
-        {
-            dispatchers.AppendLine($"// Visitors for {rulesByHead.Key}");
-            var first = rulesByHead.First();
-              
-                for (int i = 0; i < rulesByHead.Count(); i++)
-                {
-                    var r = rulesByHead.ToList()[i];
-                    var prefixCase = $@"case ""{rulesByHead.Key}_{i}"":
-                    return Visit{rulesByHead.Key}(node);";
-                    dispatchers.AppendLine(prefixCase);
-                }             
-        }
-
-        StringBuilder visitors = new StringBuilder();
-
-        foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
-        {
-            bool isGroup = rulesByHead.Count() == 1 && rulesByHead.ToList()[0].IsSubRule;
-            bool isExpressionRule = rulesByHead.ToList().All(x => x.IsExpressionRule);
-            bool isByPassRule = rulesByHead.ToList().All(x => x.IsByPassRule);
-
-            var first = rulesByHead.First();
-            if (first.IsInfixExpressionRule)
-            {
-                var infixVisitor = GenerateInfixExpressionVisitor2(first, 0);
-                visitors.AppendLine(infixVisitor);
-                continue;
-            }
-            else if (first.ExpressionAffix == Affix.PostFix)
-            {
-                var postfixVisitor = GeneratePostfixExpressionVisitor2(first, 0);
-                visitors.AppendLine(postfixVisitor);
-                continue;
-            }
-            else if (first.ExpressionAffix == Affix.PreFix)
-            {
-                var postfixVisitor = GeneratePrefixExpressionVisitor2(first, 0);
-                visitors.AppendLine(postfixVisitor);
-                continue;
-            }
-            else if (first.ExpressionAffix == Affix.PreFix && first.IsByPassRule && first.Clauses.Count == 1)
-            {
-                var prefixVisitor = "";
-                visitors.AppendLine(prefixVisitor);
-                continue;
-            }
-            else
-            {
-                var v = GenerateVisitorRule2(first, 0);
-                visitors.AppendLine(v);
-                continue;
-            }
-        }
-
-
-        var visitor = _templateEngine.ApplyTemplate("Visitor2Template",
-            additional: new Dictionary<string, string>()
-            {
-                { "VISITORS", visitors.ToString() },
-                { "NAMESPACE", _namespace },
-                {"DISPATCHERS", dispatchers.ToString() }                
-            });
-        return visitor;
-    }
-
-
-    private string GenerateVisitorRule2(Rule rule, int index)
-    {
-        string args = "";
-        StringBuilder compute = new StringBuilder();
-        for (int i = 0; i < rule.Clauses.Count; i++)
-        {
-            var clause = rule.Clauses[i];
-            if (i > 0)
-            {
-                args += ", ";
-            }
-            args += $"arg{i}";
-
-            if (clause is TerminalClause || clause is ChoiceClause choice && choice.IsTerminalChoice)
-            {
-                compute.AppendLine($"var arg{i} = (node.Children[{i}] as SyntaxLeaf<{_lexerName},{_outputType}>).Token;");
-            }
-            else
-            {
-                compute.AppendLine($"var arg{i} = Dispatch(node.Children[{i}] as SyntaxNode<{_lexerName}, {_outputType}>);");
-            }
-        }
-
-        var content = _templateEngine.ApplyTemplate(rule.IsByPassRule ? "ByPassRuleVisitor" : "RuleVisitor", rule.Name,
-            additional: new Dictionary<string, string>()
-            {
-                {"COMPUTE_ARGS", compute.ToString() },
-                {"ARGS", args },                
-                {"METHOD", rule.MethodName },                 
-            });
-        GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
-        return content;
-    }
-
-    private string GenerateInfixExpressionVisitor2(Rule rule, int index)
-    {
-        GeneratorLogger.Log($"\nGenerating infix expression visitor for rule {rule.Name} : {rule.Dump()}");
-
-        var operatorClause = rule.Clauses[1];
-        StringBuilder returnBuilder = new StringBuilder();
-
-        if (operatorClause is ChoiceClause operatorChoice)
-        {
-            returnBuilder.AppendLine("switch(arg1.TokenID) {");
-            foreach (var choice in operatorChoice.Choices)
-            {
-                if (choice is TerminalClause terminalChoice)
-                {
-                    if (rule.TokenToVisitorMethodName.TryGetValue(terminalChoice.Name, out var methodName))
-                    {
-                        returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
-{{
-    return _instance.{methodName}(arg0, arg1, arg2);    
-    break;
-}}");
-                    }
-                }
-            }
-            returnBuilder.AppendLine(@$"
-default: {{
-throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented for precedence {rule.Precedence}"");
-        }}
-}}");
-        }
-        else if (rule.Clauses[1] is TerminalClause terminalClause)
-        {
-            if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
-            {
-                returnBuilder.AppendLine(@$" case <#LEXER#>.{terminalClause.Name} :
-{{
-    return _instance.{methodName}(arg0, arg1, arg2);    
-    break;
-}}");
-            }
-        }
-
-        var content = _templateEngine.ApplyTemplate("InfixVisitor", rule.Name,
-            additional: new Dictionary<string, string>()
-            {
-                {"LEFT_NAME", rule.Clauses[0].Name },
-                {"RIGHT_NAME", rule.Clauses[2].Name },
-                {"INDEX",index.ToString() },
-                {"METHOD_NAME", rule.MethodName }, // TODO there may are multiple methods for the same rule
-                {"LOWER_PRECEDENCE_VISITOR", rule.Clauses[0].Name },
-                {"RETURN_TYPE", _outputType },
-                    {"RETURN", returnBuilder.ToString() },
-            });
-        GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
-        return content;
-    }
-
-    private string GeneratePostfixExpressionVisitor2(Rule rule, int index)
-    {
-        GeneratorLogger.Log($"\nGenerating postfix expression visitor for rule {rule.Name} : {rule.Dump()}");
-
-        var operatorClause = rule.Clauses[1];
-        StringBuilder returnBuilder = new StringBuilder();
-
-        if (operatorClause is ChoiceClause operatorChoice)
-        {
-            returnBuilder.AppendLine("switch(arg1.TokenID) {");
-            foreach (var choice in operatorChoice.Choices)
-            {
-                if (choice is TerminalClause terminalChoice)
-                {
-                    if (rule.TokenToVisitorMethodName.TryGetValue(terminalChoice.Name, out var methodName))
-                    {
-                        returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
-{{
-    return _instance.{methodName}(arg0, arg1);    
-    break;
-}}");
-                    }
-                }
-            }
-            returnBuilder.AppendLine(@$"
-default: {{
-throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented for precedence {rule.Precedence}"");
-        }}
-}}");
-        }
-        else if (rule.Clauses[1] is TerminalClause terminalClause)
-        {
-            if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
-            {
-                returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1);");
-            }
-        }
-
-        var content = _templateEngine.ApplyTemplate("PostfixVisitor", rule.Name,
-            additional: new Dictionary<string, string>()
-            {
-                {"LEFT_NAME", rule.Clauses[0].Name },
-                {"INDEX",index.ToString() },
-                {"METHOD_NAME", rule.MethodName }, // TODO there may are multiple methods for the same rule
-                {"LOWER_PRECEDENCE_VISITOR", rule.Clauses[0].Name },
-                {"RETURN_TYPE", _outputType },
-                    {"RETURN", returnBuilder.ToString() },
-            });
-        GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
-        return content;
-    }
-
-    private string GeneratePrefixExpressionVisitor2(Rule rule, int index)
-    {
-        GeneratorLogger.Log($"\nGenerating postfix expression visitor for rule {rule.Name} : {rule.Dump()}");
-
-        var operatorClause = rule.Clauses[0];
-        StringBuilder returnBuilder = new StringBuilder();
-
-        if (operatorClause is ChoiceClause operatorChoice)
-        {
-            returnBuilder.AppendLine("switch(arg1.TokenID) {");
-            foreach (var choice in operatorChoice.Choices)
-            {
-                if (choice is TerminalClause terminalChoice)
-                {
-                    if (rule.TokenToVisitorMethodName.TryGetValue(terminalChoice.Name, out var methodName))
-                    {
-                        returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
-{{
-    return _instance.{methodName}(arg0, arg1);    
-    break;
-}}");
-                    }
-                }
-            }
-            returnBuilder.AppendLine(@$"
-default: {{
-throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented for precedence {rule.Precedence}"");
-        }}
-}}");
-        }
-        else if (operatorClause is TerminalClause terminalClause)
-        {
-            if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
-            {
-                returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1);");
-            }
-        }
-
-        var content = _templateEngine.ApplyTemplate("PrefixVisitor", rule.Name,
-            additional: new Dictionary<string, string>()
-            {
-                {"LEFT_NAME", rule.Clauses[0].Name },
-                {"INDEX",index.ToString() },
-                {"METHOD_NAME", rule.MethodName }, // TODO there may are multiple methods for the same rule
-                {"LOWER_PRECEDENCE_VISITOR", rule.Clauses[0].Name },
-                {"RETURN_TYPE", _outputType },
-                    {"RETURN", returnBuilder.ToString() },
-            });
-        GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
-        return content;
+        return _visitor2Generator.GenerateVisitor();
     }
 
     #endregion
+
+
+
 
 }
