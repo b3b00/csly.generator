@@ -1,1 +1,0 @@
-﻿var arg<#INDEX#> = VisitChoice_<#NAME#>((<#NODE_TYPE#><<#LEXER#>, <#OUTPUT#>>)node.Children[<#INDEX#>]);

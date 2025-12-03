@@ -224,17 +224,6 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                         context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
 
-                        var staticVisitor = parserBuilderGenerator.GenerateStaticVisitor();
-
-                        string visitorCode = $@"
-
-{string.Join(Environment.NewLine, usings)}
-
-    {staticVisitor}
-
-";
-                        context.AddSource($"{className}Visitor.g.cs", SourceText.From(visitorCode, Encoding.UTF8));
-
                         var staticVisitor2 = parserBuilderGenerator.GenerateVisitor2();
 
                         context.AddSource($"{className}Visitor2.g.cs", SourceText.From(staticVisitor2, Encoding.UTF8));

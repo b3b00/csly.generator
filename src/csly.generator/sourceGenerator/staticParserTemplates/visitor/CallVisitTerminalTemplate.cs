@@ -1,1 +1,0 @@
-﻿var arg<#INDEX#> = (node.Children[<#INDEX#>] as SyntaxLeaf<<#LEXER#>, <#OUTPUT#>>).Token;
