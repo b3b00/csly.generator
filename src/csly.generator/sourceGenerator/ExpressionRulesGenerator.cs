@@ -17,6 +17,10 @@ namespace csly.generator.sourceGenerator
 
         public void Generate(ParserModel model)
         {
+            if (model.Operations == null || model.Operations.Count == 0)
+            {
+                return;
+            }
             var operationsByPrecedence = model.Operations.GroupBy(x => x.Precedence).ToDictionary(x => x.Key, x => x.ToList());
 
             Dictionary<int, string> ruleNameForPrecedence = new Dictionary<int, string>();

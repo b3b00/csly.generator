@@ -86,6 +86,13 @@ internal class LexerBuilderGenerator
                     }
                 case model.lexer.GenericToken.Double:
                     {
+                        if (fsm.GetState(inIntState) == null)
+                        {
+                            fsm.GoTo(startState);
+                            var next = fsm.RangeTransition('0', '9');
+                            fsm.Mark(inIntState);
+                            fsm.RangeTransitionTo(inIntState, '0', '9');
+                        }
                         fsm.GoTo(inIntState);
                         fsm.Transition('.');
                         fsm.Mark(inDoubleState);

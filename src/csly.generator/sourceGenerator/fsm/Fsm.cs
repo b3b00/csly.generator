@@ -399,6 +399,15 @@ internal class Fsm
         return _states[targetState];
     }
 
+    internal State GetState(string stateName)
+    {
+        if (_statesByName.TryGetValue(stateName, out var state))
+        {
+            return state;
+        }
+        return null;
+    }
+
     internal void AddKeyword(string arg0, string name)
     {
         _keywords[arg0] = name;
