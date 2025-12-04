@@ -25,7 +25,7 @@ public partial class Program
     {
 
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-        var parser = fs.ReadAllText("/samples/expr.gram");
+        var parser = fs.ReadAllText("/samples/json.gram");
 
         var result = GenerateSource(parser, "SimpleParser");
 

@@ -30,7 +30,15 @@ internal class StaticLexerBuilder
 
     public void AddLexeme(Lexeme lexeme)
     {
-        _lexemes.Add(lexeme);
+        // always put int token at first position so that it get before double token
+        if (lexeme.Type == GenericToken.Int)
+        {
+            _lexemes.Insert(0, lexeme);
+        }
+        else
+        {
+            _lexemes.Add(lexeme);
+        }
     }
 
     public void Add(GenericToken type, string name, List<string> modes, params string[] args)

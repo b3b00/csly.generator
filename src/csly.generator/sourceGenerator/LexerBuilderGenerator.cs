@@ -80,6 +80,7 @@ internal class LexerBuilderGenerator
                     {
                         var next = fsm.RangeTransition('0', '9');
                         fsm.Mark("InInt");
+                        fsm.End(lexem.Name);
                         fsm.RangeTransitionTo("InInt", '0', '9');
                         fsm.End(lexem.Name);
                         break;
