@@ -12,5 +12,20 @@ public enum ExprToken
     [Sugar("(")] LPAREN,
     [Sugar(")")] RPAREN,
     [Sugar("!")] FACTORIAL,
+
+    [Sugar(";")] SEMICOLON,
+    [Sugar("=")] ASSIGN,
+    [Sugar(",")] COMMA,
+
+    [AlphaNumId] ID,
+    [Keyword("PRINT")] PRINT,
+    [Keyword("TEST")] TEST,
+    [Keyword("TRUE")] T,
+    [Keyword("FALSE")] F,
+    [Keyword("HEAD")] HEAD,
+
+
+
+
 }
 

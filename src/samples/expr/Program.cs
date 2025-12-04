@@ -9,12 +9,44 @@ namespace expr
     public  class Program
     {
 
-        private static void ParseExpr(string source, int expecting = -666)
+        private static void ParseExpr2(params (string source, int expecting)[] testCase)
         {
+            StringBuilder source = new StringBuilder();
+            source.AppendLine("GO : HEAD( AA 1, BB 1*2, CC 5-2 )");
+            char argId = (char)(((byte)'A') - 1);
+            for (int i = 0; i < testCase.Length; i++)
+            {
+                argId = (char)(((byte)argId) + 1);
+
+                source.Append($"TEST({argId},{testCase[i].source},{Math.Abs(testCase[i].expecting)}, {(testCase[i].expecting < 0 ? "TRUE" : "FALSE")}  )");
+                if (i % 2 == 0)
+                {
+                    source.Append(";");
+                }
+                source.AppendLine();
+            }
+            argId = (char)(((byte)'A') - 1);
+            for (int i = 0; i < testCase.Length; i++)
+            {
+                argId = (char)(((byte)argId) + 1);
+                source.Append($"PRINT {argId}");
+                if (i % 2 == 0)
+                {
+                    source.Append(";");
+                }
+                source.AppendLine();
+            }
+
+            var program = source.ToString();
+            Console.WriteLine("[[");
+            Console.WriteLine(program);
+            Console.WriteLine("]]");
             ExprParser exprInstance = new ExprParser();
             ExprParserMain exprMain = new ExprParserMain(exprInstance);
 
-            var exprParsed = exprMain.Parse(source);
+            var expecting = testCase.Select(tc => tc.expecting).Sum();
+
+            var exprParsed = exprMain.Parse(program);
             if (exprParsed.IsOk)
             {
                 Console.WriteLine($"\x1b[34mParsing [{source}] succeeded.\x1b[0m");
@@ -46,17 +78,26 @@ namespace expr
 
         public static void Main(string[] args)
         {
-            var instance = new ExprParser();
-            var main = new ExprParserMain( instance);
-            ParseExpr("1 +1", 2);
-            //ParseExpr("1 + 2 * 3", 7);
-            //ParseExpr("-1 + 2 * 3", 5);
-            //ParseExpr("2 * -1", -2);
-            //ParseExpr("10 / 2 + 3", 8);
-            //ParseExpr("10 / (2 + 3)", 2);
-            //ParseExpr("-1 + -1", -2);
-            //ParseExpr("5!", 5 * 4 * 3 * 2 * 1);
-            //ParseExpr("-5!", -5 * 4 * 3 * 2 * 1);
+
+            Console.WriteLine("============= EXPRESSION PARSER TESTER =============");
+
+           
+
+            ParseExpr2
+            (("1 + (2 + 3)", 6)
+            , ("1 - 2 - 3", -4)
+            , ("1 + 2 * 3", 7)
+            , ("-1 + 2 * 3", 5)
+            , ("2 * -1", -2)
+            , ("10 / 2 + 3", 8)
+            , ("10 / (2 + 3)", 2)
+            , ("-1 + -1", -2)
+            , ("5!", 120)
+            , ("-5!", -120)
+            );
+
+            return;
+            
 
         }
     }
