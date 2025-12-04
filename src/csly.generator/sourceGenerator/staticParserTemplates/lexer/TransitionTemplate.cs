@@ -1,7 +1,7 @@
 ﻿
 if (<#CONDITION#>)
 {
-
+    //Console.WriteLine($"#<#CURRENT_STATE#> -- '{ch}' (<#CONDITION#>) --> #<#NEW_STATE#> ");
     _currentState = <#NEW_STATE#>;
     _currentPosition.Index++;
     _currentPosition.Column++;

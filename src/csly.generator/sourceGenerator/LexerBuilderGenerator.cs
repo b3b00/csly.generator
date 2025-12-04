@@ -208,6 +208,8 @@ internal class LexerBuilderGenerator
 
     public string Generate(Fsm fsm)
     {
+        System.IO.File.WriteAllText($"C:\\tmp\\generation\\{_staticLexerBuilder.LexerName}_fsm.txt", fsm.ToString());
+
         var statesCode = string.Join("\n", fsm.States.Select(state => Generate(fsm, state)));
 
         var statesCall = string.Join("\n else ", fsm.States.Select(state =>
@@ -265,6 +267,7 @@ internal class LexerBuilderGenerator
             
             return _templateEngine.ApplyTemplate(nameof(LexerTemplates.TransitionTemplate), additional: new Dictionary<string, string>()
                 {
+                    { "CURRENT_STATE", state.Id.ToString() },
                     { "CONDITION", transition.StringCondition },
                     { "NEW_STATE", targetState.Id.ToString() },
                     {"TOKEN_NAME", targetState.TokenName ?? "null" },

@@ -437,7 +437,8 @@ internal class Fsm
             sb.AppendLine($"State {state.Id} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName}");
             foreach (var transition in GetTransitions(state.Id))
             {
-                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {transition.TargetState}");
+                var target = GetState(transition.TargetState);
+                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id} {(target.IsEnd ? "(END)": "")}");
             }
 
         }
