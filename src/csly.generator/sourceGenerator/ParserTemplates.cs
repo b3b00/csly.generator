@@ -34,23 +34,4 @@ internal enum ParserTemplates
     ExpressionPostfixRuleParser
 }
 
-internal enum VisitorTemplates
-{
-    CallVisitNonTerminalTemplate,
-    CallVisitTerminalTemplate,
-    CallVisitRuleTemplate,
-    NonTerminalVisitorTemplate,
-    RuleVisitorTemplate,
-    VisitorTemplate,
-    CallVisitManyTemplate,
-    ZeroOrMoreVisitorTemplate,
-    OneOrMoreVisitorTemplate,
-    CallVisitOptionTemplate,
-    OptionVisitorTemplate,
-    CallVisitChoiceTemplate,
-    TerminalChoiceVisitorTemplate,
-    NonTerminalChoiceVisitorTemplate,
-    NonTerminalChoiceVisitorCall,
-    InfixExpressionVisitorTemplate,
-    PostfixExpressionVisitorTemplate
-}   
+
