@@ -15,7 +15,21 @@ internal class State
 
     public bool IsEnd { get; set; }
 
-    public string TokenName { get; set; }
+    public bool IsExplicitEnd { get; set; }
+
+    private string _tokenName;
+
+    public string TokenName
+    {
+        get => _tokenName; set
+        {
+            if (!string.IsNullOrEmpty(_tokenName) && value == null)
+            {
+                ;
+            }
+            _tokenName = value;
+        }
+    }
     public State(int id, bool isEnd = false)
     {
         Id = id;
@@ -128,12 +142,13 @@ internal class Fsm
         return id;
     }
 
-    public void End(string tokenName)
+    public void End(string tokenName, bool isExplicit = false)
     {
         if (_states.TryGetValue(_currentState, out var state))
         {
             state.IsEnd = true;
             state.TokenName = tokenName;
+            state.IsExplicitEnd = isExplicit;
         }
     }
 

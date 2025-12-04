@@ -237,8 +237,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                         var explicitTokens = parserBuilderGenerator.GetExplicitTokens();
                         staticLexerBuilder.SetExplicitTokens(explicitTokens);
                         var t = lexerGenerator.GenerateLexer();
-                        StaticLexerGenerator staticLexerGenerator =
-                            new StaticLexerGenerator(staticLexerBuilder);
+                        
 
                         var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}

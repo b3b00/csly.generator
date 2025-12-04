@@ -73,7 +73,7 @@ internal class LexerBuilderGenerator
                 case model.lexer.GenericToken.SugarToken:
                     {
                         fsm.ConstantTransition(lexem.Arg0);
-                        fsm.End(lexem.Name);
+                        fsm.End(lexem.Name, lexem.IsExplicit);
                         break;
                     }
                 case model.lexer.GenericToken.Int:
@@ -239,13 +239,19 @@ internal class LexerBuilderGenerator
 
         var transitionsCode = string.Join("\n",transitions.Select(transition =>
         {
+            
 
             var targetState = fsm.GetState(transition.TargetState);
 
-            var endingTransition = state.IsEnd ? 
+            ;
+
+            var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
+            var match = $"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{targetState.TokenName}, memory, _startPosition);";
+
+        var endingTransition = state.IsEnd ? 
             @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
         var memory = new ReadOnlyMemory<char>(sliced.ToArray());
-        _currentMatch = new FsmMatch<{_staticLexerBuilder.LexerName}>({_staticLexerBuilder.LexerName}.{targetState.TokenName}, memory, _startPosition)  ;"
+        _currentMatch = {(targetState.IsExplicitEnd ? explicitMatch : match)};"
         :
         "";
 
@@ -255,15 +261,18 @@ internal class LexerBuilderGenerator
                     { "CONDITION", transition.StringCondition },
                     { "NEW_STATE", targetState.Id.ToString() },
                     {"TOKEN_NAME", targetState.TokenName ?? "null" },
-                    { "ENDING", endingTransition }
+                    //{ "ENDING", endingTransition }
                 });
             
         }));
 
+        var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
+        var match = $"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition);";
+
         var ending = state.IsEnd ?
             @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
         var memory = new ReadOnlyMemory<char>(sliced.ToArray());
-        _currentMatch = new FsmMatch<{_staticLexerBuilder.LexerName}>({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition)  ;"
+        _currentMatch = {(state.IsExplicitEnd ? explicitMatch : match)} ;"
         :
         "";
 

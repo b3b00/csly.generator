@@ -48,14 +48,14 @@ namespace ebnf.grammar
         [Production("clause : IDENTIFIER ZEROORMORE")]
         public GrammarNode ZeroMoreClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
-            var innerClause = BuildTerminalOrNonTerimal(id.Value, true);
+            var innerClause = BuildTerminalOrNonTerminal(id.Value, true);
             return new ZeroOrMoreClause(innerClause as IClause);
         }
 
         [Production("clause : IDENTIFIER ONEORMORE")]
         public GrammarNode OneMoreClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
-            var innerClause = BuildTerminalOrNonTerimal(id.Value);
+            var innerClause = BuildTerminalOrNonTerminal(id.Value);
             return new OneOrMoreClause(innerClause as IClause);
         }
 
@@ -64,28 +64,28 @@ namespace ebnf.grammar
         [Production("clause : IDENTIFIER LCURLY INT DASH INT RCURLY")]
         public GrammarNode RepeatClauseMinMax(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> lcurl, Token<EbnfTokenGeneric> min, Token<EbnfTokenGeneric> dash, Token<EbnfTokenGeneric> max, Token<EbnfTokenGeneric> rcurl)
         {
-            var innerClause = BuildTerminalOrNonTerimal(id.Value);
+            var innerClause = BuildTerminalOrNonTerminal(id.Value);
             return new RepeatClause(innerClause as IClause, min.IntValue, max.IntValue);
         }
 
         [Production("clause : IDENTIFIER LCURLY INT RCURLY")]
         public GrammarNode RepeatClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> lcurl, Token<EbnfTokenGeneric> min, Token<EbnfTokenGeneric> rcurl)
         {
-            var innerClause = BuildTerminalOrNonTerimal(id.Value);
+            var innerClause = BuildTerminalOrNonTerminal(id.Value);
             return new RepeatClause(innerClause as IClause, min.IntValue, min.IntValue);
         }
 
         [Production("clause : IDENTIFIER OPTION")]
         public GrammarNode OptionClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
-            var innerClause = BuildTerminalOrNonTerimal(id.Value);
+            var innerClause = BuildTerminalOrNonTerminal(id.Value);
             return new OptionClause(innerClause as IClause);
         }
 
         [Production("clause : IDENTIFIER DISCARD ")]
         public GrammarNode SimpleDiscardedClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discard)
         {
-            var clause = BuildTerminalOrNonTerimal(id.Value, true);
+            var clause = BuildTerminalOrNonTerminal(id.Value, true);
             return clause;
         }
 
@@ -112,28 +112,28 @@ namespace ebnf.grammar
         [Production("choices : IDENTIFIER  ")]
         public GrammarNode ChoicesOne(Token<EbnfTokenGeneric> head)
         {
-            var choice = BuildTerminalOrNonTerimal(head.Value);
+            var choice = BuildTerminalOrNonTerminal(head.Value);
             return new ChoiceClause(choice as IClause);
         }
 
         [Production("choices : STRING")]
         public GrammarNode ChoicesString(Token<EbnfTokenGeneric> head)
         {
-            var choice = BuildTerminalOrNonTerimal(head.Value, discard: false);
+            var choice = BuildTerminalOrNonTerminal(head.Value, discard: false);
             return new ChoiceClause(choice as IClause);
         }
 
         [Production("choices : IDENTIFIER OR choices ")]
         public GrammarNode ChoicesMany(Token<EbnfTokenGeneric> head, Token<EbnfTokenGeneric> discardOr, GrammarNode tail)
         {
-            var headClause = BuildTerminalOrNonTerimal(head.Value);
+            var headClause = BuildTerminalOrNonTerminal(head.Value);
             return new ChoiceClause(headClause as IClause, (tail as ChoiceClause).Choices);
         }
 
         [Production("choices : STRING OR choices ")]
         public GrammarNode ChoicesManyExplicit(Token<EbnfTokenGeneric> head, Token<EbnfTokenGeneric> discardOr, GrammarNode tail)
         {
-            var headClause = BuildTerminalOrNonTerimal(head.Value, discard: false);
+            var headClause = BuildTerminalOrNonTerminal(head.Value, discard: false);
             return new ChoiceClause(headClause as IClause, (tail as ChoiceClause).Choices);
         }
 
@@ -141,21 +141,21 @@ namespace ebnf.grammar
         [Production("clause : IDENTIFIER ")]
         public GrammarNode SimpleClause(Token<EbnfTokenGeneric> id)
         {
-            var clause = BuildTerminalOrNonTerimal(id.Value);
+            var clause = BuildTerminalOrNonTerminal(id.Value);
             return clause;
         }
 
         [Production("clause : STRING")]
         public GrammarNode ExplicitTokenClause(Token<EbnfTokenGeneric> explicitToken)
         {
-            var clause = BuildTerminalOrNonTerimal(explicitToken.Value, discard: false);
+            var clause = BuildTerminalOrNonTerminal(explicitToken.Value, discard: false);
             return clause;
         }
 
         [Production("clause : STRING DISCARD")]
         public GrammarNode ExplicitTokenClauseDiscarded(Token<EbnfTokenGeneric> explicitToken, Token<EbnfTokenGeneric> discard)
         {
-            var clause = BuildTerminalOrNonTerimal(explicitToken.Value, discard: true);
+            var clause = BuildTerminalOrNonTerminal(explicitToken.Value, discard: true);
             return clause;
         }
 
@@ -258,14 +258,14 @@ namespace ebnf.grammar
         [Production("groupclause : IDENTIFIER ")]
         public GrammarNode GroupClause(Token<EbnfTokenGeneric> id)
         {
-            var clause = BuildTerminalOrNonTerimal(id.Value);
+            var clause = BuildTerminalOrNonTerminal(id.Value);
             return new GroupClause(clause as IClause);
         }
 
         [Production("groupclause : STRING ")]
         public GrammarNode GroupClauseExplicit(Token<EbnfTokenGeneric> explicitToken)
         {
-            var clause = BuildTerminalOrNonTerimal(explicitToken.Value, discard: false);
+            var clause = BuildTerminalOrNonTerminal(explicitToken.Value, discard: false);
             return new GroupClause(clause as IClause);
         }
 
@@ -275,14 +275,14 @@ namespace ebnf.grammar
         [Production("groupclause : IDENTIFIER DISCARD ")]
         public GrammarNode GroupClauseDiscarded(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
-            var clause = BuildTerminalOrNonTerimal(id.Value, true);
+            var clause = BuildTerminalOrNonTerminal(id.Value, true);
             return new GroupClause(clause as IClause);
         }
 
         [Production("groupclause : STRING DISCARD ")]
         public GrammarNode GroupClauseExplicitDiscarded(Token<EbnfTokenGeneric> explicitToken, Token<EbnfTokenGeneric> discarded)
         {
-            var clause = BuildTerminalOrNonTerimal(explicitToken.Value, true);
+            var clause = BuildTerminalOrNonTerminal(explicitToken.Value, true);
             return new GroupClause(clause as IClause);
         }
 
@@ -297,7 +297,7 @@ namespace ebnf.grammar
         #endregion
 
 
-        private GrammarNode BuildTerminalOrNonTerimal(string name, bool discard = false)
+        private GrammarNode BuildTerminalOrNonTerminal(string name, bool discard = false)
         {
 
             string token = null;
@@ -308,7 +308,15 @@ namespace ebnf.grammar
 
 
             if (isTerminal)
-                clause = new TerminalClause(name, discard);
+            {
+                if (name.StartsWith("'") && name.EndsWith("'"))
+                {
+                    token = name.Trim('\'');
+                    clause = new TerminalClause(Math.Abs(name.GetHashCode()).ToString(), token, discard);
+                }
+                else
+                    clause = new TerminalClause(name, discard);
+            }
             else
             {
                 if (name.StartsWith("'"))

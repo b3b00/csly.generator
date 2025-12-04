@@ -1,2 +1,2 @@
 public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseExplicitTerminal_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position, bool discarded = false)
-     => parseExplicitTerminal(tokens,"explicit",position,discarded);
+     => parseExplicitTerminal(tokens,"<#TOKEN#>",position,discarded);

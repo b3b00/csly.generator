@@ -197,7 +197,10 @@ public class ParserBuilderGenerator
             if (terminalClause.IsExplicit)
             {
                 // STATIC : beware non alphanumeric chars in terminalClause.Name
-                content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExplicitTerminalParserTemplate), terminalClause.Name);
+                content = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExplicitTerminalParserTemplate), terminalClause.Name , additional : new()
+                {
+                    {"TOKEN",terminalClause.ExplicitValue }
+                });
             }
             else
             {
@@ -208,15 +211,30 @@ public class ParserBuilderGenerator
         builder.AppendLine(content).AppendLine();
     }
 
+    private string leaderToString(Leader l) 
+    {
+        if (l.IsExplicit)
+        {
+            return $"new LeadingToken<{_lexerName}>(\"{l.Value}\")";
+        }
+        else
+        {
+            return $"new LeadingToken<{_lexerName}>({_lexerName}.{l.Value})";
+        }
+    }
+
     private void GenerateNonTerminal(NonTerminalClause nonTerminalClause, StringBuilder builder)
     {
+
+        
+
         if (_ruleParsers.TryGetValue(nonTerminalClause.Name, out var rules))
         {
             StringBuilder calls = new();
 
             var allLeaders = rules.SelectMany(r => r.Leaders)
                     .Distinct().ToList()
-                    .Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})");
+                    .Select(leaderToString);
             var expecting = string.Join(", ", allLeaders);
 
             for (int i = 0; i < rules.Count(); i++)
@@ -228,7 +246,7 @@ public class ParserBuilderGenerator
                 {
                     ;
                 }
-                var leaders = string.Join(", ", rule.Leaders.Distinct().Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})"));
+                var leaders = string.Join(", ", rule.Leaders.Distinct().Select(leaderToString));
                 string callTemplate = _templateEngine.ApplyTemplate(nameof(ParserTemplates.RuleCallTemplate), nonTerminalClause.Name,
                     additional: new Dictionary<string, string>()
                 {
@@ -281,6 +299,10 @@ public class ParserBuilderGenerator
         {
             if (c is TerminalClause tc)
             {
+                if (tc.IsExplicit)
+                {
+                    return $"new LeadingToken<{_lexerName}>(\"{tc.ExplicitValue}\")";
+                }
                 return $"new LeadingToken<{_lexerName}>({_lexerName}.{tc.Name})";
             }
             else if (c is NonTerminalClause ntc)
@@ -288,7 +310,7 @@ public class ParserBuilderGenerator
                 if (_ruleParsers.TryGetValue(ntc.Name, out var rules))
                 {
                     var leaders = rules.SelectMany(r => r.Leaders).Distinct()
-                        .Select(x => $"new LeadingToken<{_lexerName}>({_lexerName}.{x})");
+                        .Select(leaderToString);
                     return string.Join(", ", leaders);
                 }
             }
@@ -440,13 +462,24 @@ public class ParserBuilderGenerator
 
                     case TerminalClause terminalClause:
                         {
-                            // STATIC : later , manage discarded tokens
-                            call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
-                                additional: new Dictionary<string, string>()
-                                {
+                            if (terminalClause.IsExplicit)
+                            {
+                                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ExplicitTerminalClauseTemplate), terminalClause.Name,
+                                    additional: new Dictionary<string, string>()
+                                    {
                             {"INDEX",i.ToString()}
-                                });
-                            AddClause(terminalClause);
+                                    });
+                                AddClause(terminalClause);
+                            }
+                            else
+                            {
+                                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
+                                    additional: new Dictionary<string, string>()
+                                    {
+                            {"INDEX",i.ToString()}
+                                    });
+                                AddClause(terminalClause);
+                            }
                             break;
                         }
 

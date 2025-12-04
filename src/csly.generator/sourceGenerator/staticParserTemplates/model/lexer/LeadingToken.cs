@@ -27,9 +27,8 @@ public sealed class LeadingToken<IN> : IEquatable<LeadingToken<IN>> where IN:str
         IsIndent = isIndent;
     }
     
-    public LeadingToken(IN tokenId, string explicitToken)
-    {
-        TokenId = tokenId;
+    public LeadingToken(string explicitToken)
+    {        
         ExplicitToken = explicitToken;
         IsExplicitToken = true;
     }

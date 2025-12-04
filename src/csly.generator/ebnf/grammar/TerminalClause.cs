@@ -11,6 +11,8 @@ namespace ebnf.grammar
         public bool Discarded { get; set; }
 
         public bool IsExplicit => _isExplicit;
+
+        public string ExplicitValue { get; set; }
         public TerminalClause(string name, bool discarded = false)
         {
             Name = name;
@@ -19,6 +21,14 @@ namespace ebnf.grammar
                 _isExplicit = true;
                 Name = Name.Substring(1, Name.Length - 2);
             }
+            Discarded = discarded;
+        }
+
+        public TerminalClause(string name, string explicitValue, bool discarded = false)
+        {
+            Name = name;
+            ExplicitValue = explicitValue.Trim('\'');
+            _isExplicit = true;
             Discarded = discarded;
         }
 

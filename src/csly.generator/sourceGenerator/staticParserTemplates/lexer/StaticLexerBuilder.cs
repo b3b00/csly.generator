@@ -40,6 +40,7 @@ internal class StaticLexerBuilder
         AddLexeme(lexem);
     }
 
+    private int explicitSugarCount = 0;
 
     internal void SetExplicitTokens(List<TerminalClause> explicitTokens)
     {
@@ -47,14 +48,15 @@ internal class StaticLexerBuilder
 
         foreach (var token in explicitTokens)
         {            
-            token.Name = token.Name.Trim('\'');
-            if (MatchId(id, token.Name))
+            token.Name = token.ExplicitValue.Trim('\'');
+            if (MatchId(id, token.ExplicitValue))
             {                
-                AddLexeme(new Lexeme(GenericToken.KeyWord, token.Name));
+                AddLexeme(new Lexeme(GenericToken.KeyWord, token.ExplicitValue));
             }
             else
-            {
-                AddLexeme(new Lexeme(GenericToken.Identifier, token.Name));                
+            {                
+                AddLexeme(new Lexeme(GenericToken.SugarToken, token.ExplicitValue));
+                explicitSugarCount++;
             }
         }
     }

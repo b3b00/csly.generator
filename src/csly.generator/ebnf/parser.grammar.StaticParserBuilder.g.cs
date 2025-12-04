@@ -139,7 +139,7 @@ namespace csly.ebnf.builder
 
         public void ComputeLeaders()
         {
-            Dictionary<string, List<string>> nonTerminalLeaders = new Dictionary<string, List<string>>();
+            Dictionary<string, List<Leader>> nonTerminalLeaders = new Dictionary<string, List<Leader>>();
 
             List<string> startingPoints;
             if (string.IsNullOrEmpty(ParserOPtions.StartingNonTerminal))
@@ -159,7 +159,7 @@ namespace csly.ebnf.builder
 
         }
 
-        private void ComputeLeadersForNonTerminal(string nonTerminal, Dictionary<string, List<string>> leadersForNTs)
+        private void ComputeLeadersForNonTerminal(string nonTerminal, Dictionary<string, List<Leader>> leadersForNTs)
         {
 
             if (leadersForNTs.ContainsKey(nonTerminal))
@@ -180,7 +180,7 @@ namespace csly.ebnf.builder
         }
 
 
-        private void ComputeLeaderForRule(Rule rule, Dictionary<string, List<string>> leadersForNTs)
+        private void ComputeLeaderForRule(Rule rule, Dictionary<string, List<Leader>> leadersForNTs)
         {
             int i = 0;
             var first = rule.Clauses[0];
@@ -189,17 +189,20 @@ namespace csly.ebnf.builder
                 first = rule.Clauses[i];
                 if (first is TerminalClause term)
                 {
-                    rule.Leaders.Add(term.Name);
+                    var leader = term.IsExplicit ? new Leader(true, term.ExplicitValue) : new Leader(false, term.Name);
+
+                        rule.Leaders.Add(leader);
+                        
                     if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
-                    {
-                        if (!existingLeaders.Contains(term.Name))
+                    {                        
+                        if (!existingLeaders.Contains(leader))
                         {
-                            existingLeaders.Add(term.Name);
+                            existingLeaders.Add(leader);
                         }
                     }
                     else
                     {
-                        leadersForNTs[rule.Head] = new List<string> { term.Name };
+                        leadersForNTs[rule.Head] = new List<Leader> { leader };
                     }
                 }
                 else if (first is NonTerminalClause nt)
@@ -225,17 +228,20 @@ namespace csly.ebnf.builder
                     var innerFirst = manyClause.manyClause;
                     if (innerFirst is TerminalClause termInner)
                     {
-                        rule.Leaders.Add(termInner.Name);
+                        var leader = termInner.IsExplicit ? new Leader(true, termInner.ExplicitValue) : new Leader(false, termInner.Name);
+                        
+                         rule.Leaders.Add(leader);
+                        rule.Leaders.Add(leader);
                         if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
                         {
-                            if (!existingLeaders.Contains(termInner.Name))
+                            if (!existingLeaders.Contains(leader))
                             {
-                                existingLeaders.Add(termInner.Name);
+                                existingLeaders.Add(leader);
                             }
                         }
                         else
                         {
-                            leadersForNTs[rule.Head] = new List<string> { termInner.Name };
+                            leadersForNTs[rule.Head] = new List<Leader> { leader };
                         }
                     }
                     else if (innerFirst is NonTerminalClause ntInner)
@@ -262,17 +268,18 @@ namespace csly.ebnf.builder
                     var inner = optionClause.Clause;
                     if (inner is TerminalClause termInner)
                     {
-                        rule.Leaders.Add(termInner.Name);
+                        var leader = termInner.IsExplicit ? new Leader(true, termInner.ExplicitValue) : new Leader(false, termInner.Name);
+                        rule.Leaders.Add(leader);
                         if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
                         {
-                            if (!existingLeaders.Contains(termInner.Name))
+                            if (!existingLeaders.Contains(leader))
                             {
-                                existingLeaders.Add(termInner.Name);
+                                existingLeaders.Add(leader);
                             }
                         }
                         else
                         {
-                            leadersForNTs[rule.Head] = new List<string> { termInner.Name };
+                            leadersForNTs[rule.Head] = new List<Leader> { leader };
                         }
                     }
                     else if (inner is NonTerminalClause ntInner)
@@ -300,17 +307,18 @@ namespace csly.ebnf.builder
                     {
                         if (choice is TerminalClause termChoice)
                         {
-                            rule.Leaders.Add(termChoice.Name);
+                            var leader = termChoice.IsExplicit ? new Leader(true, termChoice.ExplicitValue) : new Leader(false, termChoice.Name);
+                            rule.Leaders.Add(leader);
                             if (leadersForNTs.TryGetValue(rule.Head, out var existingLeaders))
                             {
-                                if (!existingLeaders.Contains(termChoice.Name))
+                                if (!existingLeaders.Contains(leader))
                                 {
-                                    existingLeaders.Add(termChoice.Name);
+                                    existingLeaders.Add(leader);
                                 }
                             }
                             else
                             {
-                                leadersForNTs[rule.Head] = new List<string> { termChoice.Name };
+                                leadersForNTs[rule.Head] = new List<Leader> { leader };
                             }
                         }
                         else if (choice is NonTerminalClause ntChoice)

@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace ebnf.grammar
 {
-
+    public record Leader(bool IsExplicit, string Value);
     public class Rule : GrammarNode
     {
         public Rule()
@@ -54,7 +54,7 @@ namespace ebnf.grammar
         public string RuleString { get; set; }
 
         public List<IClause> Clauses { get; set; }
-        public List<string> Leaders { get; set; } = new List<string>();
+        public List<Leader> Leaders { get; set; } = new List<Leader>();
 
         public string NonTerminalName { get; set; }
 

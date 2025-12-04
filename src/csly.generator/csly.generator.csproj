@@ -55,10 +55,6 @@
     <Compile Include="sourceGenerator\staticParserTemplates\lexer\StaticLexerBuilder.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="sourceGenerator\StaticLexerGenerator.cs" />
-  </ItemGroup>
-
   <!--<ItemGroup>
     <ProjectReference Include="..\samples\ebnfrules\ebnfrules.csproj" />
   </ItemGroup>-->

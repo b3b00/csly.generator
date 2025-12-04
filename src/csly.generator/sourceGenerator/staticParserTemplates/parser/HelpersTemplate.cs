@@ -32,7 +32,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseExplicitTerminal(List<Token
 
         result.EndingPosition = !result.IsError ? position + 1 : position;
 
-    var leading = new LeadingToken<<#LEXER#>>(default(<#LEXER#>), expected);
+    var leading = new LeadingToken<<#LEXER#>>(expected);
 
         result.IsError = !leading.Match(tokens[position]);
     var token = tokens[position];
