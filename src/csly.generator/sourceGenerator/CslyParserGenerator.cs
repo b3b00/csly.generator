@@ -208,13 +208,21 @@ public class CslyParserGenerator : IIncrementalGenerator
 
     {staticParser}
 
-}}";
+";
 
-                        context.AddSource($"{className}.g.cs", SourceText.From(staticParser, Encoding.UTF8));
+                        context.AddSource($"{className}.g.cs", SourceText.From(parserCode, Encoding.UTF8));
 
-                        var staticVisitor2 = parserBuilderGenerator.GenerateVisitor2();
+                            var staticVisitor2 = parserBuilderGenerator.GenerateVisitor2();
+                            
+                        string visitorCode = $@"
 
-                        context.AddSource($"{className}Visitor2.g.cs", SourceText.From(staticVisitor2, Encoding.UTF8));
+{string.Join(Environment.NewLine, usings)}
+
+    {staticVisitor2}
+
+";
+
+                        context.AddSource($"{className}Visitor2.g.cs", SourceText.From(visitorCode, Encoding.UTF8));
 
                     }
                     catch(Exception e)
