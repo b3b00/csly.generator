@@ -1,4 +1,4 @@
-﻿private <#OUTPUT#> Visit<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node) 
+﻿private <#OUTPUT#> Visit<#NAME#>_<#INDEX#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node) 
 {
    
         <#COMPUTE_ARGS#>

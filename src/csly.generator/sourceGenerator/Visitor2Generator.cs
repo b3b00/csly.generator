@@ -50,11 +50,11 @@ namespace csly.generator.sourceGenerator
                     if (!r.IsSubRule)
                     {
                         var prefixCase = $@"case ""{rulesByHead.Key}_{i}"":
-                    return Visit{rulesByHead.Key}(node);";
+                    return Visit{rulesByHead.Key}_{i}(node);";
                         dispatchers.AppendLine(prefixCase);
                     }
                 }
-            }
+            }   
 
             StringBuilder visitors = new StringBuilder();
 
@@ -93,8 +93,15 @@ namespace csly.generator.sourceGenerator
                 {
                     if (!first.IsSubRule)
                     {
-                        var v = GenerateVisitorRule(first, 0);
-                        visitors.AppendLine(v);
+                        int i = 0;
+                        foreach(var rule in rulesByHead)
+                        {
+                            var v = GenerateVisitorRule(rule, i);
+                            visitors.AppendLine(v);
+                            i++;
+                        }
+
+                        
                         continue;
                     }
                 }
@@ -185,6 +192,7 @@ namespace csly.generator.sourceGenerator
             var content = _templateEngine.ApplyTemplate(rule.IsByPassRule ? "ByPassRuleVisitor" : "RuleVisitor", rule.Name,
                 additional: new Dictionary<string, string>()
                 {
+                    {"INDEX", index.ToString() },
                 {"COMPUTE_ARGS", compute.ToString() },
                 {"ARGS", args },
                 {"METHOD", rule.MethodName },
