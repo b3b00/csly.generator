@@ -319,7 +319,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
 
             if (operatorClause is ChoiceClause operatorChoice)
             {
-                returnBuilder.AppendLine("switch(arg1.TokenID) {");
+                returnBuilder.AppendLine("switch(arg0.TokenID) {");
                 foreach (var choice in operatorChoice.Choices)
                 {
                     if (choice is TerminalClause terminalChoice)
@@ -336,7 +336,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                 }
                 returnBuilder.AppendLine(@$"
 default: {{
-throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented for precedence {rule.Precedence}"");
+throw new NotImplementedException($""Operator {{arg0.TokenID}} not implemented for precedence {rule.Precedence}"");
         }}
 }}");
             }
