@@ -19,7 +19,7 @@
             AddToken(token);
                 _currentMatch = null;
             //consume whit spaces on token boundaries
-            ConsumeWhitSpace(source);
+            ConsumeWhiteSpace(source);
 
             _startPosition = new LexerPosition(_currentPosition.Index, _currentPosition.Line, _currentPosition.Column);
         }        

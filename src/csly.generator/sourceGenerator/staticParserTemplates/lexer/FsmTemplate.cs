@@ -49,7 +49,7 @@ private Factory _defaultFactory;
     
 
     /// consumes all whitspaces starting from _currentPosition and move _currentPosition accordingly
-    private void ConsumeWhitSpace(ReadOnlySpan<char> source)
+    private void ConsumeWhiteSpace(ReadOnlySpan<char> source)
     {
         while (_currentPosition.Index < source.Length && char.IsWhiteSpace(source[_currentPosition.Index]))
         {
@@ -75,7 +75,7 @@ List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
         void AddToken(Token<<#LEXER#>> token) {    
             tokens.Add(token);            
         }
-
+        ConsumeWhiteSpace(source);
         while (_currentPosition.Index <= source.Length)
         {
             

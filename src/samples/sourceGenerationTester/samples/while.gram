@@ -162,9 +162,8 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
 
         #region statements
 
-        [Production("statement :  LPAREN statement RPAREN ")]
-        public WhileAST block(Token<WhileTokenGeneric> discardLpar, WhileAST statement,
-            Token<WhileTokenGeneric> discardRpar)
+        [Production("statement :  LPAREN[d] statement RPAREN[d] ")]
+        public WhileAST block(WhileAST statement)
         {
             return statement;
         }
@@ -183,44 +182,41 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
             return seq;
         }
 
-        [Production("additionalStatements : SEMICOLON statementPrim")]
-        public WhileAST additional(Token<WhileTokenGeneric> semi, WhileAST statement)
+        [Production("additionalStatements : SEMICOLON[d] statementPrim")]
+        public WhileAST additional(WhileAST statement)
         {
             return statement;
         }
 
-        [Production("statementPrim: IF WhileParserGeneric_expressions THEN statement ELSE statement")]
-        public WhileAST ifStmt(Token<WhileTokenGeneric> discardIf, WhileAST cond, Token<WhileTokenGeneric> dicardThen,
-            WhileAST thenStmt, Token<WhileTokenGeneric> dicardElse, WhileAST elseStmt)
+        [Production("statementPrim: IF[d] WhileParserGeneric_expressions THEN[d] statement ELSE[d] statement")]
+        public WhileAST ifStmt(WhileAST cond, WhileAST thenStmt, WhileAST elseStmt)
         {
             var stmt = new IfStatement(cond as Expression, thenStmt as Statement, elseStmt as Statement);
             return stmt;
         }
 
-        [Production("statementPrim: WHILE WhileParserGeneric_expressions DO statement")]
-        public WhileAST whileStmt(Token<WhileTokenGeneric> discardWhile, WhileAST cond,
-            Token<WhileTokenGeneric> dicardDo, WhileAST blockStmt)
+        [Production("statementPrim: WHILE[d] WhileParserGeneric_expressions DO[d] statement")]
+        public WhileAST whileStmt(WhileAST cond, WhileAST blockStmt)
         {
             var stmt = new WhileStatement(cond as Expression, blockStmt as Statement);
             return stmt;
         }
 
-        [Production("statementPrim: IDENTIFIER ASSIGN WhileParserGeneric_expressions")]
-        public WhileAST assignStmt(Token<WhileTokenGeneric> variable, Token<WhileTokenGeneric> discardAssign,
-            WhileAST value)
+        [Production("statementPrim: IDENTIFIER ASSIGN[d] WhileParserGeneric_expressions")]
+        public WhileAST assignStmt(Token<WhileTokenGeneric> variable, WhileAST value)
         {
             var assign = new AssignStatement(variable.StringWithoutQuotes, value as Expression);
             return assign;
         }
 
-        [Production("statementPrim: SKIP")]
-        public WhileAST skipStmt(Token<WhileTokenGeneric> discard)
+        [Production("statementPrim: SKIP[d]")]
+        public WhileAST skipStmt()
         {
             return new SkipStatement();
         }
 
-        [Production("statementPrim: PRINT WhileParserGeneric_expressions")]
-        public WhileAST skipStmt(Token<WhileTokenGeneric> discard, WhileAST expression)
+        [Production("statementPrim: PRINT[d] WhileParserGeneric_expressions")]
+        public WhileAST skipStmt(WhileAST expression)
         {
             return new PrintStatement(expression as Expression);
         }
@@ -236,8 +232,7 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
             return new IntegerConstant(intToken.IntValue);
         }
 
-        [Production("primary: TRUE")]
-        [Production("primary: FALSE")]
+        [Production("primary: [TRUE|FALSE]")]        
         public WhileAST PrimaryBool(Token<WhileTokenGeneric> boolToken)
         {
             return new BoolConstant(bool.Parse(boolToken.StringWithoutQuotes));
@@ -355,4 +350,3 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
 
         #endregion
     }
-}
