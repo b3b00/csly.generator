@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using csly.whileLang.compiler;
+using csly.models;
+using Sigil;
+
+namespace csly.whileLang.model
+{
+    public sealed class SkipStatement : Statement
+    {
+        public Scope CompilerScope { get; set; }
+
+        public LexerPosition Position { get; set; }
+
+        public string Dump(string tab)
+        {
+            return $"{tab}(SKIP)";
+        }
+
+        public Emit<Func<int>> EmitByteCode(CompilerContext context, Emit<Func<int>> emiter)
+        {
+            emiter.Nop();
+            return emiter;
+        }
+
+        public void AppendTernaries(List<TernaryExpression> ternaries)
+        {
+        }
+
+        public string Transpile(CompilerContext context)
+        {
+            return ";";
+        }
+    }
+}

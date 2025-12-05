@@ -3,6 +3,8 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Authors>b3b00</Authors>
     <RootNamespace>csly.whileLang</RootNamespace>
+    <EmitCompilerGeneratedFiles>string</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>./Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
