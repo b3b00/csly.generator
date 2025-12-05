@@ -90,8 +90,9 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         {
             if (attribute.Name.ToString() == "Operation")
             {
-                var args = GetAttributeArgsArray(attribute, skip: 0);
-                
+                var args = GetAttributeArgsAsStringArray(attribute, skip: 0);
+                ;
+
                 string tokenName = args[0].Trim(new[] { '"' });
                 string infixArg = args[1].Trim(new[] { '"' }).Replace("Affix.", "");
                 Affix affix = (Affix)System.Enum.Parse(typeof(Affix), infixArg);
@@ -105,7 +106,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Left")
             {
-                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].Trim(new[] { '"' });
                 int precedence = int.Parse(args[1]);
                 var operation = new Operation(methodName, tokenName, Affix.InFix, Associativity.Left, precedence);
@@ -113,7 +114,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Right")
             {
-                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].Trim(new[] { '"' });
                 int precedence = int.Parse(args[1]);
                 var operation = new Operation(methodName, tokenName, Affix.InFix, Associativity.Right, precedence);
@@ -121,7 +122,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Prefix")
             {
-                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].Trim(new[] { '"' });
                 string associativityArg = args[1].Trim(new[] { '"' }).Replace("Associativity.", "");
                 Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
@@ -131,7 +132,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Postfix")
             {
-                var args = GetAttributeArgsArray(attribute, skip: 0);                
+                var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].Trim(new[] { '"' });
                 string associativityArg = args[1].Trim(new[] { '"' }).Replace("Associativity.", "");
                 Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);

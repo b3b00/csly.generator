@@ -12,7 +12,7 @@ public class CslySyntaxWalker : CSharpSyntaxWalker
 
         if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
         {
-            System.Collections.Generic.List<string> args = GetAttributeArgsArray(attribute, skip);
+            System.Collections.Generic.List<string> args = GetAttributeArgsAsStringArray(attribute, skip);
             if (args.Count > 0)
             {
                 var strargs = string.Join(", ", args);
@@ -29,12 +29,21 @@ public class CslySyntaxWalker : CSharpSyntaxWalker
         return string.Empty;
     }
 
-    public static System.Collections.Generic.List<string> GetAttributeArgsArray(AttributeSyntax attribute, int skip = 0)
+    public static System.Collections.Generic.List<string> GetAttributeArgsAsStringArray(AttributeSyntax attribute, int skip = 0)
     {
         if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Any())
         {
             return attribute.ArgumentList.Arguments.Skip(skip).Select(x =>
             {
+                if (x.Expression is CastExpressionSyntax cast)
+                {
+                    if (cast.Expression is MemberAccessExpressionSyntax memberAccess)
+                    {
+                        var name = memberAccess.Name.ToString();
+                        return name;
+                        ;
+                    }
+                }
                 var value = x.Expression.ToString();
                 if (x.NameColon != null && x.NameColon.Name.Identifier.Text != "")
                 {
@@ -45,6 +54,19 @@ public class CslySyntaxWalker : CSharpSyntaxWalker
             }).ToList();
         }
         return new List<string>();
+
+    }
+
+    public static System.Collections.Generic.List<AttributeArgumentSyntax> GetAttributeArgsArray(AttributeSyntax attribute, int skip = 0)
+    {
+        if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Any())
+        {
+            return attribute.ArgumentList.Arguments.Skip(skip).Select(x =>
+            {
+                return x;
+            }).ToList();
+        }
+        return new List<AttributeArgumentSyntax>();
 
     }
 

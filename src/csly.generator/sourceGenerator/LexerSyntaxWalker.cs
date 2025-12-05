@@ -206,7 +206,7 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                         var type = ShortLexemesToGenericType[attributeName];
 
                         var args = GetAttributeArgs(attributeSyntax);
-                        var arguments = GetAttributeArgsArray(attributeSyntax, 0);
+                        var arguments = GetAttributeArgsAsStringArray(attributeSyntax, 0);
                         if (type == GenericToken.Identifier)
                         {
                             arguments.Insert(0, attributeName); 
@@ -300,12 +300,12 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                     if (method == "Keyword")
                     {
                         _staticLexerBuilder.Add(GenericToken.KeyWord, name, modes,
-                            GetAttributeArgsArray(attributeSyntax, skip).ToArray());
+                            GetAttributeArgsAsStringArray(attributeSyntax, skip).ToArray());
                     }
                     else if (method == "Sugar")
                     {
                         _staticLexerBuilder.Add(GenericToken.SugarToken, name, modes,
-                            GetAttributeArgsArray(attributeSyntax, skip).ToArray());
+                            GetAttributeArgsAsStringArray(attributeSyntax, skip).ToArray());
                     }
                     else if (method == "AlphaId")
                     {
@@ -328,7 +328,7 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                     else
                     {
                         GenericToken lexemeType = (GenericToken)Enum.Parse(typeof(GenericToken),member.Name.Identifier.Text);                         
-                        _staticLexerBuilder.Add(lexemeType, name, modes, GetAttributeArgsArray(attributeSyntax, 1).ToArray());
+                        _staticLexerBuilder.Add(lexemeType, name, modes, GetAttributeArgsAsStringArray(attributeSyntax, 1).ToArray());
                     }
                 }
             }
