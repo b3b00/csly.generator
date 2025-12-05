@@ -10,22 +10,36 @@ using System.IO;
 using System.Linq;
 
 namespace sourceGenerationTester;
-public partial class Program
+
+public static class Ext
+{
+    public static string Capitalize(this string s)
+    {
+        if (string.IsNullOrEmpty(s))
+            return s;
+        if (s.Length == 1)
+            return s.ToUpper();
+        return char.ToUpper(s[0]) + s.Substring(1);
+    }
+}
+
+public  class Program
 {
     public static void Main(string[] args)
     {
-        Generate();
+        var who = args[0];
+        Generate(who);
         //Run();
         /*GoStatic();
         Run();*/
     }
 
 
-    private static void Generate()
+    private static void Generate(string who)
     {
 
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-        var parser = fs.ReadAllText("/samples/json.gram");
+        var parser = fs.ReadAllText($"/samples/{who}.gram");
 
         var result = GenerateSource(parser, "SimpleParser");
 
@@ -35,7 +49,7 @@ public partial class Program
         string path = "c:/tmp/generation/";
         Directory.CreateDirectory(path);
 
-        File.WriteAllText(Path.Combine(path, "Expr.cs"), parser);
+        File.WriteAllText(Path.Combine(path, $"{who.Capitalize()}.cs"), parser);
 
         foreach (var file in contents)
         {

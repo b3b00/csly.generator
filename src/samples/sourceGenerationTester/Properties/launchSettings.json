@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "While generation": {
+      "commandName": "Project",
+      "commandLineArgs": "while"
+    },
+    "json generation": {
+      "commandName": "Project",
+      "commandLineArgs": "json"
+    }
+  }
+}

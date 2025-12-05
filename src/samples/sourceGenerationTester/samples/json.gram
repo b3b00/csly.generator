@@ -1,0 +1,183 @@
+﻿using csly.models;
+using jsonparser.JsonModel;
+
+namespace json;
+
+[ParserGenerator]
+    public partial class JSON : AbstractParserGenerator<JsonTokenGeneric, JSONParser , JSon>
+    {
+    }
+
+    public enum JsonTokenGeneric
+    {
+        [String] STRING = 1,
+        [Double(channel:0)] DOUBLE = 2,
+        [Lexeme(GenericToken.Int,channel:0)] INT = 3,
+
+        [Keyword("true", channel:0)]
+        [Keyword("false", channel:0)]
+        BOOLEAN = 4,
+        [Keyword( "null",channel:0)] NULL = 14,
+        
+        
+        [Sugar("{",channel:0)] ACCG = 5,
+        [Sugar( "}",channel:0)] ACCD = 6,
+        [Sugar( "[",channel:0)] CROG = 7,
+        [Sugar( "]",channel:0)] CROD = 8,
+        [Sugar( ",",channel:0)] COMMA = 9,
+        [Sugar( ":",channel:0)] COLON = 10,        
+        
+    }
+
+    [ParserRoot("root")]
+    public class JSONParser
+    {
+        #region root
+
+        [Production("root : value")]
+        public JSon Root(JSon value)
+        {
+            return value;
+        }
+
+        #endregion
+
+        #region VALUE
+
+        [Production("value : STRING")]
+        public JSon StringValue(Token<JsonTokenGeneric> stringToken)
+        {
+            return new JValue(stringToken.StringWithoutQuotes);
+        }
+
+        [Production("value : INT")]
+        public JSon IntValue(Token<JsonTokenGeneric> intToken)
+        {
+            return new JValue(intToken.IntValue);
+        }
+
+        [Production("value : DOUBLE")]
+        public JSon DoubleValue(Token<JsonTokenGeneric> doubleToken)
+        {
+            var dbl = double.MinValue;
+            try
+            {
+                var doubleParts = doubleToken.Value.Split('.');
+                dbl = double.Parse(doubleParts[0]);
+                if (doubleParts.Length > 1)
+                {
+                    var decimalPart = double.Parse(doubleParts[1]);
+                    for (var i = 0; i < doubleParts[1].Length; i++) decimalPart = decimalPart / 10.0;
+                    dbl += decimalPart;
+                }
+            }
+            catch
+            {
+                dbl = double.MinValue;
+            }
+
+            return new JValue(dbl);
+        }
+
+        [Production("value : BOOLEAN")]
+        public JSon BooleanValue(Token<JsonTokenGeneric> boolToken)
+        {
+            return new JValue(bool.Parse(boolToken.Value));
+        }
+
+        [Production("value : NULL")]
+        public JSon NullValue(Token<JsonTokenGeneric> forget)
+        {
+            return new JNull();
+        }
+
+        [Production("value : object")]
+        public JSon ObjectValue(JSon value)
+        {
+            return value;
+        }
+
+        [Production("value: list")]
+        public JSon ListValue(JSon list)
+        {
+            return list;
+        }
+
+        #endregion
+
+        #region OBJECT
+
+        [Production("object: ACCG ACCD")]
+        public JSon EmptyObjectValue(Token<JsonTokenGeneric> accg, Token<JsonTokenGeneric> accd)
+        {
+            return new JObject();
+        }
+
+        [Production("object: ACCG members ACCD")]
+        public JSon AttributesObjectValue(Token<JsonTokenGeneric> accg, JSon members, Token<JsonTokenGeneric> accd)
+        {
+            return members;
+        }
+
+        #endregion
+
+        #region LIST
+
+        [Production("list: CROG CROD")]
+        public JSon EmptyList(Token<JsonTokenGeneric> crog, Token<JsonTokenGeneric> crod)
+        {
+            return new JList();
+        }
+
+        [Production("list: CROG listElements CROD")]
+        public JSon List(Token<JsonTokenGeneric> crog, JSon elements, Token<JsonTokenGeneric> crod)
+        {
+            return elements;
+        }
+
+
+        [Production("listElements: value COMMA listElements")]
+        public JSon ListElementsMany(JSon value, Token<JsonTokenGeneric> comma, JSon tail)
+        {
+            var elements = new JList(value);
+            elements.AddRange(tail as JList);
+            return elements;
+        }
+
+        [Production("listElements: value")]
+        public JSon ListElementsOne(JSon element)
+        {
+            return new JList(element);
+        }
+
+        #endregion
+
+        #region PROPERTIES
+
+        [Production("property: STRING COLON value")]
+        public JSon property(Token<JsonTokenGeneric> key, Token<JsonTokenGeneric> colon, JSon value)
+        {
+            return new JObject(key.StringWithoutQuotes, value);
+        }
+
+
+        [Production("members : property COMMA members")]
+        public JSon ManyMembers(JSon pair, Token<JsonTokenGeneric> comma, JSon tail)
+        {
+            var members = new JObject();
+            members.Merge(pair as JObject);
+            members.Merge(tail as JObject);
+            return members;
+        }
+
+        [Production("members : property")]
+        public JSon SingleMember(JSon pair)
+        {
+            var members = new JObject();
+            members.Merge(pair as JObject);
+            return members;
+        }
+
+        #endregion
+    }
+
