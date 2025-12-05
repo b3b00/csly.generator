@@ -1,4 +1,4 @@
-﻿private <#OUTPUT#> Visit<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+﻿private <#OUTPUT#> Visit<#NAME#>_<#INDEX#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
 {
     var arg0 = VisitNonTerminal(node, 0);
     if (node.IsByPassNode)

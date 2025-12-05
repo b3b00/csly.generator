@@ -43,16 +43,17 @@ namespace csly.generator.sourceGenerator
             {
                 dispatchers.AppendLine($"// Visitors for {rulesByHead.Key}");
                 var first = rulesByHead.First();
-
+               
                 for (int i = 0; i < rulesByHead.Count(); i++)
                 {
                     var r = rulesByHead.ToList()[i];
                     if (!r.IsSubRule)
                     {
+                        int index = r.IsExpressionRule ? 0 : i;
                         var prefixCase = $@"case ""{rulesByHead.Key}_{i}"":
-                    return Visit{rulesByHead.Key}_{i}(node);";
+                    return Visit{rulesByHead.Key}_{index}(node);";
                         dispatchers.AppendLine(prefixCase);
-                    }
+                    }                    
                 }
             }   
 
@@ -65,6 +66,7 @@ namespace csly.generator.sourceGenerator
                 bool isByPassRule = rulesByHead.ToList().All(x => x.IsByPassRule);
 
                 var first = rulesByHead.First();
+
                 if (first.IsInfixExpressionRule)
                 {
                     var infixVisitor = GenerateInfixExpressionVisitor(first, 0);
