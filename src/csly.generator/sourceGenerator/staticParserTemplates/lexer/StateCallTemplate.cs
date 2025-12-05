@@ -15,24 +15,26 @@
             {
                 factory = _defaultFactory;
             }
-            var token = factory(match<#STATE#>);            
+            var token = factory(match<#STATE#>);
             AddToken(token);
                 _currentMatch = null;
             //consume whit spaces on token boundaries
             ConsumeWhiteSpace(source);
 
             _startPosition = new LexerPosition(_currentPosition.Index, _currentPosition.Line, _currentPosition.Column);
-        }        
+        }
     }
     if (!continueScanning) {
         if (_currentPosition.Index >= source.Length)
-        {            
+        {
             _currentPosition.Index++; // to avoid infinite loop on end of source
             AddToken(new Token<<#LEXER#>>());
         }
         else
         {
-            return $"error @ {_currentPosition.ToString()} on character '{source[_currentPosition.Index]}'";
+            char ch = GetChar(source, _currentPosition);
+            var error = new LexicalError(_currentPosition.Line, _currentPosition.Column, ch, "en");
+            return error;
         }
     }
 }

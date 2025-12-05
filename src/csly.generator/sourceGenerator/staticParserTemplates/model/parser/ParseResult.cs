@@ -32,10 +32,11 @@ public class ParseResult<IN, OUT> where IN : struct, Enum
         IsError = true;
     }
 
-    public ParseResult(string error)
+    public ParseResult(LexicalError error)
     {        
-        Errors = new List<ParseError>();
-        Errors.Add(new LexicalError(0,0,'x',"TODO"));
+        if (Errors == null)
+            Errors = new List<ParseError>();        
+        Errors.Add(error);
         IsError = true;
     }
 

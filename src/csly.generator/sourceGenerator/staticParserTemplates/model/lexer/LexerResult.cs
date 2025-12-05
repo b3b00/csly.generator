@@ -10,7 +10,7 @@ public class LexerResult<T> where T:struct, Enum
 {
     public List<Token<T>> Tokens { get; set; } = new List<Token<T>>();
     
-    public string Error { get; set; } = null;
+    public LexicalError Error { get; set; } = null;
 
     private bool _isOk = false;
 
@@ -19,7 +19,7 @@ public class LexerResult<T> where T:struct, Enum
 
     public bool IsError => !_isOk;
 
-    public static implicit operator LexerResult<T>(string error)
+    public static implicit operator LexerResult<T>(LexicalError error)
     {
         var result = new LexerResult<T>()
         {

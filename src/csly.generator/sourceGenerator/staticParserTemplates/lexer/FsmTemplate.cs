@@ -72,15 +72,12 @@ _startPosition = new LexerPosition(0,0,0);
 List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
-        void AddToken(Token<<#LEXER#>> token) {    
-            tokens.Add(token);            
+        void AddToken(Token<<#LEXER#>> token) {
+            tokens.Add(token);
         }
         ConsumeWhiteSpace(source);
         while (_currentPosition.Index <= source.Length)
-        {
-            
-            
-
+        {   
             <#STATE_CALLS#>
         }
         return tokens;
