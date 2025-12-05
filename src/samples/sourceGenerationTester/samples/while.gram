@@ -250,6 +250,13 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
             return new Variable(varToken.StringWithoutQuotes);
         }
 
+        
+        [Production("primary: LPAREN[d] WhileParserGeneric_expressions RPAREN[d] ")]
+        public WhileAST PrimaryGroup(WhileAST expression    )
+        {
+            return expression;
+        }
+
         [Operand]
         [Production("operand: primary")]
         public WhileAST Operand(WhileAST prim)
