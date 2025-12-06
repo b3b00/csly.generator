@@ -1,4 +1,4 @@
-﻿namespace csly.whileLang.model
+﻿namespace csly.whileLang
 {
     public interface Statement : WhileAST
     {

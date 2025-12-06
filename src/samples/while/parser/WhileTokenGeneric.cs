@@ -1,6 +1,6 @@
 ﻿using csly.models;
 
-namespace csly.whileLang.parser
+namespace csly.whileLang
 {
     public enum WhileTokenGeneric
     {

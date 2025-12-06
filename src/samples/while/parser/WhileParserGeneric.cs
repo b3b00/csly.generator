@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using csly.whileLang.model;
+using csly.whileLang;
 using csly.models;
 
-namespace csly.whileLang.parser
+namespace csly.whileLang
 {
     [ParserRoot("statement")]
     public class WhileParserGeneric
@@ -64,7 +64,7 @@ namespace csly.whileLang.parser
         #region statements
 
         [Production("statement :  LPAREN statement RPAREN ")]
-        public WhileAST block(Token<WhileTokenGeneric> discardLpar, Statement statement,
+        public WhileAST block(Token<WhileTokenGeneric> discardLpar, WhileAST statement,
             Token<WhileTokenGeneric> discardRpar)
         {
             return statement;
@@ -92,9 +92,9 @@ namespace csly.whileLang.parser
 
         [Production("statementPrim: IF WhileParserGeneric_expressions THEN statement ELSE statement")]
         public WhileAST ifStmt(Token<WhileTokenGeneric> discardIf, WhileAST cond, Token<WhileTokenGeneric> dicardThen,
-            WhileAST thenStmt, Token<WhileTokenGeneric> dicardElse, Statement elseStmt)
+            WhileAST thenStmt, Token<WhileTokenGeneric> dicardElse, WhileAST elseStmt)
         {
-            var stmt = new IfStatement(cond as Expression, thenStmt as Statement, elseStmt);
+            var stmt = new IfStatement(cond as Expression, thenStmt as Statement, elseStmt as Statement);
             return stmt;
         }
 
@@ -108,9 +108,9 @@ namespace csly.whileLang.parser
 
         [Production("statementPrim: IDENTIFIER ASSIGN WhileParserGeneric_expressions")]
         public WhileAST assignStmt(Token<WhileTokenGeneric> variable, Token<WhileTokenGeneric> discardAssign,
-            Expression value)
+            WhileAST value)
         {
-            var assign = new AssignStatement(variable.StringWithoutQuotes, value);
+            var assign = new AssignStatement(variable.StringWithoutQuotes, value as Expression);
             return assign;
         }
 
@@ -155,6 +155,10 @@ namespace csly.whileLang.parser
         {
             return new Variable(varToken.StringWithoutQuotes);
         }
+
+        [Production("primary: LPAREN[d] WhileParserGeneric_expressions RPAREN[d]")]
+        public WhileAST PrimaryId(WhileAST value) => value;
+        
 
         [Operand]
         [Production("operand: primary")]

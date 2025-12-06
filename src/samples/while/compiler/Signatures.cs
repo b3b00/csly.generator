@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using csly.whileLang.model;
+using csly.whileLang;
 
 namespace csly.whileLang.compiler
 {

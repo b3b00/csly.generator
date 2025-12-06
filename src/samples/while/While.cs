@@ -1,10 +1,11 @@
 ﻿using csly.models;
-using csly.whileLang.model;
-using csly.whileLang.parser;
+using csly.whileLang;
+
 
 
 namespace csly.whileLang
 {
+    [ParserGenerator]
     public partial class While: AbstractParserGenerator<WhileTokenGeneric,WhileParserGeneric, WhileAST>
     {
     }

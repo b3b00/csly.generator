@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Authors>b3b00</Authors>
+    <OutputType>Exe</OutputType>
     <RootNamespace>csly.whileLang</RootNamespace>
     <EmitCompilerGeneratedFiles>string</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>./Generated</CompilerGeneratedFilesOutputPath>
@@ -9,9 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="compiler\" />
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Sigil" Version="5.0.0" />
   </ItemGroup>

@@ -5,7 +5,7 @@ using csly.whileLang.compiler;
 using csly.models;
 using Sigil;
 
-namespace csly.whileLang.model
+namespace csly.whileLang
 {
     public class ReturnStatement : Statement
     {

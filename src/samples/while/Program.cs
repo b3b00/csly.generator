@@ -1,4 +1,6 @@
-﻿using csly.whileLang.parser;
+﻿using csly.whileLang;
+using csly.whileLang.interpreter;
+using System;
 
 namespace csly.whileLang
 {
@@ -21,7 +23,26 @@ namespace csly.whileLang
             ";
             WhileParserGeneric instance = new WhileParserGeneric();
 
-            //WhileParserGenericMain parserMain = new WhileParserGenericMain(instance);
+            WhileParserGenericMain parserMain = new WhileParserGenericMain(instance);
+
+            var parseResult = parserMain.Parse(whileCode);
+
+            if (parseResult.IsOk)
+            {
+                
+                Interpreter interpreter = new Interpreter();
+                var context = interpreter.Interprete(parseResult.Result as Statement);
+                Console.WriteLine("Final Context:");
+                Console.WriteLine(context.ToString());
+                
+            }
+            else
+            {
+                foreach (var err in parseResult.Errors)
+                {
+                    System.Console.WriteLine(err.ToString());
+                }
+            }
 
 
         }

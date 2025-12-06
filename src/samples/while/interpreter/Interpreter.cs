@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using csly.whileLang.compiler;
-using csly.whileLang.model;
+using csly.whileLang;
 
 namespace csly.whileLang.interpreter
 {

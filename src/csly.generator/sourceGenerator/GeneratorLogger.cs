@@ -12,7 +12,7 @@ namespace csly.generator.sourceGenerator
 
         public static void Log(string message)
         {
-#if DEBUG
+#if DEBUG 
             string timedMessage = $"[{DateTime.Now.ToString("o")}] {message}{Environment.NewLine}";
             System.IO.File.AppendAllText("c:/tmp/generation/parsergeneration.log", timedMessage);
 #endif

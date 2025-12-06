@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using csly.whileLang.compiler;
 
-namespace csly.whileLang.model
+namespace csly.whileLang
 {
     public interface Expression : WhileAST
     {
