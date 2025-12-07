@@ -18,5 +18,9 @@ namespace csly.generator.sourceGenerator
 #endif
         }
 
+        internal static void Clean()
+        {
+            System.IO.File.WriteAllText("c:/tmp/generation/parsergeneration.log","");
+        }
     }
 }

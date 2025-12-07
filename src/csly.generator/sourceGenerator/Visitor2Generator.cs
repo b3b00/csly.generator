@@ -221,8 +221,7 @@ namespace csly.generator.sourceGenerator
                         {
                             returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1, arg2);
-    break;
+    return _instance.{methodName}(arg0, arg1, arg2);    
 }}");
                         }
                     }
@@ -240,7 +239,6 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                     returnBuilder.AppendLine(@$" case <#LEXER#>.{terminalClause.Name} :
 {{
     return _instance.{methodName}(arg0, arg1, arg2);    
-    break;
 }}");
                 }
             }
@@ -278,8 +276,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                         {
                             returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1);    
-    break;
+    return _instance.{methodName}(arg0, arg1);
 }}");
                         }
                     }
@@ -330,8 +327,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                         {
                             returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1);    
-    break;
+    return _instance.{methodName}(arg0, arg1);
 }}");
                         }
                     }

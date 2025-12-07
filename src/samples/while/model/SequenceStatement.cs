@@ -6,7 +6,7 @@ using csly.whileLang.compiler;
 using csly.models;
 using Sigil;
 
-namespace csly.whileLang
+namespace csly.whileLang.model
 {
     public class SequenceStatement : Statement, IEnumerable<Statement>
     {

@@ -55,6 +55,9 @@ public class CslyParserGenerator : IIncrementalGenerator
     
     private void GenerateCode(SourceProductionContext context, Compilation compilation, ImmutableArray<SyntaxNode> declarations)
     {
+
+        GeneratorLogger.Clean();
+
         Func<SyntaxNode, string> getName = (node) =>
         {
             if (node is ClassDeclarationSyntax classDeclarationSyntax)
@@ -175,7 +178,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                         "using System.Collections.Generic;"
                     }); 
                     usings = usings.Distinct().ToList();
-
+                    
                     StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
                     LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator(staticLexerBuilder);
                     try
@@ -201,6 +204,12 @@ public class CslyParserGenerator : IIncrementalGenerator
                         
                         var staticParser = parserBuilderGenerator.GenerateParser(parserDecl as ClassDeclarationSyntax);
 
+                        GeneratorLogger.Log($"%%%%%%%%%%% USINGS : PARSER");
+                        foreach (var u in usings)
+                        {
+                            GeneratorLogger.Log($"%%%%% >{u}");
+                        }
+                        GeneratorLogger.Log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                         string parserCode = $@"
 
 {string.Join(Environment.NewLine, usings)}
@@ -213,7 +222,13 @@ public class CslyParserGenerator : IIncrementalGenerator
                         context.AddSource($"{className}.g.cs", SourceText.From(parserCode, Encoding.UTF8));
 
                             var staticVisitor2 = parserBuilderGenerator.GenerateVisitor2();
-                            
+
+                        GeneratorLogger.Log($"%%%%%%%%%%% USINGS : VISITOR");
+                        foreach (var u in usings)
+                        {
+                            GeneratorLogger.Log($"%%%%% >{u}");
+                        }
+                        GeneratorLogger.Log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                         string visitorCode = $@"
 
 {string.Join(Environment.NewLine, usings)}
@@ -245,8 +260,13 @@ public class CslyParserGenerator : IIncrementalGenerator
                         var explicitTokens = parserBuilderGenerator.GetExplicitTokens();
                         staticLexerBuilder.SetExplicitTokens(explicitTokens);
                         var t = lexerGenerator.GenerateLexer();
-                        
 
+                        GeneratorLogger.Log($"%%%%%%%%%%% USINGS : LEXER");
+                        foreach (var u in usings)
+                        {
+                            GeneratorLogger.Log($"%%%%% >{u}");
+                        }
+                        GeneratorLogger.Log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                         var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}
 

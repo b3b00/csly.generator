@@ -231,7 +231,7 @@ internal class LexerBuilderGenerator
         {
             return $@"_tokenFactories.Add({_staticLexerBuilder.LexerName}.{kvp.Key},{kvp.Value});";
         }));
-
+        
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
             {"KEYWORDS", keywords },

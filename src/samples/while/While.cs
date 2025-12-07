@@ -1,5 +1,5 @@
 ﻿using csly.models;
-using csly.whileLang;
+using csly.whileLang.model;
 
 
 

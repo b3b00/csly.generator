@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using csly.whileLang;
+using csly.whileLang.model;
 using csly.models;
 
 namespace csly.whileLang

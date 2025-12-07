@@ -4,7 +4,7 @@ using csly.whileLang.compiler;
 using Sigil;
 using csly.models;
 
-namespace csly.whileLang;
+namespace csly.whileLang.model;
 
 public class TernaryExpression : Expression
 {

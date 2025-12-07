@@ -1,4 +1,4 @@
-﻿using csly.whileLang;
+﻿using csly.whileLang.model;
 using csly.whileLang.interpreter;
 using System;
 
