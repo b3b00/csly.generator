@@ -40,6 +40,20 @@
                 "${workspaceFolder}/src/test/test.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label":"run tests with coverage",
+            "command":"dotnet",
+            "type":"process",
+            "args":[
+                "test",
+                "${workspaceFolder}/tests/generatorTests/generatorTests.csproj",
+                "--no-build",
+                "/p:CollectCoverage=true",
+                "/p:CoverletOutputFormat=lcov",
+                "   "
+            ],
         }
+
     ]
 }

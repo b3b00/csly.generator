@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Authors>b3b00</Authors>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>csly.whileLang</RootNamespace>
     <EmitCompilerGeneratedFiles>string</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>./Generated</CompilerGeneratedFilesOutputPath>

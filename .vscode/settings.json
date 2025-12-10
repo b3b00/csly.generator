@@ -1,0 +1,6 @@
+{
+    "dotnet-test-explorer.testProjectPath": "tests/generatorTests/generatorTests.csproj",
+  "dotnet-test-explorer.testArguments": "/p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info",
+  "markiscodecoverage.searchCriteria": "**/lcov.info",
+  "code-coverage-lcov.path.searchPath":"**/lcov.info"
+}
