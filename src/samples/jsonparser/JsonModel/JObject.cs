@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace jsonparser.JsonModel
 {
@@ -53,6 +54,12 @@ namespace jsonparser.JsonModel
                 entries.Add($"\"{pair.Key}\": {pair.Value.Dump()}");
             }
             return "{ " + string.Join(", ", entries) + " }";
+        }
+
+        public override int GetDepth()
+        {
+            var depth = Values.Select(x => x.Value.GetDepth()).Max();
+            return depth + 1;
         }
     }
 }

@@ -2,24 +2,30 @@
 
   <PropertyGroup>    
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>    
+    <LangVersion>latest</LangVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Description>#CSLLY parser generator using source generators</Description>
+    <PackageProjectUrl>https://github.com/b3b00/csly.generator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/b3b00/csly.generator</RepositoryUrl>
     <Authors>b3b00</Authors>
-    <version>0.0.1</version>    
-    <PackageVersion>0.0.1</PackageVersion>
+    <version>0.0.2</version>    
+    <PackageVersion>0.0.2</PackageVersion>
     <ApplicationIcon />
-    <OutputType>Library</OutputType>
-    <StartupObject />
+    <!--<OutputType>Library</OutputType>-->
+    <!--<StartupObject />-->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <IsRoslynComponent>true</IsRoslynComponent>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
     
+    <!-- default is true -->
+    <BuildOutputTargetFolder>bin</BuildOutputTargetFolder>
   </PropertyGroup>
 
   <ItemGroup>

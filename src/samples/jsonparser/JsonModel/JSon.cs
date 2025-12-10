@@ -9,6 +9,10 @@ namespace jsonparser.JsonModel
         public virtual bool IsValue { get; set; }
         public virtual bool IsNull { get; set; }
 
+        public virtual int GetDepth()
+        {
+            return 1;
+        }
         public abstract string Dump();
         
     }

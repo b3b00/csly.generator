@@ -19,6 +19,11 @@
 
         public bool IsBool => value is bool;
 
+        public override int GetDepth()
+        {
+            return 0;
+        }
+
         public T GetValue<T>()
         {
             return (T) value;

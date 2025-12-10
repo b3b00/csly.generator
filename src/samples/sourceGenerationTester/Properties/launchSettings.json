@@ -7,6 +7,10 @@
     "json generation": {
       "commandName": "Project",
       "commandLineArgs": "json"
+    },
+    "test": {
+      "commandName": "Project",
+      "commandLineArgs": "test"
     }
   }
 }

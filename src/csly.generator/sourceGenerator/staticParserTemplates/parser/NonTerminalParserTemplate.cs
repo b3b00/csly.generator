@@ -17,7 +17,10 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<T
 
     result.IsError = true;
     var allExpected = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>() { new UnexpectedTokenSyntaxError<<#LEXER#>>(tokens[position],"en", expectedTokens) };
-    result.AddErrors(results.SelectMany(x => x.Errors != null ? x.GetErrors() : allExpected ).ToList());
+
+
+    result.AddErrors(results.SelectMany(x => x.Errors != null && x.Errors.Count > 0 ? x.GetErrors() : new List<UnexpectedTokenSyntaxError<<#LEXER#>>>()).ToList());
+    result.AddErrors(allExpected);
         return result;
     }
         

@@ -1,0 +1,69 @@
+Entering AskMultiLineText with finish key = Enter
+start outer while true 
+key : None + A
+key : None + Spacebar
+key : None + NumPad1
+key : None + Spacebar
+key : None + B
+key : None + NumPad2
+key : None + Spacebar
+key : None + LeftArrow
+key : None + LeftArrow
+key : None + LeftArrow
+key : None + Enter
+*** new Line detected 
+
+key : Control + D
+key : Control + Enter
+key = finish key ctrl+Enter => breaking;
+Finished input collection. with 1 lines
+a 1 b2 
+trying validation ? False
+no validation : succeeding.
+Entering AskMultiLineText with finish key = Enter
+start outer while true 
+Entering AskMultiLineText with finish key = Enter
+start outer while true 
+key : None + Spacebar
+key : None + A
+key : None + Spacebar
+key : None + NumPad1
+key : None + Enter
+*** new Line detected 
+
+key : None + B
+key : None + Spacebar
+key : None + NumPad2
+key : None + Enter
+*** new Line detected 
+ a 1
+key : None + C
+key : None + NumPad3
+key : None + Spacebar
+key : None + Enter
+*** new Line detected 
+ a 1
+b 2
+key : None + OemPeriod
+key : None + Enter
+*** new Line detected 
+ a 1
+b 2
+c3 
+key : Control + Enter
+key = finish key ctrl+Enter => breaking;
+Finished input collection. with 4 lines
+ a 1
+b 2
+c3 
+;
+trying validation ? False
+no validation : succeeding.
+Entering AskMultiLineText with finish key = Enter
+start outer while true 
+key : Control + Enter
+key = finish key ctrl+Enter => breaking;
+Finished input collection. with 0 lines
+
+trying validation ? False
+no validation : succeeding.

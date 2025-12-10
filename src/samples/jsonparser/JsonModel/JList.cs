@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace jsonparser.JsonModel
@@ -21,6 +22,11 @@ namespace jsonparser.JsonModel
         {
             Items = new List<JSon>();
             Items.Add(item);
+        }
+
+        public override int GetDepth()
+        {
+            return Items.Select(x => x.GetDepth()).DefaultIfEmpty(0).Max() + 1;
         }
 
         public override bool IsList => true;

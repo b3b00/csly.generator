@@ -5,5 +5,10 @@
         public override bool IsNull => true;
 
         public override string Dump() => "null";
+
+        public override int GetDepth()
+        {
+            return 0;
+        }
     }
 }

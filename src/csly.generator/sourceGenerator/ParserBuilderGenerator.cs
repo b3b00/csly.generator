@@ -719,12 +719,13 @@ public class ParserBuilderGenerator
 
     #region generate entry point
 
-    public string GenerateEntryPoint()
+    public string GenerateEntryPoint(string ns)
     {
         var root = _staticParserBuilder.ParserOPtions.StartingNonTerminal;
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
-            {"ROOT",root } //TODO
+            {"ROOT",root },
+            {"NAMESPACE",ns   }
         });
         return content;
     }

@@ -12,6 +12,6 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseChoice_<#NAME#>(List<Token<
 
         result.IsError = true;
     var allExpected = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>() { new UnexpectedTokenSyntaxError<<#LEXER#>>(tokens[position],"en", expectedTokens) };
-    result.AddErrors(results.SelectMany(x => x.Errors != null ? x.GetErrors() : allExpected).ToList());
+    result.AddErrors(results.SelectMany(x => x.Errors != null && x.Errors.Count > 0? x.GetErrors() : allExpected).ToList());
     return result;
 }

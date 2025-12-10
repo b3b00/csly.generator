@@ -17,7 +17,7 @@ public class CslyParserGenerator : IIncrementalGenerator
     
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-
+        GeneratorLogger.Log("Starting generation... (initialize)");
         Dictionary<ClassDeclarationSyntax,(string lexerType, string parserType)> _lexerAndParserTypes = new();
         
         // Filter classes annotated with the [Report] attribute. Only filtered Syntax Nodes can trigger code generation.
@@ -56,8 +56,8 @@ public class CslyParserGenerator : IIncrementalGenerator
     private void GenerateCode(SourceProductionContext context, Compilation compilation, ImmutableArray<SyntaxNode> declarations)
     {
 
-        GeneratorLogger.Clean();
-
+        //GeneratorLogger.Clean();
+        GeneratorLogger.Log("Starting generation...");
         Func<SyntaxNode, string> getName = (node) =>
         {
             if (node is ClassDeclarationSyntax classDeclarationSyntax)
@@ -293,7 +293,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                     // ***********
                     // entry point
 
-                    var main = parserBuilderGenerator.GenerateEntryPoint();
+                    var main = parserBuilderGenerator.GenerateEntryPoint(ns);
                     string code = $@"
 
 {string.Join(Environment.NewLine, usings)}
