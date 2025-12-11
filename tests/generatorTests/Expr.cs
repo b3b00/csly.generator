@@ -49,6 +49,10 @@ public class ExprParser
         };
     }
 
+    [Operand]
+    [Production("operand : INT")]
+    public int Operand(Token<ExprToken> intToken) => intToken.IntValue;
+
 }
 
 [ParserGenerator]

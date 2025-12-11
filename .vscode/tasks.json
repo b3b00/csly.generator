@@ -23,7 +23,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/samples/source-generation/source-generation.csproj",
+                "${workspaceFolder}/src/samples/sourceGenerationTester/sourceGenerationTester.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
