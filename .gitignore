@@ -7,3 +7,6 @@
 .vs/*
 *.swp
 *.user
+**/msbuild.binlog
+**/nupkg/*
+**/lcov.info
