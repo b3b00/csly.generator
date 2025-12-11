@@ -9,8 +9,8 @@
     <Nullable>enable</Nullable>
     <PackageProjectUrl>https://github.com/b3b00/csly.generator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/b3b00/csly.generator</RepositoryUrl>
-    <version>0.0.3</version>
-    <PackageVersion>0.0.3</PackageVersion>
+    <version>0.0.4</version>
+    <PackageVersion>0.0.4</PackageVersion>
     <LangVersion>latest</LangVersion>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -39,7 +39,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="*" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../LICENSE" Pack="true" PackagePath="" />
