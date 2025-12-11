@@ -5,9 +5,7 @@ on:
   push:
     branches: 
       - dev
-      - tech/actions 
-      - master
-      - feature/implicit-tokens
+      - main
   pull_request:
     branches: 
       - dev

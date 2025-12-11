@@ -6,22 +6,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-<!-- Help you inspect generator output -->
+    <!-- Help you inspect generator output -->
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
-    
-<IncludeBuildOutput>true</IncludeBuildOutput>           <!-- default is true -->
-  <BuildOutputTargetFolder>bin</BuildOutputTargetFolder>
+
+    <IncludeBuildOutput>true</IncludeBuildOutput>    <!-- default is true -->
+    <BuildOutputTargetFolder>bin</BuildOutputTargetFolder>
 
 
-<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
 
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="interactiveCLI" Version="1.1.2" OutputItemType="Analyzer" />
-    <PackageReference Include="csly.generator" Version="0.0.3" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
