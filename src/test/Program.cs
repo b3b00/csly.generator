@@ -18,10 +18,12 @@ public class Program {
         TestForm form = new TestForm();
 
         form.Ask();
+        Console.WriteLine("trying to parse your code...");
         while (!string.IsNullOrEmpty(form.Code))
         {
             Parser instance = new Parser();
             ParserMain main = new ParserMain(instance);
+            Console.WriteLine("\tParsing...");
             var r = main.Parse(form.Code);
             if (r.IsOk)
             {
