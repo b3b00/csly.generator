@@ -1,34 +1,32 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>    
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <Description>#CSLLY parser generator using source generators</Description>
+    <Authors>b3b00</Authors>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <PackageProjectUrl>https://github.com/b3b00/csly.generator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/b3b00/csly.generator</RepositoryUrl>
-    <Authors>b3b00</Authors>
-    <version>0.0.2</version>    
-    <PackageVersion>0.0.2</PackageVersion>
-    <ApplicationIcon />
-    <!--<OutputType>Library</OutputType>-->
-    <!--<StartupObject />-->
+    <version>0.0.3</version>
+    <PackageVersion>0.0.3</PackageVersion>
+    <LangVersion>latest</LangVersion>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <IsRoslynComponent>true</IsRoslynComponent>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    
-    <!-- default is true -->
-    <BuildOutputTargetFolder>bin</BuildOutputTargetFolder>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -37,18 +35,19 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Collections.Immutable" Version="9.0.10" />
-    <PackageReference Include="System.ValueTuple" Version="4.6.1" />
-    <PackageReference Include="System.Memory" Version="4.5.5" />
-    <PackageReference Include="System.Text.Json" Version="9.0.10" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="*" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="sourceGenerator\staticParserTemplates\**\*.cs" />
     <!--<Compile Remove="model\parser\**\*.cs" />-->
@@ -56,19 +55,7 @@
     <EmbeddedResource Remove="model\parser\**" />
     <None Remove="model\parser\**" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Include="sourceGenerator\staticParserTemplates\lexer\StaticLexerBuilder.cs" />
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <ProjectReference Include="..\samples\ebnfrules\ebnfrules.csproj" />
-  </ItemGroup>-->
-  
-
-  
-    
-
-  
-
 </Project>

@@ -21,24 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="interactiveCLI" Version="1.1.2" OutputItemType="Analyzer" />
-  </ItemGroup>
-
-  
-
-  <ItemGroup>
-   
-<!-- Force the generator to be loaded as an Analyzer -->
-    <!--<PackageReference Include="csly.generator" Version="0.0.2"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />-->
-
-    <!-- If interactiveCLI is a normal library, keep it as a regular reference -->
-
-    
-      <ProjectReference Include="..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    
-
-   
+    <PackageReference Include="csly.generator" Version="0.0.3" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>
