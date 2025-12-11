@@ -199,14 +199,11 @@ namespace csly.generator.sourceGenerator
                 {"ARGS", args },
                 {"METHOD", rule.MethodName },
                 });
-            GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
             return content;
         }
 
         private string GenerateInfixExpressionVisitor(Rule rule, int index)
         {
-            GeneratorLogger.Log($"\nGenerating infix expression visitor for rule {rule.Name} : {rule.Dump()}");
-
             var operatorClause = rule.Clauses[1];
             StringBuilder returnBuilder = new StringBuilder();
 
@@ -254,14 +251,11 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                 {"RETURN_TYPE", _outputType },
                     {"RETURN", returnBuilder.ToString() },
                 });
-            GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
             return content;
         }
 
         private string GeneratePostfixExpressionVisitor(Rule rule, int index)
         {
-            GeneratorLogger.Log($"\nGenerating postfix expression visitor for rule {rule.Name} : {rule.Dump()}");
-
             var operatorClause = rule.Clauses[1];
             StringBuilder returnBuilder = new StringBuilder();
 
@@ -305,14 +299,11 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                 {"RETURN_TYPE", _outputType },
                     {"RETURN", returnBuilder.ToString() },
                 });
-            GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
             return content;
         }
 
         private string GeneratePrefixExpressionVisitor(Rule rule, int index)
         {
-            GeneratorLogger.Log($"\nGenerating postfix expression visitor for rule {rule.Name} : {rule.Dump()}");
-
             var operatorClause = rule.Clauses[0];
             StringBuilder returnBuilder = new StringBuilder();
 
@@ -356,7 +347,6 @@ throw new NotImplementedException($""Operator {{arg0.TokenID}} not implemented f
                 {"RETURN_TYPE", _outputType },
                     {"RETURN", returnBuilder.ToString() },
                 });
-            GeneratorLogger.Log($"\nGenerated infix expression visitor:\n{content}");
             return content;
         }
 

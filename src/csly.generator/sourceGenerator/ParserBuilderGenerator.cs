@@ -63,7 +63,7 @@ public class ParserBuilderGenerator
         expressionRulesGenerator.Generate(_staticParserBuilder.Model);
         _staticParserBuilder.ComputeLeaders();
 
-        GeneratorLogger.Log($"\nfound {_rules.Count} rules");
+        
         var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
@@ -440,7 +440,6 @@ public class ParserBuilderGenerator
             GenerateOperationRule(rule, builder, index);
             return;
         }
-        GeneratorLogger.Log($"\nGenerating rule parser for rule {rule.Name} : {rule.Dump()}");
 
         StringBuilder clausesBuilder = new StringBuilder();
         string children = "";
@@ -546,14 +545,12 @@ public class ParserBuilderGenerator
                 { "INDEX", index.ToString() },
                 { "RULESTRING", $"{rule.Head} : {string.Join(" ", Enumerable.Select<IClause, string>(rule.Clauses, x => x.Name))}" },
             });
-        GeneratorLogger.Log($"\nGenerated rule parser:\n{content}");
         builder.AppendLine(content);
     }
 
 
     private void GenerateOperationRule(Rule rule, StringBuilder builder, int index)
     {
-        GeneratorLogger.Log($"\nGenerating expression rule parser for rule {rule.Name} : {rule.Dump()}");
         if (rule.IsInfixExpressionRule)
         {
             var lower = rule.Clauses[0].Name;
@@ -575,7 +572,6 @@ public class ParserBuilderGenerator
                 {"LOWER_PRECEDENCE", lower }, // TODO
                 {"OPERATOR",  operatorClause } // TODO
         });
-            GeneratorLogger.Log($"\nGenerated infix expression parser:\n{parser}");
             builder.AppendLine(parser);
         }
         else if (rule.ExpressionAffix == Affix.PreFix)
@@ -595,8 +591,6 @@ public class ParserBuilderGenerator
                 {"LOWER_PRECEDENCE", lower }, // TODO
                 {"OPERATOR",  operatorClause }
             });
-                GeneratorLogger.Log($"\nGenerated prefix expression parser:\n{parser}");
-                builder.AppendLine(parser);
             }
         }
         else if (rule.ExpressionAffix == Affix.PostFix)
@@ -627,12 +621,7 @@ public class ParserBuilderGenerator
                 {"OPERATOR",  operatorClause },
                 {"TOKEN_KIND", tokenKind }
             });
-            GeneratorLogger.Log($"\nGenerated infix expression parser:\n{parser}");
             builder.AppendLine(parser);
-        }
-        else
-        {
-            GeneratorLogger.Log($"\nExpression affix {rule.ExpressionAffix} not handled yet. This must be the expression root rule");
         }
     }
 
