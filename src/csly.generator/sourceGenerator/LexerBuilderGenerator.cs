@@ -37,8 +37,6 @@ internal class LexerBuilderGenerator
 
         var fsm = GenerateFSM();
 
-        //string dump = fsm.ToString();
-        //System.IO.File.WriteAllText($"C:\\tmp\\generation\\{name}_fsm.txt", dump);
         return Generate(fsm);
 
     }
@@ -209,8 +207,6 @@ internal class LexerBuilderGenerator
 
     public string Generate(Fsm fsm)
     {
-        System.IO.File.WriteAllText($"C:\\tmp\\generation\\{_staticLexerBuilder.LexerName}_fsm.txt", fsm.ToString());
-
         var statesCode = string.Join("\n", fsm.States.Select(state => Generate(fsm, state)));
 
         var statesCall = string.Join("\n else ", fsm.States.Select(state =>
