@@ -4,11 +4,15 @@
     <Authors>b3b00</Authors>
     <OutputType>Library</OutputType>
     <RootNamespace>csly.whileLang</RootNamespace>
-    <EmitCompilerGeneratedFiles>string</EmitCompilerGeneratedFiles>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>./Generated</CompilerGeneratedFilesOutputPath>
+    <KeepCompilerGeneratedFiles>true</KeepCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Generated\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
