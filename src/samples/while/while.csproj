@@ -3,10 +3,11 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Authors>b3b00</Authors>
     <OutputType>Library</OutputType>
-    <RootNamespace>csly.whileLang</RootNamespace>
+    <RootNamespace>csly.whileLang</RootNamespace>    
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>./Generated</CompilerGeneratedFilesOutputPath>
     <KeepCompilerGeneratedFiles>true</KeepCompilerGeneratedFiles>
+    <AssemblyName>whiley</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

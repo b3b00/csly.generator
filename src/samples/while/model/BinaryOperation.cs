@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using csly.whileLang.compiler;
-using csly.models;
+using csly.whiley.models;
 using Sigil;
 
 namespace csly.whileLang.model

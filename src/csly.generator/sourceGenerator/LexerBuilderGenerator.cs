@@ -19,7 +19,7 @@ internal class LexerBuilderGenerator
 
     private StaticLexerBuilder _staticLexerBuilder;
 
-
+    private string _assemblyName;
 
     public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax, 
         Dictionary<string, SyntaxNode> declarationsByName)
@@ -53,10 +53,10 @@ internal class LexerBuilderGenerator
 
     public const int start = -1;
 
-    public LexerBuilderGenerator(StaticLexerBuilder staticLexerBuilder)
+    public LexerBuilderGenerator(StaticLexerBuilder staticLexerBuilder, string? assemblyName)
     {
         _staticLexerBuilder = staticLexerBuilder;
-        
+        _assemblyName = assemblyName;
     }
 
     public Fsm GenerateFSM()
@@ -234,7 +234,8 @@ internal class LexerBuilderGenerator
             {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
-            { "STATE_CALLS", statesCall }
+            { "STATE_CALLS", statesCall },
+            {"ASSEMBLY", _assemblyName}
         });
     }
 

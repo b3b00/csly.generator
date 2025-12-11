@@ -1,4 +1,4 @@
-﻿using csly.models;
+﻿using csly.whiley.models;
 
 namespace csly.whileLang
 {

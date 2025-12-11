@@ -34,10 +34,6 @@ namespace csly.generator.sourceGenerator
         {
             StringBuilder builder = new();
 
-
-            // DISPATCHERS
-            // case <#LEXER#>.{xxxx} :
-            //   return Visit{NonTerminal}_{index}(node);
             StringBuilder dispatchers = new StringBuilder();
             foreach (var rulesByHead in _rules.GroupBy(x => x.Head))
             {

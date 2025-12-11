@@ -15,6 +15,17 @@
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal",
             "stopAtEntry": false
+        },
+        {
+            "name": "source generation",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildSourceGeneration",
+            "program": "${workspaceFolder}/src/samples/source-generation/bin/Debug/net9.0/source-generation.dll",
+            "args": [""],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "stopAtEntry": false
         }
 
 
