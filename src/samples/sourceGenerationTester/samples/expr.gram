@@ -1,6 +1,6 @@
 ﻿namespace generatorTests;
 
-
+using csly.testing.models;
 
 
 
@@ -14,7 +14,18 @@ public enum ExprToken
 
     [Sugar("*")] MULT = 4,
 
-    [Sugar("/")] DIVIDE = 5
+    [Sugar("/")] DIVIDE = 5,
+
+    [Sugar("+l")] LEFTPLUS = 6,
+    [Sugar("-l")] LEFTMINUS = 7,
+
+    [Sugar("*l")] LEFTMULT = 8,
+    [Sugar("/l")] LEFTDIVIDE = 9,
+
+
+    [Sugar("(")] LEFTPAREN = 10,
+    [Sugar(")")] RIGHTPAREN = 11,
+
 }
 
 [ParserRoot("expression")]
@@ -24,6 +35,8 @@ public class ExprParser
     [Production("expression : ExprParser_expressions")]
     public int expression(int expr) => expr;
     
+
+    // Expressions are right associative
 
     [Right("PLUS",10)]
     [Right("MINUS",10)]
@@ -49,9 +62,40 @@ public class ExprParser
         };
     }
 
+    // expressions are left associative
+
+    [Left("LEFTPLUS",10)]
+    [Left("LEFTMINUS",10)]
+    public int LeftTerm(int left, Token<ExprToken> oper, int right)
+    {
+        return oper.TokenID switch
+        {
+            ExprToken.LEFTPLUS => left + right,
+            ExprToken.LEFTMINUS => left - right,
+            _ => throw new Exception("Unknown operator")
+        };
+    }
+
+    [Left("LEFTMULT",20)]
+    [Left("LEFTDIVIDE",20)]
+    public int LeftFactor(int left, Token<ExprToken> oper, int right) 
+    {
+        return oper.TokenID switch
+        {
+            ExprToken.LEFTMULT => left * right,
+            ExprToken.LEFTDIVIDE => left / right,
+            _ => throw new Exception("Unknown operator")
+        };
+    }
+
     [Operand]
-    [Production("operand : INT")]
-    public int Operand(Token<ExprToken> intToken) => intToken.IntValue;
+    [Production("intOperand : INT")]
+    public int IntOperand(Token<ExprToken> intToken) => intToken.IntValue;
+
+    [Operand]
+    [Production("groupOperand : LEFTPAREN[d] expression RIGHTPAREN[d]")]
+    public int GroupOperand(int expr) => expr;
+    
 
 }
 

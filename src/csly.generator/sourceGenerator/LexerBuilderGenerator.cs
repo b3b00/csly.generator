@@ -41,6 +41,23 @@ internal class LexerBuilderGenerator
 
     }
 
+    public string GenerateFSMDump()
+    {
+        var fsm = GenerateFSM();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("FSM DUMP:");
+        foreach(var state in fsm.States)
+        {
+            sb.AppendLine($" State {state.Id} {(state.IsEnd ? "(End)" : "")} Token: {state.TokenName}");
+            var transitions = fsm.GetTransitions(state.Id);
+            foreach(var transition in transitions)
+            {
+                sb.AppendLine($"   --[{transition.StringCondition}]--> State {transition.TargetState}");
+            }
+        }
+        return sb.ToString();
+    }
+
 
     public const string startState = "start";
     public const string inIntState = "InInt";
