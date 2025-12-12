@@ -283,12 +283,14 @@ public class ParserBuilderGenerator
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseInChoiceTemplate), terminalClause.Name,
                                 additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                    call += $"\nresults.Add(r{i});\n";
                     AddClause(terminalClause);
                 }
                 else if (innerClause is NonTerminalClause nonTerminalClause)
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseInChoiceTemplate), nonTerminalClause.Name,
                                 additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                    call += $"\nresults.Add(r{i});\n";
                     AddClause(nonTerminalClause);
                 }
                 callsBuilder.AppendLine(call).AppendLine();

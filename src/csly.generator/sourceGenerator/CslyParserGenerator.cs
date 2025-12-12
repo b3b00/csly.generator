@@ -254,6 +254,18 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                         context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
 
+                        string fsmDump = lexerGenerator.GenerateFSMDump();
+
+                        string fsmDumpCode = $@"
+/****************************
+/** this the state machine dump for lexer {lexerName}
+/****************************
+
+{fsmDump}
+*/";
+
+                        context.AddSource($"FSM_{lexerName}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));
+
                     }
                     catch (Exception e)
                     {

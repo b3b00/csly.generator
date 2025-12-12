@@ -37,6 +37,15 @@ public class SyntaxParseResult<IN, OUT> where IN : struct, Enum
         }
     }
 
+    public void AddErrors(HashSet<UnexpectedTokenSyntaxError<IN>> errors)
+    {
+        InitErrors();
+        foreach (var error in errors.ToList())
+        {
+            AddError(error);
+        }
+    }
+
     public void AddError(UnexpectedTokenSyntaxError<IN> error)
     {
         InitErrors();
