@@ -13,5 +13,6 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
      result.Root = tree;
      result.IsError = false;
      result.EndingPosition = r<#RULE_COUNT#>.EndingPosition;
+     <#ERRORS#>
      return result;
 }

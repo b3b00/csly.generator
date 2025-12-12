@@ -31,6 +31,14 @@ var parser = new Static<#PARSER#>();
             var result = parser.ParseNonTerminal_<#ROOT#>(lexerResult.Tokens, 0);
             if (result.IsOk)
             {
+                if (result.EndingPosition < lexerResult.Tokens.Count - 1)
+                {
+                    ParseResult<<#LEXER#>, <#OUTPUT#>> notEndedResult = new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.GetCompactedParseErrors());
+                    //notEndedResult.IsError = true;
+                    //notEndedResult.AddErrors(result.Errors);
+                    return notEndedResult;
+                }
+
                 Console.WriteLine("Parsing succeeded.");
                 //Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
                 

@@ -103,7 +103,7 @@ namespace csly.ebnf.models
             }
         }
 
-        [ExcludeFromCodeCoverage] public override string ErrorMessage => $"unepected {UnexpectedToken.ToString()}. Expecting {string.Join(", ", ExpectedTokens.Select(x => x.ToString()))}.";
+        [ExcludeFromCodeCoverage] public override string ErrorMessage => $"unexpected {UnexpectedToken.ToString()}. Expecting {string.Join(", ", ExpectedTokens.Select(x => x.ToString()))}.";
 
 
         private string GetMessageForExpectedToken(LeadingToken<T> expected)

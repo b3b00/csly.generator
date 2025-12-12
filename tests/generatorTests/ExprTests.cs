@@ -1,4 +1,5 @@
 using NFluent;
+using csly.testing.models;
 
 namespace generatorTests;
 
@@ -64,6 +65,20 @@ public class ExprTests
         Check.That(result.IsError).IsTrue();
         var errors = result.Errors;
         Check.That(errors).CountIs(1);
+        var error = errors[0];
+        Check.That(error).IsInstanceOfType(typeof(UnexpectedTokenSyntaxError<ExprToken>));
+        var unexpectedError = error as UnexpectedTokenSyntaxError<ExprToken>;
+        Check.That(unexpectedError.UnexpectedToken.TokenID).IsEqualTo(ExprToken.LEFTPAREN);
+        var expectedTokens = unexpectedError.ExpectedTokens;
+        Check.That(expectedTokens).CountIs(8);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.PLUS);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.MINUS);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.MULT);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.DIVIDE);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTPLUS);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTMINUS);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTMULT);
+        Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTDIVIDE);
 
     }
 

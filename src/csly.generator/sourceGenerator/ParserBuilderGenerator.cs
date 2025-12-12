@@ -445,6 +445,7 @@ public class ParserBuilderGenerator
 
         StringBuilder clausesBuilder = new StringBuilder();
         string children = "";
+        StringBuilder errors = new StringBuilder();
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
             if (i != 0)
@@ -533,6 +534,7 @@ public class ParserBuilderGenerator
                         }
                 }
                 clausesBuilder.AppendLine(call).AppendLine();
+                errors.AppendLine($"result.AddErrors(r{i}.Errors);");
             }
         }
 
@@ -546,6 +548,7 @@ public class ParserBuilderGenerator
                 { "HEAD", rule.Head },
                 { "INDEX", index.ToString() },
                 { "RULESTRING", $"{rule.Head} : {string.Join(" ", Enumerable.Select<IClause, string>(rule.Clauses, x => x.Name))}" },
+                { "ERRORS", errors.ToString() }
             });
         builder.AppendLine(content);
     }
