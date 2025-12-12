@@ -15,6 +15,28 @@
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal",
             "stopAtEntry": false
+        },
+        {
+            "name": "generate EXPR",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildSourceGeneration",
+            "program": "${workspaceFolder}/src/samples/sourceGenerationTester/bin/Debug/net8.0/sourceGenerationTester.dll",
+            "args": ["expr"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "generate WHILE",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildSourceGeneration",
+            "program": "${workspaceFolder}/src/samples/sourceGenerationTester/bin/Debug/net8.0/sourceGenerationTester.dll",
+            "args": ["while"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "stopAtEntry": false
         }
 
 

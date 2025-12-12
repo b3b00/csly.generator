@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using csly.models;
+
 
 namespace <#NAMESPACE#>;
 

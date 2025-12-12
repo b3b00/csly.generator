@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using csly.whileLang.model;
-using csly.models;
+using csly.whiley.models;
 
 namespace csly.whileLang
 {

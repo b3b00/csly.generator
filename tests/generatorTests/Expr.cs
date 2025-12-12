@@ -1,4 +1,4 @@
-﻿namespace generatorTests;
+namespace generatorTests;
 
 using csly.testing.models;
 

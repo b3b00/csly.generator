@@ -1,6 +1,6 @@
 ﻿
 using System.Collections.Generic;
-using Factory = System.Func<csly.models.FsmMatch<<#NAMESPACE#>.<#LEXER#>>, csly.models.Token<<#NAMESPACE#>.<#LEXER#>>>;
+using Factory = System.Func<csly.<#ASSEMBLY#>.models.FsmMatch<<#NAMESPACE#>.<#LEXER#>>, csly.<#ASSEMBLY#>.models.Token<<#NAMESPACE#>.<#LEXER#>>>;
 
 namespace <#NAMESPACE#>;
 

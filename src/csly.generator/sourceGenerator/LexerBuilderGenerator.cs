@@ -19,7 +19,7 @@ internal class LexerBuilderGenerator
 
     private StaticLexerBuilder _staticLexerBuilder;
 
-
+    private string _assemblyName;
 
     public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax, 
         Dictionary<string, SyntaxNode> declarationsByName)
@@ -41,6 +41,23 @@ internal class LexerBuilderGenerator
 
     }
 
+    public string GenerateFSMDump()
+    {
+        var fsm = GenerateFSM();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("FSM DUMP:");
+        foreach(var state in fsm.States)
+        {
+            sb.AppendLine($" State {state.Id} {(state.IsEnd ? "(End)" : "")} Token: {state.TokenName}");
+            var transitions = fsm.GetTransitions(state.Id);
+            foreach(var transition in transitions)
+            {
+                sb.AppendLine($"   --[{transition.StringCondition}]--> State {transition.TargetState}");
+            }
+        }
+        return sb.ToString();
+    }
+
 
     public const string startState = "start";
     public const string inIntState = "InInt";
@@ -53,10 +70,10 @@ internal class LexerBuilderGenerator
 
     public const int start = -1;
 
-    public LexerBuilderGenerator(StaticLexerBuilder staticLexerBuilder)
+    public LexerBuilderGenerator(StaticLexerBuilder staticLexerBuilder, string? assemblyName)
     {
         _staticLexerBuilder = staticLexerBuilder;
-        
+        _assemblyName = assemblyName;
     }
 
     public Fsm GenerateFSM()
@@ -234,7 +251,8 @@ internal class LexerBuilderGenerator
             {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
-            { "STATE_CALLS", statesCall }
+            { "STATE_CALLS", statesCall },
+            {"ASSEMBLY", _assemblyName}
         });
     }
 

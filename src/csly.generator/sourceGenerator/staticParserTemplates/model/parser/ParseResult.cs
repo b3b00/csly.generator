@@ -35,7 +35,7 @@ public class ParseResult<IN, OUT> where IN : struct, Enum
     public ParseResult(LexicalError error)
     {        
         if (Errors == null)
-            Errors = new List<ParseError>();        
+            Errors = new List<ParseError>();
         Errors.Add(error);
         IsError = true;
     }

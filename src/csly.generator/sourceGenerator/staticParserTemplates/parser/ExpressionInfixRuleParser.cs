@@ -21,6 +21,8 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
     {
 
         // TODO node name
+        // TODO store errors expetec tokens (choices)
+        // dont forget to add errors from r0 if any.
         var leftTree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { r0.Root },
         "<#HEAD#>_<#INDEX#>");
         leftTree.ExpressionAffix = Affix.<#AFFIX#>;
@@ -31,6 +33,9 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
         result.Root = leftTree;
         result.IsError = false;
         result.EndingPosition = r0.EndingPosition;
+
+        result.Errors = r1.Errors;
+        result.AddErrors(r0.Errors);
 
         return result;
 

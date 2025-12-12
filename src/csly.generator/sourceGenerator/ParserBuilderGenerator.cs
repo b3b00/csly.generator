@@ -283,12 +283,14 @@ public class ParserBuilderGenerator
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseInChoiceTemplate), terminalClause.Name,
                                 additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                    call += $"\nresults.Add(r{i});\n";
                     AddClause(terminalClause);
                 }
                 else if (innerClause is NonTerminalClause nonTerminalClause)
                 {
                     call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.NonTerminalClauseInChoiceTemplate), nonTerminalClause.Name,
                                 additional: new Dictionary<string, string>() { { "INDEX", i.ToString() } });
+                    call += $"\nresults.Add(r{i});\n";
                     AddClause(nonTerminalClause);
                 }
                 callsBuilder.AppendLine(call).AppendLine();
@@ -443,6 +445,7 @@ public class ParserBuilderGenerator
 
         StringBuilder clausesBuilder = new StringBuilder();
         string children = "";
+        StringBuilder errors = new StringBuilder();
         for (int i = 0; i < rule.Clauses.Count; i++)
         {
             if (i != 0)
@@ -531,6 +534,7 @@ public class ParserBuilderGenerator
                         }
                 }
                 clausesBuilder.AppendLine(call).AppendLine();
+                errors.AppendLine($"result.AddErrors(r{i}.Errors);");
             }
         }
 
@@ -544,6 +548,7 @@ public class ParserBuilderGenerator
                 { "HEAD", rule.Head },
                 { "INDEX", index.ToString() },
                 { "RULESTRING", $"{rule.Head} : {string.Join(" ", Enumerable.Select<IClause, string>(rule.Clauses, x => x.Name))}" },
+                { "ERRORS", errors.ToString() }
             });
         builder.AppendLine(content);
     }
