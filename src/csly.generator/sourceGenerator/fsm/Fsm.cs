@@ -19,6 +19,12 @@ internal class State
 
     private string _tokenName;
 
+    public bool IsSingleLineComment { get; set; } = false;
+
+    public bool IsMultiLineComment { get; set; } = false;
+
+    public string MultiLineCommentEndString { get; set; }
+
     public string TokenName
     {
         get => _tokenName; set
@@ -142,13 +148,15 @@ internal class Fsm
         return id;
     }
 
-    public void End(string tokenName, bool isExplicit = false)
+    public void End(string tokenName, bool isExplicit = false, bool isSingleLineComment = false, bool isMultiLineComment = false)
     {
         if (_states.TryGetValue(_currentState, out var state))
         {
             state.IsEnd = true;
             state.TokenName = tokenName;
             state.IsExplicitEnd = isExplicit;
+            state.IsSingleLineComment = isSingleLineComment;
+            state.IsMultiLineComment = isMultiLineComment;
         }
     }
 
@@ -167,7 +175,7 @@ internal class Fsm
     {
         int id = GetNewState();
         State state = new State(id);
-        _states[id] = state;
+        AddState(state);
         TransitionTo(state.Id, input);
     }
 
@@ -175,7 +183,7 @@ internal class Fsm
     {
         int id = GetNewState();
         State state = new State(id);
-        _states[id] = state;
+        AddState(state);
         AnyTransitionTo(state.Id);
     }
 
@@ -290,7 +298,7 @@ internal class Fsm
     {
         int id = GetNewState();
         State state = new State(id);
-        _states[id] = state;
+        AddState(state);
         return MultiRangeTransitionTo(state.Id, ranges);
 
     }
@@ -335,7 +343,7 @@ internal class Fsm
     {
         int id = GetNewState();
         State state = new State(id);
-        _states[id] = state;
+        AddState(state);
         return ExceptTransitionTo(state.Id, except);
     }
 
@@ -357,7 +365,8 @@ internal class Fsm
         {
             var newStateId = GetNewState();
             State state = new State(newStateId);
-            _states[newStateId] = state;
+            AddState(state);
+            //_states[newStateId] = state;
             target = newStateId;
         }
         var chars = except.ToCharArray();
@@ -399,6 +408,11 @@ internal class Fsm
         return _states[targetState];
     }
 
+    internal State GetCurrentState()
+    {
+        return _states[_currentState];
+    }
+
     internal State GetState(string stateName)
     {
         if (_statesByName.TryGetValue(stateName, out var state))
@@ -434,7 +448,7 @@ internal class Fsm
         StringBuilder sb = new StringBuilder();
         foreach (var state in _states.Values)
         {
-            sb.AppendLine($"State {state.Id} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName}");
+            sb.AppendLine($"State {state.Id} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName} --  {(state.IsMultiLineComment ? "multi line comment" : "")} {(state.IsSingleLineComment ? "single line comment" : "")}");
             foreach (var transition in GetTransitions(state.Id))
             {
                 var target = GetState(transition.TargetState);

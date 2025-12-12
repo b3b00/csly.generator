@@ -17,6 +17,12 @@ namespace <#NS#> {
 
         public bool IsExplicit { get; set; } = false;
 
+        public bool IsSingleLineComment { get; set; } = false;
+
+        public bool IsMultiLineComment { get; set; } = false;
+
+        public string MultiLineCommentEndDelimiter { get; set; } = null;
+
         public FsmMatch(ReadOnlyMemory<char> value, LexerPosition position)
         {
             Value = value;

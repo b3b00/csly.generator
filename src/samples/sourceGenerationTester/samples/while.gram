@@ -99,7 +99,11 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
         [Sugar( ";")] SEMICOLON = 52,
 
 
-        EOF = 0
+        EOF = 0,
+
+        [SingleLineComment("//")]
+        [MultiLineComment("/*", "*/")]
+        COMMENT = 101,
 
         #endregion
     }

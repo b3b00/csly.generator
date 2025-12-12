@@ -32,13 +32,12 @@ internal class LexerBuilderGenerator
 
     }
 
-    public string GenerateLexer()
+    public (string lexer, string fsm) GenerateLexer()
     {       
 
         var fsm = GenerateFSM();
-
-        return Generate(fsm);
-
+        string lexer = Generate(fsm);
+        return (lexer, fsm.ToString());
     }
 
     public string GenerateFSMDump()
@@ -210,6 +209,26 @@ internal class LexerBuilderGenerator
                         fsm.End(lexem.Name);
                         break;
                     }
+                    case model.lexer.GenericToken.Comment:
+                    {
+                        
+                        fsm.GoTo(startState);
+                        if (lexem.Args.Length == 2)
+                        {
+                            var startComment = lexem.Args[0].Trim(new[] { '"' });                            
+                            fsm.ConstantTransition(startComment);                                                        
+                            fsm.End(lexem.Name,isMultiLineComment:true);
+                            fsm.GetCurrentState().MultiLineCommentEndString = lexem.Args[1].Trim(new[] { '"' });
+                        }
+                        else if (lexem.Args.Length == 1)
+                        {
+                            var lineComment = lexem.Args[0].Trim(new[] {'"'} );
+                            fsm.ConstantTransition(lineComment);                            
+                            fsm.End(lexem.Name,isSingleLineComment:true);
+                        }
+
+                        break;
+                    }
                 default:
                     {
                         Console.WriteLine($"FSM generation for lexeme type {lexem.Type} not implemented yet.");
@@ -290,14 +309,18 @@ internal class LexerBuilderGenerator
                 });
             
         }));
-
+        
         var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
         var match = $"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition);";
-
+        var comment = state.IsSingleLineComment ? "_currentMatch.IsSingleLineComment = true;" :
+                      state.IsMultiLineComment ? @$"_currentMatch.IsMultiLineComment = true;
+_currentMatch.MultiLineCommentEndDelimiter = ""{state.MultiLineCommentEndString}"";" :
+                      "";
         var ending = state.IsEnd ?
             @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
         var memory = new ReadOnlyMemory<char>(sliced.ToArray());
-        _currentMatch = {(state.IsExplicitEnd ? explicitMatch : match)} ;"
+        _currentMatch = {(state.IsExplicitEnd ? explicitMatch : match)} ;
+        {comment}"
         :
         "";
 
