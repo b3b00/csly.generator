@@ -206,6 +206,7 @@ public class WhileTests
 
         Check.That(result.Result).IsInstanceOf<SequenceStatement>();
         var seq = result.Result as SequenceStatement;
+        Check.That(seq.Count).IsEqualTo(1);
         Check.That(seq.Get(0)).IsInstanceOf<PrintStatement>();
         var print = seq.Get(0) as PrintStatement;
         var expr = print.Value;
