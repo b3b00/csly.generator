@@ -84,6 +84,7 @@ private Factory _defaultFactory;
                 {
                     commentValue = "".ToCharArray();
                 }
+                comment.Channel = 1;
                 position = position + commentValue.Length;
                 if (commentValue.Length > comment.SpanValue.Length)
                 {
@@ -111,7 +112,7 @@ private Factory _defaultFactory;
                     position = end + position;
                 commentValue = source.Slice(lexerPosition.Index, position - lexerPosition.Index);
                 comment.SpanValue = commentValue;
-
+                comment.Channel = 1;
                 var newPosition = lexerPosition.Index + commentValue.Length + comment.MultiLineCommentEndDelimiter.Length;
                 var lines = EOLManager.GetLinesLength(commentValue);
                 var newLine = lexerPosition.Line + lines.Count - 1;
