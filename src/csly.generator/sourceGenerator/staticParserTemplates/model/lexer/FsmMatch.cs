@@ -14,8 +14,15 @@ namespace <#NS#> {
         public ReadOnlyMemory<char> Value { get; set; }
 
         public LexerPosition Position { get; set; }
+        public CommentType CommentType  => (IsMultiLineComment) ? CommentType.Multi : (IsSingleLineComment) ? CommentType.Single : CommentType.No;
 
         public bool IsExplicit { get; set; } = false;
+
+        public bool IsSingleLineComment { get; set; } = false;
+
+        public bool IsMultiLineComment { get; set; } = false;
+
+        public string MultiLineCommentEndDelimiter { get; set; } = null;
 
         public FsmMatch(ReadOnlyMemory<char> value, LexerPosition position)
         {

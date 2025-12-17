@@ -46,6 +46,32 @@ public class WhileTests
         Check.That((bin.Right as IntegerConstant)?.Value).IsEqualTo(1);
     }
 
+     [Fact]
+    public void TestAssignAddWithComments()
+    {
+        var parser = BuildParser();
+        var result = parser.Parse(@"(a /* block*/:=
+        // this is a 1
+        1
+        +
+        // this another 1
+        1)");
+        Check.That(result).IsNotNull();
+        Check.That(result.IsOk).IsTrue();
+
+        Check.That(result.Result).IsInstanceOf<SequenceStatement>();
+        var seq = result.Result as SequenceStatement;
+        Check.That(seq.Get(0)).IsInstanceOf<AssignStatement>();
+        var assign = seq.Get(0) as AssignStatement;
+        Check.That(assign.VariableName).IsEqualTo("a");
+        var val = assign.Value;
+        Check.That(val).IsInstanceOf<BinaryOperation>();
+        var bin = val as BinaryOperation;
+        Check.That(bin.Operator).IsEqualTo(BinaryOperator.ADD);
+        Check.That((bin.Left as IntegerConstant)?.Value).IsEqualTo(1);
+        Check.That((bin.Right as IntegerConstant)?.Value).IsEqualTo(1);
+    }
+
     [Fact]
     public void TestBuildParser()
     {

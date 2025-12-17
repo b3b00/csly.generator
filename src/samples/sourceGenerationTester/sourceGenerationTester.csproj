@@ -13,23 +13,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="samples\expr.gram" />
+      <None Remove="samples\*.gram" />
     </ItemGroup>
 
     <ItemGroup>
-      <!--<ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
+      <!-- <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" /> -->
 
-      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
+      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="samples\test.gram" />
-      <EmbeddedResource Include="samples\while.gram" />
-      <EmbeddedResource Include="samples\json.gram" />
-      <EmbeddedResource Include="samples\ebnf.gram" />
-      <EmbeddedResource Include="samples\expr.gram" />
-      <EmbeddedResource Include="samples\toky.gram" />
-      <EmbeddedResource Include="samples\expression.gram" />
+      <EmbeddedResource Include="samples\*.gram" />
     </ItemGroup>
 
     <ItemGroup>

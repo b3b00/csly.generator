@@ -79,7 +79,6 @@ public class ExprTests
         Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTMINUS);
         Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTMULT);
         Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTDIVIDE);
-
     }
 
 

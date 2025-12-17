@@ -41,7 +41,7 @@ public  class Program
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
         var parser = fs.ReadAllText($"/samples/{who}.gram");
 
-        var result = GenerateSource(parser, "SimpleParser");
+        var result = GenerateSource(parser, "whileLang");
 
         var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);

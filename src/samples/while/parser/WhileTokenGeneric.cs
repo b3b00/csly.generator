@@ -82,7 +82,7 @@ namespace csly.whileLang
 
         #endregion
 
-        #region sugar 50 ->
+        #region sugar 50 -> 100
 
         [Sugar( "(")] LPAREN = 50,
 
@@ -91,9 +91,20 @@ namespace csly.whileLang
         [Sugar( ";")] SEMICOLON = 52,
 
 
-        EOF = 0
+        
 
         #endregion
+
+        #region comments 100 ->
+
+        [SingleLineComment("//")]
+        [MultiLineComment("/*", "*/")]
+        COMMENT = 101,
+
+        #endregion
+
+        EOF = 0
+
     }
     
     public enum ShortWhileTokenGeneric

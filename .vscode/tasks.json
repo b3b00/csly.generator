@@ -46,31 +46,6 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watchTest",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/src/test/test.csproj"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label":"run tests with coverage",
-            "command":"dotnet",
-            "type":"process",
-            "args":[
-                "test",
-                "${workspaceFolder}/tests/generatorTests/generatorTests.csproj",
-                "--no-build",
-                "/p:CollectCoverage=true",
-                "/p:CoverletOutputFormat=lcov",
-                "/p:CoverletOutput=${workspaceFolder}/lcov.info"
-            ],
-        },
-        {
             "label": "build unit tests",
             "command": "dotnet",
             "type": "process",
@@ -87,7 +62,6 @@
             },
             "dependsOn" : ["clean unit tests"]
         },
-        ,
         {
             "label": "clean unit tests",
             "command": "dotnet",
@@ -102,8 +76,7 @@
             "group": {
                 "kind": "clean",
                 "isDefault": true
-            },
-            "dependsOn"
+            }
         }
 
 

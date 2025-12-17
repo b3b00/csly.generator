@@ -244,24 +244,24 @@ public class CslyParserGenerator : IIncrementalGenerator
                         // TODO : add explicit tokens if needed
                         var explicitTokens = parserBuilderGenerator.GetExplicitTokens();
                         staticLexerBuilder.SetExplicitTokens(explicitTokens);
-                        var t = lexerGenerator.GenerateLexer();
+                        (string lexer, string fsm) = lexerGenerator.GenerateLexer();
                         var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}
 
 
-   {t}
+   {lexer}
 ";
 
                         context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
 
-                        string fsmDump = lexerGenerator.GenerateFSMDump();
+                        
 
                         string fsmDumpCode = $@"
 /****************************
 /** this the state machine dump for lexer {lexerName}
 /****************************
 
-{fsmDump}
+{fsm}
 */";
 
                         context.AddSource($"FSM_{lexerName}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));

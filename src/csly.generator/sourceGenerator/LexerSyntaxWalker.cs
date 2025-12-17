@@ -324,7 +324,12 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                         _staticLexerBuilder.Add(GenericToken.Identifier,
                             name, modes,
                             new[] { "_a-zA-Z", "-_a-zA-Z0-9" });
-                    }                    
+                    }
+                    else if (method == "Comment")
+                    {
+                        _staticLexerBuilder.Add(GenericToken.Comment, name, modes,
+                            GetAttributeArgsAsStringArray(attributeSyntax, skip).ToArray());
+                    }
                     else
                     {
                         GenericToken lexemeType = (GenericToken)Enum.Parse(typeof(GenericToken),member.Name.Identifier.Text);                         
