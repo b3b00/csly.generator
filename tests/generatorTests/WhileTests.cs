@@ -172,6 +172,14 @@ public class WhileTests
         Check.That(elseAssign.VariableName).IsEqualTo("b");
         Check.That(elseAssign.Value).IsInstanceOf<StringConstant>();
         Check.That((elseAssign.Value as StringConstant).Value).IsEqualTo("world");
+
+        Interpreter interpreter = new Interpreter();
+        var interpretation = interpreter.Interprete(result.Result);
+        TypedValue a = interpretation.GetVariable("a");
+        Check.That(a.ValueType).IsEqualTo(WhileType.STRING);
+        Check.That(a.Value.ToString).IsEqualTo("hello");
+        TypedValue b = interpretation.GetVariable("b");
+        Check.That(b).IsNull();
     }
 
     [Fact]
@@ -217,6 +225,7 @@ public class WhileTests
         Check.That(bin.Right).IsInstanceOf<BoolConstant>();
         Check.That((bin.Left as BoolConstant).Value).IsTrue();
         Check.That((bin.Right as BoolConstant).Value).IsFalse();
+
     }
 
 
