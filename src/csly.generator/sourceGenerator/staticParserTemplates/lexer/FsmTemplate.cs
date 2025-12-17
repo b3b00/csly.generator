@@ -42,7 +42,7 @@ private Factory _defaultFactory;
 
     public <#LEXER#>_FsmLexer()
     {
-        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position);     
+        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter);
         <#FACTORIES#>
     }
 
@@ -65,6 +65,71 @@ private Factory _defaultFactory;
             _currentPosition.Index++;
         }
     }
+
+    private LexerPosition ConsumeComments(Token<<#LEXER#>> comment, ReadOnlyMemory<char> source)
+    {
+        // TODO return the value and new position after consuming comment
+        var lexerPosition = comment.Position;
+        ReadOnlyMemory<char> commentValue;
+
+        if (comment.CommentType == CommentType.Single)
+        {
+            // single line comment
+            var position = lexerPosition.Index;
+                if (position < source.Length -1)
+                {
+                    commentValue = source.GetToEndOfLine(position);
+                }
+                else
+                {
+                    commentValue = "".ToCharArray();
+                }
+                position = position + commentValue.Length;
+                if (commentValue.Length > comment.SpanValue.Length)
+                {
+                    comment.SpanValue = commentValue.RemoveEndOfLineChars();
+                }
+                else
+                {
+                    comment.SpanValue = "".ToCharArray();
+                }
+
+                var newPosition = lexerPosition.Clone();
+                newPosition.Index = position;
+                newPosition.Line++;
+                newPosition.Column = 0;
+                return newPosition;
+        }
+        else if (comment.CommentType == CommentType.Multi)
+        {
+            // multi line comment
+            var position = lexerPosition.Index;
+                var end = source.Span.Slice(position).IndexOf<char>(comment.MultiLineCommentEndDelimiter.AsSpan());
+                if (end < 0)
+                    position = source.Length;
+                else
+                    position = end + position;
+                commentValue = source.Slice(lexerPosition.Index, position - lexerPosition.Index);
+                comment.SpanValue = commentValue;
+
+                var newPosition = lexerPosition.Index + commentValue.Length + comment.MultiLineCommentEndDelimiter.Length;
+                var lines = EOLManager.GetLinesLength(commentValue);
+                var newLine = lexerPosition.Line + lines.Count - 1;
+                int newColumn;
+                if (lines.Count > 1)
+                    newColumn = lines[lines.Count-1] + comment.MultiLineCommentEndDelimiter.Length;
+                else
+                    newColumn = lexerPosition.Column + lines[0] + comment.MultiLineCommentEndDelimiter.Length;
+
+                var newLexerPosition = lexerPosition.Clone();
+                newLexerPosition.Index = newPosition;
+                newLexerPosition.Line = newLine;
+                newLexerPosition.Column = newColumn;
+                return newLexerPosition;  
+        }
+        return comment.Position;
+    }
+
 
     public LexerResult<<#LEXER#>> Scan(ReadOnlySpan<char> source) {
         _currentPosition = new LexerPosition(0,0,0);

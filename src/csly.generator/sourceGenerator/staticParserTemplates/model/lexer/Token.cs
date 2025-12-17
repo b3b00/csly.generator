@@ -26,6 +26,8 @@ public class Token<T> where T:struct, Enum
     [JsonIgnore]
     public char CharDelimiter ='\'';
     
+    [JsonIgnore]
+    public string MultiLineCommentEndDelimiter = null;
 
     [JsonIgnore] private string _hexaPrefix = "0x";
 
@@ -38,13 +40,15 @@ public class Token<T> where T:struct, Enum
 
 
     public Token(T token, string value, LexerPosition position, 
-        CommentType commentType = CommentType.Single, int? channel = null, char decimalSeparator = '.' ) : this(token,new ReadOnlyMemory<char>(value.ToCharArray()),position,commentType,channel, decimalSeparator:decimalSeparator)
+        CommentType commentType = CommentType.Single, string multiLineCommentEndDelimiter = null, int? channel = null, char decimalSeparator = '.' ) : 
+        this(token, new ReadOnlyMemory<char>(value.ToCharArray()), position, commentType, multiLineCommentEndDelimiter, channel, decimalSeparator:decimalSeparator)
 
 {
     }
     
     public Token(T token, ReadOnlyMemory<char> value, LexerPosition position, 
-        CommentType commentType = CommentType.Single, int? channel = null, bool isWhiteSpace = false, char decimalSeparator = '.' )
+        CommentType commentType = CommentType.Single, string multiLineCommentEndDelimiter = null, 
+         int? channel = null, bool isWhiteSpace = false, char decimalSeparator = '.' )
     {
         IsWhiteSpace = isWhiteSpace;
         IsEOS = false;
@@ -53,6 +57,7 @@ public class Token<T> where T:struct, Enum
         Position = position;
         CommentType = commentType;
         DecimalSeparator = decimalSeparator;
+        MultiLineCommentEndDelimiter = multiLineCommentEndDelimiter;
         if (CommentType != CommentType.No)
         {
             if (channel == null)

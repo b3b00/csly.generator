@@ -6,7 +6,6 @@
     
     if (isEnd) {
         _currentState = 0;
-    // TODO : no more to consume store token in list and go back to start state
     <#ENDING#>
     _currentMatch.IsDone = true;
     return (true, 0, _currentMatch);

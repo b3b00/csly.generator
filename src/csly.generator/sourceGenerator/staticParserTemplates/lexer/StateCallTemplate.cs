@@ -16,6 +16,9 @@
                 factory = _defaultFactory;
             }
             var token = factory(match<#STATE#>);
+            
+            _currentPosition = ConsumeComments(token, source.ToArray());
+            
             AddToken(token);
                 _currentMatch = null;
             //consume whit spaces on token boundaries

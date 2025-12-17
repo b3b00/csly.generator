@@ -14,6 +14,7 @@ namespace <#NS#> {
         public ReadOnlyMemory<char> Value { get; set; }
 
         public LexerPosition Position { get; set; }
+        public CommentType CommentType  => (IsMultiLineComment) ? CommentType.Multi : (IsSingleLineComment) ? CommentType.Single : CommentType.No;
 
         public bool IsExplicit { get; set; } = false;
 
