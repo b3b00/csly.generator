@@ -35,14 +35,8 @@ public class <#PARSER#>Main
                 if (result.EndingPosition < mainTokens.Count - 1)
                 {
                     ParseResult<<#LEXER#>, <#OUTPUT#>> notEndedResult = new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.GetCompactedParseErrors());
-                    //notEndedResult.IsError = true;
-                    //notEndedResult.AddErrors(result.Errors);
                     return notEndedResult;
                 }
-
-                Console.WriteLine("Parsing succeeded.");
-                //Console.WriteLine($"Parse Tree: {result.Root.Dump("  ")}");
-                
                 // visiting
                 var visitor = new <#PARSER#>Visitor2(_instance);
                 var output = visitor.Visit(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
