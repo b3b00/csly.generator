@@ -1,5 +1,6 @@
-﻿using csly.models;
-using csly.whileLang;
+﻿using csly.whileLang.models;
+using csly.whileLang.model;
+using whileLang;
 
 namespace whileLang;
 
