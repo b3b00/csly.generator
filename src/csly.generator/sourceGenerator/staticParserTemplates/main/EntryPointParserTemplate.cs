@@ -26,12 +26,13 @@ public class <#PARSER#>Main
             }
 
 
-// parsing
-var parser = new Static<#PARSER#>();
-            var result = parser.ParseNonTerminal_<#ROOT#>(lexerResult.Tokens, 0);
+            // parsing
+            var mainTokens = lexerResult.MainTokens;
+            var parser = new Static<#PARSER#>();
+            var result = parser.ParseNonTerminal_<#ROOT#>(mainTokens, 0);
             if (result.IsOk)
             {
-                if (result.EndingPosition < lexerResult.Tokens.Count - 1)
+                if (result.EndingPosition < mainTokens.Count - 1)
                 {
                     ParseResult<<#LEXER#>, <#OUTPUT#>> notEndedResult = new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.GetCompactedParseErrors());
                     //notEndedResult.IsError = true;

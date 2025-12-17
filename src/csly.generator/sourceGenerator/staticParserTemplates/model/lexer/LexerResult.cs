@@ -9,6 +9,8 @@ namespace <#NS#>;
 public class LexerResult<T> where T:struct, Enum
 {
     public List<Token<T>> Tokens { get; set; } = new List<Token<T>>();
+
+    public List<Token<T>> MainTokens => Tokens.FindAll(t => t.Channel == null || t.Channel == 0);
     
     public LexicalError Error { get; set; } = null;
 
