@@ -177,7 +177,7 @@ public class WhileTests
         var interpretation = interpreter.Interprete(result.Result);
         TypedValue a = interpretation.GetVariable("a");
         Check.That(a.ValueType).IsEqualTo(WhileType.STRING);
-        Check.That(a.Value.ToString).IsEqualTo("hello");
+        Check.That(a.Value.ToString()).IsEqualTo("hello");
         TypedValue b = interpretation.GetVariable("b");
         Check.That(b).IsNull();
     }
