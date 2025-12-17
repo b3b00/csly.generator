@@ -127,7 +127,7 @@ private Factory _defaultFactory;
                 newLexerPosition.Column = newColumn;
                 return newLexerPosition;  
         }
-        return comment.Position;
+        return _currentPosition;
     }
 
 

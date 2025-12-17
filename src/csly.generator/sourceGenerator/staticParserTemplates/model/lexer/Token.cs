@@ -40,14 +40,14 @@ public class Token<T> where T:struct, Enum
 
 
     public Token(T token, string value, LexerPosition position, 
-        CommentType commentType = CommentType.Single, string multiLineCommentEndDelimiter = null, int? channel = null, char decimalSeparator = '.' ) : 
+        CommentType commentType = CommentType.No, string multiLineCommentEndDelimiter = null, int? channel = null, char decimalSeparator = '.' ) : 
         this(token, new ReadOnlyMemory<char>(value.ToCharArray()), position, commentType, multiLineCommentEndDelimiter, channel, decimalSeparator:decimalSeparator)
 
 {
     }
     
     public Token(T token, ReadOnlyMemory<char> value, LexerPosition position, 
-        CommentType commentType = CommentType.Single, string multiLineCommentEndDelimiter = null, 
+        CommentType commentType = CommentType.No, string multiLineCommentEndDelimiter = null, 
          int? channel = null, bool isWhiteSpace = false, char decimalSeparator = '.' )
     {
         IsWhiteSpace = isWhiteSpace;
