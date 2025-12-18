@@ -242,7 +242,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                     try
                     {
-                        // TODO : add explicit tokens if needed
+                        // TODO : add explicit tokens if needed : ⚠️ explicit tokens are only in default mode !
                         var explicitTokens = parserBuilderGenerator.GetExplicitTokens();
                         staticLexerBuilder.SetExplicitTokens(explicitTokens);
                         List<(string mode, string lexer, string fsm)> subLexers = lexerGenerator.GenerateSubLexers();
