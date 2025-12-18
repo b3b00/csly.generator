@@ -24,6 +24,10 @@ namespace <#NS#> {
 
         public string MultiLineCommentEndDelimiter { get; set; } = null;
 
+        public bool IsPop { get; set; } = false;
+
+        public string PushTarget { get; set; } = null;
+
         public FsmMatch(ReadOnlyMemory<char> value, LexerPosition position)
         {
             Value = value;

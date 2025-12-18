@@ -32,30 +32,25 @@ internal class LexerBuilderGenerator
 
     }
 
-    public (string lexer, string fsm) GenerateLexer()
+    public List<(string mode, string lexer, string fsm)> GenerateSubLexers()
     {       
         // TODO : support multiple modes
-        var fsm = GenerateFSM();
-        string lexer = Generate(fsm);
-        return (lexer, fsm.ToString());
+        var fsms = GenerateFsms();
+        var subLexers = new List<(string mode, string lexer, string fsm)>();
+        foreach(var mode in fsms) {
+            string lexer = Generate(mode.Value);
+            var dump = new StringBuilder();
+            dump.AppendLine("********************************");
+            dump.AppendLine($"*** Mode: >>{mode.Key}<<");
+            dump.AppendLine("********************************");
+            dump.AppendLine();
+            dump.Append(fsms.Values.ToString());
+
+            subLexers.Add((mode.Key, lexer, fsms.Values.First().ToString()));
+        }
+        return subLexers;
     }
 
-    public string GenerateFSMDump()
-    {
-        var fsm = GenerateFSM();
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("FSM DUMP:");
-        foreach(var state in fsm.States)
-        {
-            sb.AppendLine($" State {state.Id} {(state.IsEnd ? "(End)" : "")} Token: {state.TokenName}");
-            var transitions = fsm.GetTransitions(state.Id);
-            foreach(var transition in transitions)
-            {
-                sb.AppendLine($"   --[{transition.StringCondition}]--> State {transition.TargetState}");
-            }
-        }
-        return sb.ToString();
-    }
 
 
     public const string startState = "start";
@@ -113,16 +108,24 @@ internal class LexerBuilderGenerator
                 case model.lexer.GenericToken.SugarToken:
                     {
                         fsm.ConstantTransition(lexem.Arg0);
-                        fsm.End(lexem.Name, lexem.IsExplicit);
+                        fsm.End(lexem);
+                        if (lexem.IsPop)
+                        {
+                            fsm.Pop();
+                        }
+                        if (lexem.IsPush)
+                        {
+                            fsm.PushTo(lexem.PushTarget);
+                        }
                         break;
                     }
                 case model.lexer.GenericToken.Int:
                     {
                         var next = fsm.RangeTransition('0', '9');
                         fsm.Mark("InInt");
-                        fsm.End(lexem.Name);
+                        fsm.End(lexem);
                         fsm.RangeTransitionTo("InInt", '0', '9');
-                        fsm.End(lexem.Name);
+                        fsm.End(lexem);
                         break;
                     }
                 case model.lexer.GenericToken.Double:
@@ -138,7 +141,7 @@ internal class LexerBuilderGenerator
                         fsm.Transition('.');
                         fsm.Mark(inDoubleState);
                         fsm.RangeTransitionTo(inDoubleState, '0', '9');
-                        fsm.End(lexem.Name);
+                        fsm.End(lexem);
                         break;
                     }
                 case model.lexer.GenericToken.KeyWord:
@@ -160,9 +163,15 @@ internal class LexerBuilderGenerator
         {{
             if (_keywords.TryGetValue(match.Value.ToString(), out var keywordToken))
             {{
-                return new Token<{_staticLexerBuilder.LexerName}>(keywordToken, match.Value, match.Position);
+                return new Token<{_staticLexerBuilder.LexerName}>(keywordToken, match.Value, match.Position) {{
+                    IsPop = match.IsPop,
+                    PushTarget = match.PushTarget
+                }};
             }}
-            return new Token<{_staticLexerBuilder.LexerName}>(match.Token, match.Value, match.Position);
+            return new Token<{_staticLexerBuilder.LexerName}>(match.Token, match.Value, match.Position) {{
+                    IsPop = match.IsPop,
+                    PushTarget = match.PushTarget
+                }};
         }}");
 
                         var cond = string.Join(" || ", startPattern.Select(pattern =>
@@ -196,7 +205,7 @@ internal class LexerBuilderGenerator
                                     fsm.RangeTransitionTo(inIdentifierState, pattern[0], pattern[1]);
                             }
                             fsm.Mark("InIdentifier");
-                            fsm.End(lexem.Name);
+                            fsm.End(lexem);
                         }
                         var tailPatterns = lexem.IdentifierTailPatterns();
                         for (var i = 0; i < startPattern.Count(); i++)
@@ -232,7 +241,7 @@ internal class LexerBuilderGenerator
                         fsm.AnyTransitionTo(inStringState);
                         fsm.Transition(delim);
                         
-                        fsm.End(lexem.Name);
+                        fsm.End(lexem);
                         break;
                     }
                     case model.lexer.GenericToken.Comment:
@@ -243,14 +252,14 @@ internal class LexerBuilderGenerator
                         {
                             var startComment = lexem.Args[0].Trim(new[] { '"' });                            
                             fsm.ConstantTransition(startComment);                                                        
-                            fsm.End(lexem.Name,isMultiLineComment:true);
+                            fsm.End(lexem,isMultiLineComment:true);
                             fsm.GetCurrentState().MultiLineCommentEndString = lexem.Args[1].Trim(new[] { '"' });
                         }
                         else if (lexem.Args.Length == 1)
                         {
                             var lineComment = lexem.Args[0].Trim(new[] {'"'} );
                             fsm.ConstantTransition(lineComment);                            
-                            fsm.End(lexem.Name,isSingleLineComment:true);
+                            fsm.End(lexem,isSingleLineComment:true);
                         }
 
                         break;

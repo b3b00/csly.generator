@@ -42,7 +42,11 @@ private Factory _defaultFactory;
 
     public <#LEXER#>_FsmLexer()
     {
-        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter);
+        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter) {
+            IsExplicit = match.IsExplicit,
+            IsPop = match.IsPop,
+            PushTarget = match.PushTarget
+        };
         <#FACTORIES#>
     }
 

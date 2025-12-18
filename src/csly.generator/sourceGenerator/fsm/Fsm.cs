@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using csly.generator.model.lexer;
 
 namespace csly.generator.sourceGenerator.fsm;
 
@@ -25,6 +26,11 @@ internal class State
 
     public string MultiLineCommentEndString { get; set; }
 
+    public bool IsPop { get; set; } = false;
+
+    public string PushTarget { get; set; } = null;
+
+
     public string TokenName
     {
         get => _tokenName; set
@@ -36,10 +42,12 @@ internal class State
             _tokenName = value;
         }
     }
-    public State(int id, bool isEnd = false)
+    public State(int id, bool isEnd = false, bool isPop = false, string pushTarget = null)
     {
         Id = id;
         IsEnd = isEnd;
+        IsPop = isPop;
+        PushTarget = pushTarget;
     }
 }
 
@@ -125,6 +133,18 @@ internal class Fsm
         }
     }
 
+    public void Pop()
+    {
+        var state = GetState(_currentState);
+        state?.IsPop = true;
+    }
+
+    public void PushTo(string target)
+    {
+        var state = GetState(_currentState);
+        state?.PushTarget = target;
+    }
+
     public void GoTo(int state)
     {
         _currentState = state;
@@ -146,6 +166,19 @@ internal class Fsm
     {
         int id = _states.Count;        
         return id;
+    }
+
+public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLineComment = false)
+    {
+        End(lexeme.Name, lexeme.IsExplicit, isSingleLineComment, isMultiLineComment);
+        if (lexeme.IsPop)
+        {
+            Pop();
+        }
+        if (lexeme.IsPush)
+        {
+            PushTo(lexeme.PushTarget);
+        }
     }
 
     public void End(string tokenName, bool isExplicit = false, bool isSingleLineComment = false, bool isMultiLineComment = false)
