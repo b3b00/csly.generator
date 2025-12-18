@@ -34,7 +34,7 @@ internal class LexerBuilderGenerator
 
     public (string lexer, string fsm) GenerateLexer()
     {       
-
+        // TODO : support multiple modes
         var fsm = GenerateFSM();
         string lexer = Generate(fsm);
         return (lexer, fsm.ToString());
@@ -75,11 +75,37 @@ internal class LexerBuilderGenerator
         _assemblyName = assemblyName;
     }
 
-    public Fsm GenerateFSM()
+    public Dictionary<string,Fsm> GenerateFsms()
+    {
+        Dictionary<string, Fsm> fsms = new Dictionary<string, Fsm>();
+
+        var modes = _staticLexerBuilder.Lexemes.SelectMany(lexem =>
+        {
+            if (lexem.Modes != null)
+            {
+                return lexem.Modes;
+            }
+            else
+            {
+                return new List<string>() { "default" };
+            }
+        }).Distinct();
+        foreach (var mode in modes)
+        {
+            var lexemsInMode = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Modes.Contains(mode)).ToList();
+            
+            var subFfsm = GenerateFSM(lexemsInMode);
+            fsms.Add(mode, subFfsm);
+        }
+
+        return fsms;
+    }
+
+    public Fsm GenerateFSM(List<model.lexer.Lexeme> lexemsInMode)
     {
 
         Fsm fsm = new();
-        foreach(var lexem in _staticLexerBuilder.Lexemes)
+        foreach(var lexem in lexemsInMode)
         {
             fsm.GoTo(startState);
             switch (lexem.Type)
