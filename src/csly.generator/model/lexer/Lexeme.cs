@@ -20,6 +20,12 @@ namespace csly.generator.model.lexer
 
         public List<string> Modes { get; internal set; }
 
+        public string PushTarget {get; set;}
+
+        public bool IsPop {get; set;}
+
+        public bool IsPush => !string.IsNullOrEmpty(PushTarget);
+
         public bool IsExplicit { get; set; } = false;
 
         public IEnumerable<char[]> IdentifierStartPatterns()
