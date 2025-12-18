@@ -21,7 +21,9 @@ internal class LexerBuilderGenerator
 
     private string _assemblyName;
 
-    public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax, 
+    protected int upToCounter;
+
+    public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax,
         Dictionary<string, SyntaxNode> declarationsByName)
     {
         string name = enumDeclarationSyntax.Identifier.ToString();
@@ -33,12 +35,13 @@ internal class LexerBuilderGenerator
     }
 
     public List<(string mode, string lexer, string fsm)> GenerateSubLexers()
-    {       
+    {
         // TODO : support multiple modes
         var fsms = GenerateFsms();
         var subLexers = new List<(string mode, string lexer, string fsm)>();
-        foreach(var mode in fsms) {
-            string lexer = Generate(mode.Value);
+        foreach (var mode in fsms)
+        {
+            string lexer = Generate(mode.Key, mode.Value);
             var dump = new StringBuilder();
             dump.AppendLine("********************************");
             dump.AppendLine($"*** Mode: >>{mode.Key}<<");
@@ -70,7 +73,7 @@ internal class LexerBuilderGenerator
         _assemblyName = assemblyName;
     }
 
-    public Dictionary<string,Fsm> GenerateFsms()
+    public Dictionary<string, Fsm> GenerateFsms()
     {
         Dictionary<string, Fsm> fsms = new Dictionary<string, Fsm>();
 
@@ -88,7 +91,7 @@ internal class LexerBuilderGenerator
         foreach (var mode in modes)
         {
             var lexemsInMode = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Modes.Contains(mode)).ToList();
-            
+
             var subFfsm = GenerateFSM(lexemsInMode);
             fsms.Add(mode, subFfsm);
         }
@@ -100,11 +103,58 @@ internal class LexerBuilderGenerator
     {
 
         Fsm fsm = new();
-        foreach(var lexem in lexemsInMode)
+        foreach (var lexem in lexemsInMode)
         {
+
             fsm.GoTo(startState);
             switch (lexem.Type)
             {
+                case model.lexer.GenericToken.UpTo:
+                    { // TODO UPTO
+                        var exceptions = lexem.Args.Select(x => x.Trim(new[] { '"' })).ToArray();
+
+                        Func<int, int, string> GetEndLabel = (int exception, int exceptionIndex) =>
+                        {
+                            if (exception < 0 || exceptionIndex < 0)
+                            {
+                                return $"in_upto_text_{upToCounter}";
+                            }
+
+                            return $"in_upto_{exception}_{exceptionIndex}_{upToCounter}";
+                        };
+
+                        var upToChars0 = new string(exceptions.Select(x => x.First()).Distinct().ToArray());
+
+                        // allow move with any char different from exceptions' first char
+                        fsm.ExceptTransition(upToChars0);
+                        fsm.Mark(GetEndLabel(-1, -1));
+                        fsm.End(lexem);
+                        // loop if no exception char found
+                        fsm.ExceptTransitionTo(GetEndLabel(-1, -1), upToChars0);
+
+                        // for each exception, create a path
+                        for (int exceptionIndex = 0; exceptionIndex < exceptions.Length; exceptionIndex++)
+                        {
+                            var exception = exceptions[exceptionIndex];
+                            fsm.GoTo(startState);
+                            // match first char of exception
+                            fsm.Transition(exception[0]);
+                            // mark state
+                            fsm.Mark(GetEndLabel(exception.Length, exceptionIndex));
+                            // match rest of exception chars
+                            for (int i = 1; i < exception.Length; i++)
+                            {
+                                fsm.TransitionTo(GetEndLabel(exception.Length, exceptionIndex), exception[i]);
+                            }
+                            // if full exception matched, go back to start
+                            fsm.GoTo(GetEndLabel(exception.Length, exceptionIndex));
+                            fsm.ExceptTransitionTo(startState, exception);
+                            // else loop on rest of text
+                            fsm.ExceptTransitionTo(GetEndLabel(exception.Length, exceptionIndex), exception);
+                        }
+                        upToCounter++;
+                        break;
+                    }
                 case model.lexer.GenericToken.SugarToken:
                     {
                         fsm.ConstantTransition(lexem.Arg0);
@@ -186,13 +236,13 @@ internal class LexerBuilderGenerator
                             }
                         }));
 
-                        for ( var i = 0; i < startPattern.Count(); i++)
+                        for (var i = 0; i < startPattern.Count(); i++)
                         {
                             fsm.GoTo(startState);
                             var pattern = startPattern.ElementAt(i);
                             if (pattern.Length == 1)
-                            {   
-                                if (i == 0) 
+                            {
+                                if (i == 0)
                                     fsm.Transition(pattern[0]);
                                 else
                                     fsm.TransitionTo(inIdentifierState, pattern[0]);
@@ -223,9 +273,9 @@ internal class LexerBuilderGenerator
                         }
                         break;
                     }
-                    case model.lexer.GenericToken.String:
+                case model.lexer.GenericToken.String:
                     {
-                        char delim  = '"';
+                        char delim = '"';
                         char escape = '\\';
                         if (lexem.Args.Length == 2)
                         {
@@ -235,31 +285,31 @@ internal class LexerBuilderGenerator
 
                         fsm.Transition(delim);
                         fsm.Mark(inStringState);
-                        fsm.ExceptTransitionTo(inStringState,$"{delim}{escape}");
+                        fsm.ExceptTransitionTo(inStringState, $"{delim}{escape}");
                         fsm.Transition(escape);
                         fsm.Mark(inEscapedStringState);
                         fsm.AnyTransitionTo(inStringState);
                         fsm.Transition(delim);
-                        
+
                         fsm.End(lexem);
                         break;
                     }
-                    case model.lexer.GenericToken.Comment:
+                case model.lexer.GenericToken.Comment:
                     {
-                        
+
                         fsm.GoTo(startState);
                         if (lexem.Args.Length == 2)
                         {
-                            var startComment = lexem.Args[0].Trim(new[] { '"' });                            
-                            fsm.ConstantTransition(startComment);                                                        
-                            fsm.End(lexem,isMultiLineComment:true);
+                            var startComment = lexem.Args[0].Trim(new[] { '"' });
+                            fsm.ConstantTransition(startComment);
+                            fsm.End(lexem, isMultiLineComment: true);
                             fsm.GetCurrentState().MultiLineCommentEndString = lexem.Args[1].Trim(new[] { '"' });
                         }
                         else if (lexem.Args.Length == 1)
                         {
-                            var lineComment = lexem.Args[0].Trim(new[] {'"'} );
-                            fsm.ConstantTransition(lineComment);                            
-                            fsm.End(lexem,isSingleLineComment:true);
+                            var lineComment = lexem.Args[0].Trim(new[] { '"' });
+                            fsm.ConstantTransition(lineComment);
+                            fsm.End(lexem, isSingleLineComment: true);
                         }
 
                         break;
@@ -276,7 +326,7 @@ internal class LexerBuilderGenerator
     }
 
 
-    public string Generate(Fsm fsm)
+    public string Generate(string mode, Fsm fsm)
     {
         var statesCode = string.Join("\n", fsm.States.Select(state => Generate(fsm, state)));
 
@@ -294,30 +344,31 @@ internal class LexerBuilderGenerator
             return $@"{{ ""{kvp.Key}"", {_staticLexerBuilder.LexerName}.{kvp.Value} }}";
         }));
         var explicitKeywords = string.Join(", ", fsm.ExplicitKeywords.Select(kw => $@"""{kw}"""));
-        var factories = string.Join("\n",fsm.Factories.Select(kvp =>
+        var factories = string.Join("\n", fsm.Factories.Select(kvp =>
         {
             return $@"_tokenFactories.Add({_staticLexerBuilder.LexerName}.{kvp.Key},{kvp.Value});";
         }));
-        
+
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
             {"KEYWORDS", keywords },
             {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
+            { "MODE", mode },
             { "STATE_CALLS", statesCall },
             {"ASSEMBLY", _assemblyName}
         });
     }
 
     public string Generate(Fsm fsm, State state)
-    {       
+    {
         StringBuilder sb = new StringBuilder();
         var transitions = fsm.GetTransitions(state.Id);
 
-        var transitionsCode = string.Join("\n",transitions.Select(transition =>
+        var transitionsCode = string.Join("\n", transitions.Select(transition =>
         {
-            
+
 
             var targetState = fsm.GetState(transition.TargetState);
 
@@ -326,14 +377,14 @@ internal class LexerBuilderGenerator
             var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
             var match = $"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{targetState.TokenName}, memory, _startPosition);";
 
-        var endingTransition = state.IsEnd ? 
-            @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
+            var endingTransition = state.IsEnd ?
+                @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
         var memory = new ReadOnlyMemory<char>(sliced.ToArray());
         _currentMatch = {(targetState.IsExplicitEnd ? explicitMatch : match)};"
-        :
-        "";
+            :
+            "";
 
-            
+
             return _templateEngine.ApplyTemplate(nameof(LexerTemplates.TransitionTemplate), additional: new Dictionary<string, string>()
                 {
                     { "CURRENT_STATE", state.Id.ToString() },
@@ -342,9 +393,9 @@ internal class LexerBuilderGenerator
                     {"TOKEN_NAME", targetState.TokenName ?? "null" },
                     //{ "ENDING", endingTransition }
                 });
-            
+
         }));
-        
+
         var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
         var match = $"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition);";
         var comment = state.IsSingleLineComment ? "_currentMatch.IsSingleLineComment = true;" :

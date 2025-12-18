@@ -14,11 +14,11 @@ namespace csly.generator.sourceGenerator;
 [Generator]
 public class CslyParserGenerator : IIncrementalGenerator
 {
-    
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        Dictionary<ClassDeclarationSyntax,(string lexerType, string parserType)> _lexerAndParserTypes = new();
-        
+        Dictionary<ClassDeclarationSyntax, (string lexerType, string parserType)> _lexerAndParserTypes = new();
+
         // Filter classes annotated with the [Report] attribute. Only filtered Syntax Nodes can trigger code generation.
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider(
@@ -32,15 +32,15 @@ public class CslyParserGenerator : IIncrementalGenerator
             });
 
         var provider2 = context.SyntaxProvider.CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax || s is EnumDeclarationSyntax,
-            ((ctx,_) =>  ctx.Node ));
+            ((ctx, _) => ctx.Node));
 
-        
+
         // Generate the source code.
         context.RegisterSourceOutput(context.CompilationProvider.Combine(provider2.Collect()),
              ((ctx, t) => GenerateCode(ctx, t.Left, t.Right)));
     }
 
-   
+
 
     public List<string> GetUsings(SyntaxNode syntaxNode)
     {
@@ -51,7 +51,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         }
         return new List<string>();
     }
-    
+
     private void GenerateCode(SourceProductionContext context, Compilation compilation, ImmutableArray<SyntaxNode> declarations)
     {
 
@@ -75,26 +75,26 @@ public class CslyParserGenerator : IIncrementalGenerator
 
         // generate models
 
-        
+
 
         TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
         var models = templateEngine.GetAllTemplateNamesForFolder("model");
         foreach (var model in models)
         {
-            var content = templateEngine.ApplyTemplate(model, additional: new Dictionary<string, string>() { { "NS", $"csly.{assemblyName}.models"} });
+            var content = templateEngine.ApplyTemplate(model, additional: new Dictionary<string, string>() { { "NS", $"csly.{assemblyName}.models" } });
             context.AddSource($"{model}.g.cs", SourceText.From(content, Encoding.UTF8));
         }
 
 
         Dictionary<string, SyntaxNode> declarationsByName = declarations.ToDictionary(x => getName(x));
-        
+
         foreach (var declarationSyntax in declarations)
         {
             if (declarationSyntax is ClassDeclarationSyntax classDeclarationSyntax)
             {
 
                 var className = classDeclarationSyntax.Identifier.Text;
-               
+
 
                 var (lexerType, parserType, outputType, isParserGenerator) = GetClassDeclaration(classDeclarationSyntax);
 
@@ -116,7 +116,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                     if (!classDeclarationSyntax.BaseList.Types.Any(x => x.Type.ToString().StartsWith("AbstractParserGenerator<")))
                     {
-                        string inheritance = string.Join(", ",classDeclarationSyntax.BaseList.Types.Select(x => $"[{x.Type.ToString()}]"));
+                        string inheritance = string.Join(", ", classDeclarationSyntax.BaseList.Types.Select(x => $"[{x.Type.ToString()}]"));
                         context.ReportDiagnostic(Diagnostic.Create(
                             new DiagnosticDescriptor(
                                 CslyGeneratorErrors.MISSING_INHERITANCE,
@@ -126,12 +126,12 @@ public class CslyParserGenerator : IIncrementalGenerator
                                 DiagnosticSeverity.Error,
                                 true), classDeclarationSyntax.GetLocation(), classDeclarationSyntax.Identifier.Text, inheritance));
                     }
-                    
-                    
-                    
+
+
+
                     string ns = declarationSyntax.GetNameSpace();
-                
-                    
+
+
 
                     if (!declarationsByName.ContainsKey(lexerType))
                     {
@@ -143,13 +143,13 @@ public class CslyParserGenerator : IIncrementalGenerator
                                 "csly",
                                 DiagnosticSeverity.Error,
                                 true), classDeclarationSyntax.GetLocation(), lexerType));
-                                return;
+                        return;
                     }
-                    
+
                     EnumDeclarationSyntax lexerDecl = declarationsByName[lexerType] as EnumDeclarationSyntax;
-                    
-                   
-                    
+
+
+
                     if (!declarationsByName.ContainsKey(parserType))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
@@ -162,11 +162,11 @@ public class CslyParserGenerator : IIncrementalGenerator
                                 true), classDeclarationSyntax.GetLocation(), parserType));
                         return;
                     }
-                    
+
                     var parserDecl = declarationsByName[parserType] as ClassDeclarationSyntax;
-                    
+
                     string lexerName = lexerDecl.Identifier.ToString();
-                   
+
                     string modifiers = string.Join(" ", classDeclarationSyntax.Modifiers.Select(x => x.ToString()));
 
                     var usings = GetUsings(lexerDecl);
@@ -177,16 +177,17 @@ public class CslyParserGenerator : IIncrementalGenerator
                     {
                         "using System;", $"using csly.{assemblyName}.models;",
                         "using System.Collections.Generic;"
-                    }); 
+                    });
                     usings = usings.Distinct().ToList();
-                    
+
                     StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
                     LexerBuilderGenerator lexerGenerator = new LexerBuilderGenerator(staticLexerBuilder, assemblyName);
                     try
-                    {                                                
+                    {
                         lexerGenerator.AnalyseLexer(lexerDecl as EnumDeclarationSyntax, declarationsByName);
                     }
-                    catch(Exception e) {                        
+                    catch (Exception e)
+                    {
                         context.ReportDiagnostic(Diagnostic.Create(
                             new DiagnosticDescriptor(
                                 CslyGeneratorErrors.LEXER_GENERATION_FAILED,
@@ -226,7 +227,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                         context.AddSource($"{className}Visitor2.g.cs", SourceText.From(visitorCode, Encoding.UTF8));
 
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
                             new DiagnosticDescriptor(
@@ -244,28 +245,33 @@ public class CslyParserGenerator : IIncrementalGenerator
                         // TODO : add explicit tokens if needed
                         var explicitTokens = parserBuilderGenerator.GetExplicitTokens();
                         staticLexerBuilder.SetExplicitTokens(explicitTokens);
-                        (string lexer, string fsm) = lexerGenerator.GenerateLexer();
-                        var staticLexer = @$"
+                        List<(string mode, string lexer, string fsm)> subLexers = lexerGenerator.GenerateSubLexers();
+
+                        foreach (var sublexer in subLexers)
+                        {
+
+                            var staticLexer = @$"
 {string.Join(Environment.NewLine, usings)}
 
 
-   {lexer}
+   {sublexer.lexer}
 ";
 
-                        context.AddSource($"Static{lexerName}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
+                            context.AddSource($"Static{lexerName}_{sublexer.mode}.g.cs", SourceText.From(staticLexer, Encoding.UTF8));
 
-                        
 
-                        string fsmDumpCode = $@"
+
+                            string fsmDumpCode = $@"
 /****************************
-/** this the state machine dump for lexer {lexerName}
+/** this the state machine dump for lexer {lexerName}_{sublexer.mode}
 /****************************
 
-{fsm}
+{sublexer.fsm}
 */";
 
-                        context.AddSource($"FSM_{lexerName}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));
+                            context.AddSource($"FSM_{lexerName}_{sublexer.mode}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));
 
+                        }
                     }
                     catch (Exception e)
                     {
@@ -359,11 +365,11 @@ public class CslyParserGenerator : IIncrementalGenerator
                                 return (l.ToString(), p.ToString(),
                                     o.ToString(),
                                     true);
-                                
+
                             }
                         }
                     }
-                    
+
                     if (attributeSyntax.ArgumentList != null && attributeSyntax.ArgumentList.Arguments.Count == 3)
                     {
                         var arg1 = attributeSyntax.ArgumentList.Arguments[0];

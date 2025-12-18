@@ -6,7 +6,7 @@ namespace <#NAMESPACE#>;
 
     
 
-public class <#LEXER#>_FsmLexer
+public class <#LEXER#>_FsmLexer_<#MODE#>
 {
 
     private int _currentState = 0;

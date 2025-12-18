@@ -12,7 +12,7 @@
     <version>0.9.1</version>
     <PackageVersion>0.9.1</PackageVersion>
     <LangVersion>latest</LangVersion>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <IncludeSymbols>true</IncludeSymbols>
@@ -21,6 +21,9 @@
     <IsRoslynComponent>true</IsRoslynComponent>
     <IncludeBuildOutput>true</IncludeBuildOutput>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+      <PublishRepositoryUrl>false</PublishRepositoryUrl>
+    </PropertyGroup>
   <PropertyGroup>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>

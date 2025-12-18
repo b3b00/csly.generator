@@ -135,13 +135,13 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
     private List<string> GetModes(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
     {
         var all = enumMemberDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).ToList();
-        var modes = all.Where(x => x.Name.ToString() == "Mode").ToList();
+        var modes = all.Where(x => x.Name.ToString() == "Mode");
 
         return modes.SelectMany(x =>
         {
             if (x.ArgumentList != null)
             {
-                return x.ArgumentList.Arguments.Select(x => x.Expression.ToString()).ToList();
+                return x.ArgumentList.Arguments.Select(x => x.Expression.ToString().Trim(new[] {'"'})).ToList();
             }
             return new List<string>();
         }).ToList();

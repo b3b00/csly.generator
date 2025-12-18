@@ -136,13 +136,19 @@ internal class Fsm
     public void Pop()
     {
         var state = GetState(_currentState);
-        state?.IsPop = true;
+        if (state != null)
+        {
+            state.IsPop = true;
+        }
     }
 
     public void PushTo(string target)
     {
         var state = GetState(_currentState);
-        state?.PushTarget = target;
+        if (state != null)
+        {
+            state.PushTarget = target;
+        }
     }
 
     public void GoTo(int state)
@@ -243,7 +249,7 @@ public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLin
         }
     }
 
-    private Transition GetTransition(char input)
+    public Transition GetTransition(char input)
     {
         if (_transitions.TryGetValue(_currentState, out var transitions))
         {

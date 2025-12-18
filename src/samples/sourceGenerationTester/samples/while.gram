@@ -107,6 +107,42 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
         COMMENT = 101,
 
         #endregion
+
+ #region fstring 100 ->
+
+        [Push("fstringExpression")] 
+        [Mode("fstring")]
+        [Sugar("{")]
+        OPEN_FSTRING_EXPPRESSION = 100,
+
+        [Pop] 
+        [Mode("fstringExpression")] 
+        [Sugar("}")]
+        CLOSE_FSTRING_EXPPRESSION = 101,
+
+        [Sugar("$\"")]
+        [Mode("default", "fstringExpression")]
+        [Push("fstring")] 
+        OPEN_FSTRING,
+
+        [Sugar("\"")] 
+        [Mode("fstring", "fstringExpression")]
+        [Pop]  
+        CLOSE_FSTRING,
+
+        
+        [Mode("fstring")]
+        [UpTo("{","\"")]
+        FSTRING_CONTENT,
+        
+        
+        
+        
+        
+        
+        
+        #endregion
+
     }
 
 [ParserRoot("statement")]
