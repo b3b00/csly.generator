@@ -279,6 +279,16 @@ public class CslyParserGenerator : IIncrementalGenerator
                         });
                         context.AddSource($"ISubLexer.g.cs", SourceText.From(iSubLexer, Encoding.UTF8));
 
+                        var mainLexer = templateEngine.ApplyTemplate("MainLexerTemplate", additional : new Dictionary<string, string>
+                        {
+                            {"LEXER", lexerName },
+                            {"ASSEMBLY", assemblyName },
+                            {"NAMESPACE", ns },
+                            {"SUB_LEXERS", string.Join($",{Environment.NewLine}", subLexers.Select(x => $"{{ \"{x.mode}\", new {lexerName}_FsmLexer_{x.mode}() }}")) }
+                        });
+
+                        context.AddSource($"{lexerName}_MainLexer.cs", SourceText.From(mainLexer, Encoding.UTF8));
+
                     }
                     catch (Exception e)
                     {
