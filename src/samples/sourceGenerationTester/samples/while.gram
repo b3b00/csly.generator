@@ -142,6 +142,7 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
         FSTRING_CONTENT = 102,
 
         [Mode("fstring")]
+        [Push("fstring_expression")]
         [Sugar("<%")]
         OPEN_FSTRING_EXPRESSION = 103,
 

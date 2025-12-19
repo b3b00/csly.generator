@@ -64,7 +64,7 @@
         {
             char ch = GetChar(source, _currentPosition);
             var error = new LexicalError(_currentPosition.Line, _currentPosition.Column, ch, "en");
-            return error;
+            return (error, false, null);
         }
     }
 }

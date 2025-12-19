@@ -8,6 +8,7 @@
         _currentState = 0;
     <#ENDING#>
     _currentMatch.IsDone = true;
+    _lastSuccessMatch = _currentMatch.Clone();
     return (true, 0, _lastSuccessMatch, false);
     }
     else {         

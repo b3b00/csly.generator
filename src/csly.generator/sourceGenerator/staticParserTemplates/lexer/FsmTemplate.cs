@@ -138,7 +138,15 @@ private Factory _defaultFactory;
     }
 
 
-    public LexerResult<<#LEXER#>> Scan(ReadOnlySpan<char> source) {
+    public (LexerResult<<#LEXER#>> result, bool isPop, string PushTarget) Scan(string source, LexerPosition position)
+{
+    // TODO : scan a single token from source starting at position
+    // return error or token
+    // return if token is Pop or (Push and target mode)
+    return (null, false, null);
+}
+
+public (LexerResult<WhileTokenGeneric> result, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source) {
         _currentPosition = new LexerPosition(0,0,0);
 _startPosition = new LexerPosition(0,0,0);
 List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
@@ -147,12 +155,25 @@ List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
         void AddToken(Token<<#LEXER#>> token) {
             tokens.Add(token);
         }
+
+        bool IsModeChanging()
+        {
+            if (tokens.Count == 0)
+                return false;
+            var lastToken = tokens[tokens.Count - 1];
+            return lastToken.IsPop || !string.IsNullOrEmpty(lastToken.PushTarget);
+        }
+
         ConsumeWhiteSpace(source);
-        while (_currentPosition.Index <= source.Length)
+
+        while (_currentPosition.Index <= source.Length && !IsModeChanging())
         {   
             <#STATE_CALLS#>
         }
-        return tokens;
+        var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
+        bool isPop = lastToken != null && (lastToken.IsPop);
+        string pushTarget = lastToken != null ? lastToken.PushTarget : null;
+        return (tokens, isPop, pushTarget);
     }
 
 
