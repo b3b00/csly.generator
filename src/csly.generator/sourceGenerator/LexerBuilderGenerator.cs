@@ -410,7 +410,11 @@ Log("Generating FSM for mode " + mode);
         }));
 
         var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
-        var match = $"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition);";
+        var match = $@"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition) 
+    {{ 
+        IsPop = {state.IsPop.ToString().ToLower()},
+        PushTarget = ""{state.PushTarget}""
+    }}";
         var comment = state.IsSingleLineComment ? "_currentMatch.IsSingleLineComment = true;" :
                       state.IsMultiLineComment ? @$"_currentMatch.IsMultiLineComment = true;
 _currentMatch.MultiLineCommentEndDelimiter = ""{state.MultiLineCommentEndString}"";" :

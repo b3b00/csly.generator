@@ -4,10 +4,13 @@ using Factory = System.Func<csly.<#ASSEMBLY#>.models.FsmMatch<<#NAMESPACE#>.<#LE
 
 namespace <#NAMESPACE#>;
 
+
     
 
-public class <#LEXER#>_FsmLexer_<#MODE#>
+public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
 {
+
+    public string Name => "<#MODE#>";
 
     private int _currentState = 0;
 
@@ -138,16 +141,10 @@ private Factory _defaultFactory;
     }
 
 
-    public (LexerResult<<#LEXER#>> result, bool isPop, string PushTarget) Scan(string source, LexerPosition position)
-{
-    // TODO : scan a single token from source starting at position
-    // return error or token
-    // return if token is Pop or (Push and target mode)
-    return (null, false, null);
-}
 
-public (LexerResult<WhileTokenGeneric> result, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source) {
-        _currentPosition = new LexerPosition(0,0,0);
+
+public (LexerResult<WhileTokenGeneric> Result, LexerPosition NewPosition, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source, LexerPosition position) {
+        _currentPosition = position;
 _startPosition = new LexerPosition(0,0,0);
 List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
@@ -173,7 +170,7 @@ List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
         var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
         bool isPop = lastToken != null && (lastToken.IsPop);
         string pushTarget = lastToken != null ? lastToken.PushTarget : null;
-        return (tokens, isPop, pushTarget);
+        return (tokens, _currentPosition, isPop, pushTarget);
     }
 
 

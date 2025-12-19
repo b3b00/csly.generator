@@ -272,6 +272,13 @@ public class CslyParserGenerator : IIncrementalGenerator
                             context.AddSource($"FSM_{lexerName}_{sublexer.mode}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));
 
                         }
+                        templateEngine = new TemplateEngine(lexerName, parserType, outputType, ns);
+                        var iSubLexer = templateEngine.ApplyTemplate("ISubLexerTemplate", additional: new Dictionary<string, string>
+                        {
+                            {"ASSEMBLY", assemblyName }
+                        });
+                        context.AddSource($"ISubLexer.g.cs", SourceText.From(iSubLexer, Encoding.UTF8));
+
                     }
                     catch (Exception e)
                     {
