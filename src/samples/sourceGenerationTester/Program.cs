@@ -76,7 +76,6 @@ public  class Program
             {
                 Directory.CreateDirectory(fi.DirectoryName);
             }
-            Console.WriteLine($"Writing file: {fileName}");
             File.WriteAllText(fileName, file.Value);
         }
 

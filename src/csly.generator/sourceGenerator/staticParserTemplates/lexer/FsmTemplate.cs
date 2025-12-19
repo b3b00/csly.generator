@@ -13,6 +13,8 @@ public class <#LEXER#>_FsmLexer_<#MODE#>
 
     private FsmMatch<<#LEXER#>> _currentMatch = null;
 
+    private FsmMatch<<#LEXER#>> _lastSuccessMatch = null;
+
     private LexerPosition _currentPosition { get; set; }
 
     private LexerPosition _startPosition { get; set; }
@@ -40,7 +42,7 @@ public class <#LEXER#>_FsmLexer_<#MODE#>
 
 private Factory _defaultFactory;
 
-    public <#LEXER#>_FsmLexer()
+    public <#LEXER#>_FsmLexer_<#MODE#>()
     {
         _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter) {
             IsExplicit = match.IsExplicit,

@@ -110,14 +110,14 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
 
  #region fstring 100 ->
 
-        [Push("fstringExpression")] 
+        /*[Push("fstringExpression")] 
         [Mode("fstring")]
         [Sugar("{")]
         OPEN_FSTRING_EXPPRESSION = 100,
 
         [Pop] 
         [Mode("fstringExpression")] 
-        [Sugar("}")]
+        [Sugar("%>")]
         CLOSE_FSTRING_EXPPRESSION = 101,
 
         [Sugar("$\"")]
@@ -132,8 +132,19 @@ public partial class While : AbstractParserGenerator<WhileTokenGeneric, WhilePar
 
         
         [Mode("fstring")]
-        [UpTo("{","\"")]
+        [UpTo("<%","\"")]
         FSTRING_CONTENT,
+
+        [Mode("fstring")]*/
+
+        [Mode("fstring")]
+        [UpTo("<%","\"")]
+        FSTRING_CONTENT = 102,
+
+        [Mode("fstring")]
+        [Sugar("<%")]
+        OPEN_FSTRING_EXPRESSION = 103,
+
         
         
         

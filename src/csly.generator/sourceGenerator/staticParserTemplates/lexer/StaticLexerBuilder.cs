@@ -66,7 +66,7 @@ internal class StaticLexerBuilder
                 AddLexeme(new Lexeme(GenericToken.KeyWord, token.ExplicitValue) { Modes = new List<string>() { "default" } });
             }
             else
-            {                
+            {
                 AddLexeme(new Lexeme(GenericToken.SugarToken, token.ExplicitValue) { Modes = new List<string>() { "default" } });
                 explicitSugarCount++;
             }

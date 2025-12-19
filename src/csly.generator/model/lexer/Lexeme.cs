@@ -1,4 +1,5 @@
 ﻿using csly.ebnf.models;
+using csly.generator.sourceGenerator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace csly.generator.model.lexer
         public string Name => _name;
         public string[] Args => _args;
 
-        public string Arg0 => Args != null && Args.Any() ? Args.First().Trim(new[] { '"' }) : null;
+        public string Arg0 => Args != null && Args.Any() ? Args.First().TrimQuotes() : null;
 
         public List<string> Modes { get; internal set; }
 

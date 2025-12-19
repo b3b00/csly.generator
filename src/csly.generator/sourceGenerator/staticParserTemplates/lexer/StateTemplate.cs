@@ -1,4 +1,4 @@
-﻿public (bool ok, int newState, FsmMatch<<#LEXER#>> match) scanState_<#STATE_ID#>(LexerPosition position, ReadOnlySpan<char> source) {
+﻿public (bool ok, int newState, FsmMatch<<#LEXER#>> match, bool isGoingEnd) scanState_<#STATE_ID#>(LexerPosition position, ReadOnlySpan<char> source) {
     bool isEnd = <#IS_END#>;
     char ch = GetChar(source, position);
 
@@ -8,9 +8,9 @@
         _currentState = 0;
     <#ENDING#>
     _currentMatch.IsDone = true;
-    return (true, 0, _currentMatch);
+    return (true, 0, _lastSuccessMatch, false);
     }
     else {         
-        return (false, -1, null);
+        return (false, -1, null, false);
     }   
 }

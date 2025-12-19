@@ -141,7 +141,7 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         {
             if (x.ArgumentList != null)
             {
-                return x.ArgumentList.Arguments.Select(x => x.Expression.ToString().Trim(new[] {'"'})).ToList();
+                return x.ArgumentList.Arguments.Select(x => x.Expression.ToString().TrimQuotes()).ToList();
             }
             return new List<string>();
         }).ToList();

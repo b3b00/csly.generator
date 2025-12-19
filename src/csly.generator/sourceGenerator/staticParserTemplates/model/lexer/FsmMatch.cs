@@ -48,5 +48,23 @@ namespace <#NS#> {
         {
             IsMatch = false;
         }
-    }
+
+        public FsmMatch<T> Clone()
+        {
+            return new FsmMatch<T>()
+            {
+                IsMatch = this.IsMatch,
+                IsDone = this.IsDone,
+                Token = this.Token,
+                Value = this.Value,
+                Position = this.Position,
+                IsExplicit = this.IsExplicit,
+                IsSingleLineComment = this.IsSingleLineComment,
+                IsMultiLineComment = this.IsMultiLineComment,
+                MultiLineCommentEndDelimiter = this.MultiLineCommentEndDelimiter,
+                IsPop = this.IsPop,
+                PushTarget = this.PushTarget
+            };
+        }
+}
 }

@@ -61,7 +61,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                 }
             case "ParserRoot":
                 {
-                    var value = GetAttributeArgs(node, withLeadingComma: false).Trim(new[] { '"' });
+                    var value = GetAttributeArgs(node, withLeadingComma: false).TrimQuotes();
                     _staticParserBuilder.ParserOPtions.StartingNonTerminal = value;
                     break;
                 }
@@ -93,10 +93,10 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);
                 ;
 
-                string tokenName = args[0].Trim(new[] { '"' });
-                string infixArg = args[1].Trim(new[] { '"' }).Replace("Affix.", "");
+                string tokenName = args[0].TrimQuotes();
+                string infixArg = args[1].TrimQuotes().Replace("Affix.", "");
                 Affix affix = (Affix)System.Enum.Parse(typeof(Affix), infixArg);
-                string associativityArg = args[2].Trim(new[] { '"' }).Replace("Associativity.", "");
+                string associativityArg = args[2].TrimQuotes().Replace("Associativity.", "");
                 Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
                 int precedence = int.Parse(args[3]);
 
@@ -107,7 +107,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             if (attribute.Name.ToString() == "Left")
             {
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
-                string tokenName = args[0].Trim(new[] { '"' });
+                string tokenName = args[0].TrimQuotes();
                 int precedence = int.Parse(args[1]);
                 var operation = new Operation(methodName, tokenName, Affix.InFix, Associativity.Left, precedence);
                 _staticParserBuilder.Model.AddOperation(operation);                
@@ -115,7 +115,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             if (attribute.Name.ToString() == "Right")
             {
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
-                string tokenName = args[0].Trim(new[] { '"' });
+                string tokenName = args[0].TrimQuotes();
                 int precedence = int.Parse(args[1]);
                 var operation = new Operation(methodName, tokenName, Affix.InFix, Associativity.Right, precedence);
                 _staticParserBuilder.Model.AddOperation(operation);
@@ -123,8 +123,8 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             if (attribute.Name.ToString() == "Prefix")
             {
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
-                string tokenName = args[0].Trim(new[] { '"' });
-                string associativityArg = args[1].Trim(new[] { '"' }).Replace("Associativity.", "");
+                string tokenName = args[0].TrimQuotes();
+                string associativityArg = args[1].TrimQuotes().Replace("Associativity.", "");
                 Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
                 int precedence = int.Parse(args[2]);
                 var operation = new Operation(methodName, tokenName, Affix.PreFix, associativity, precedence);
@@ -133,8 +133,8 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             if (attribute.Name.ToString() == "Postfix")
             {
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
-                string tokenName = args[0].Trim(new[] { '"' });
-                string associativityArg = args[1].Trim(new[] { '"' }).Replace("Associativity.", "");
+                string tokenName = args[0].TrimQuotes();
+                string associativityArg = args[1].TrimQuotes().Replace("Associativity.", "");
                 Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
                 int precedence = int.Parse(args[2]);
                 var operation = new Operation(methodName, tokenName, Affix.PostFix, associativity, precedence);

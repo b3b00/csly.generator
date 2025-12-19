@@ -487,11 +487,13 @@ public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLin
         StringBuilder sb = new StringBuilder();
         foreach (var state in _states.Values)
         {
-            sb.AppendLine($"State {state.Id} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName} --  {(state.IsMultiLineComment ? "multi line comment" : "")} {(state.IsSingleLineComment ? "single line comment" : "")}");
+            var name = !string.IsNullOrEmpty(state.Name) ? $"[{state.Name}]" : "";
+            sb.AppendLine($"State {state.Id}{name} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName} --  {(state.IsMultiLineComment ? "multi line comment" : "")} {(state.IsSingleLineComment ? "single line comment" : "")}");
             foreach (var transition in GetTransitions(state.Id))
             {
                 var target = GetState(transition.TargetState);
-                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id} {(target.IsEnd ? "(END)": "")}");
+                var targetName = !string.IsNullOrEmpty(target.Name) ? $"[{target.Name}]" : "";
+                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id}{targetName} {(target.IsEnd ? "(END)": "")}");
             }
 
         }

@@ -1,7 +1,34 @@
 ﻿if (_currentState == <#STATE#>)
 {
-    var(ok<#STATE#>, newState<#STATE#>, match<#STATE#>) = scanState_<#STATE#>(_currentPosition, source);
+    var(ok<#STATE#>, newState<#STATE#>, match<#STATE#>, isGoingEnd<#STATE#>) = scanState_<#STATE#>(_currentPosition, source);
     bool continueScanning = false;
+    if(isGoingEnd<#STATE#> && match<#STATE#> != null)
+    {
+        _lastSuccessMatch = _currentMatch.Clone();
+    }
+    if (!ok<#STATE#> && _lastSuccessMatch != null)
+    {
+        //backtracking
+        Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
+
+        if (!_tokenFactories.TryGetValue(_lastSuccessMatch.Token, out factory))
+        {
+            factory = _defaultFactory;
+        }
+        var token = factory(_lastSuccessMatch);
+        continueScanning = true;
+        _currentState = 0;
+        _currentPosition = ConsumeComments(token, source.ToArray());
+
+        AddToken(token);
+        _currentMatch = null;
+        _lastSuccessMatch = null;
+        //consume white spaces on token boundaries
+        ConsumeWhiteSpace(source);
+        // TODO : compute ending position = lastSuccessMatch.Position + lastSuccessMatch.Value.Length
+        _currentPosition = token.Position.Forward(token.SpanValue.ToString());
+        _startPosition = _currentPosition.Clone();
+    }
     if (ok<#STATE#>)
     {
         continueScanning = true;
