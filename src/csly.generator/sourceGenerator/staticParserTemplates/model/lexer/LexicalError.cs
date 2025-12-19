@@ -13,11 +13,18 @@ public class LexicalError : ParseError
         _i18N = i18n;
     }
 
+    public LexicalError(string message)
+    {
+        ErrorType = ErrorType.UnexpectedChar;
+    }
+
+    public string Message { get; set; }
+
     protected readonly string _i18N;
 
     public char UnexpectedChar { get; set; }
 
-    public override string ErrorMessage => $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar} at {Line},{Column}";
+    public override string ErrorMessage => string.IsNullOrEmpty(Message) ? $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar} at {Line},{Column}" : Message;
 
     public override string ToString()
     {
