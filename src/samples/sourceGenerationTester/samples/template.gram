@@ -206,7 +206,7 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
         [Production("item : OPEN_CODE[d] IF[d] OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d] CLOSE_CODE[d] item* elseBlock? OPEN_CODE[d] ENDIF[d] CLOSE_CODE[d] ")]
         public ITemplate Conditional(ITemplate cond, List<ITemplate> thenBlock, ValueOption<ITemplate> elseBlock)
         {
-            var ifthenelse = new IfThenElse(cond, new Block(thenBlock), elseBlock.Match(x => x, () => new Block()) as Block);
+            var ifthenelse = new IfThenElse(cond as Expression, new Block(thenBlock), elseBlock.Match(x => x, () => new Block()) as Block);
             return ifthenelse;
         }
 
