@@ -315,6 +315,17 @@ public class CslyParserGenerator : IIncrementalGenerator
 ";
                     context.AddSource($"Main{className}.g.cs", SourceText.From(code, Encoding.UTF8));
                 }
+                else
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                CslyGeneratorErrors.NO_PARSER_GENERATOR_FOUND,
+                                "No Parser generator found.",
+                                "No parser generator found.",
+                                "csly",
+                                DiagnosticSeverity.Error,
+                                true), classDeclarationSyntax.GetLocation()));
+                }
             }
         }
     }
@@ -359,7 +370,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         GetClassDeclaration(
             ClassDeclarationSyntax classDeclarationSyntax)
     {
-
+        Console.WriteLine($"Analyzing class {classDeclarationSyntax.Identifier.Text}");
         // Go through all attributes of the class.
         foreach (AttributeListSyntax attributeListSyntax in classDeclarationSyntax.AttributeLists)
         {
@@ -368,12 +379,16 @@ public class CslyParserGenerator : IIncrementalGenerator
                 string name = attributeSyntax.Name.ToString();
                 if (name == "ParserGenerator")
                 {
+                    Console.WriteLine($"  Found ParserGenerator attribute :)");
                     if (classDeclarationSyntax?.BaseList?.Types != null)
                     {
                         var abstractParser = classDeclarationSyntax.BaseList.Types.FirstOrDefault(x => x.Type.ToString().Contains("AbstractParserGenerator"));
+
                         if (abstractParser != null)
                         {
                             var args = (abstractParser.Type as GenericNameSyntax)?.TypeArgumentList?.Arguments;
+                            Console.WriteLine($"  Found AbstractParserGenerator base class :) with {args.Value.Count} : <{string.Join(", ",args.Value.Select(x => x.ToString()))}>");
+                            
                             if (args != null && args.HasValue && args.Value.Count == 3)
                             {
                                 var l = args.Value[0];

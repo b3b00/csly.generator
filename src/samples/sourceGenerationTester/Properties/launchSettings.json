@@ -2,7 +2,7 @@
   "profiles": {
     "While generation": {
       "commandName": "Project",
-      "commandLineArgs": "while"
+      "commandLineArgs": "while c:/tmp/generation"
     },
     "json generation": {
       "commandName": "Project",
@@ -11,6 +11,10 @@
     "test": {
       "commandName": "Project",
       "commandLineArgs": "test"
+    },
+    "Template generation": {
+      "commandName": "Project",
+      "commandLineArgs": "template c:/tmp/generation_template"
     }
   }
 }
