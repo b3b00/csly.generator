@@ -10,7 +10,7 @@ namespace <#NAMESPACE#>;
 
         string Name { get; }
 
-    (LexerResult<WhileTokenGeneric> Result, LexerPosition NewPosition, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source, LexerPosition position);
+    (LexerResult<<#LEXER#>> Result, LexerPosition NewPosition, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source, LexerPosition position);
 
 
 

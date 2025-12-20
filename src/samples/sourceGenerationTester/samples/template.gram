@@ -1,12 +1,13 @@
 ﻿using csly.template.models;
-using csly.template.model;
 using template;
+using template.model;
+using template.model.expressions;
 
 namespace template;
 
 [ParserGenerator]
 
-public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateParser, ITemplate>
+public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, TemplateParser, ITemplate>
 {
 
 }
@@ -203,7 +204,7 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
         }
 
         [Production("item : OPEN_CODE[d] IF[d] OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d] CLOSE_CODE[d] item* elseBlock? OPEN_CODE[d] ENDIF[d] CLOSE_CODE[d] ")]
-        public ITemplate Conditional(Expression cond, List<ITemplate> thenBlock, ValueOption<ITemplate> elseBlock)
+        public ITemplate Conditional(ITemplate cond, List<ITemplate> thenBlock, ValueOption<ITemplate> elseBlock)
         {
             var ifthenelse = new IfThenElse(cond, new Block(thenBlock), elseBlock.Match(x => x, () => new Block()) as Block);
             return ifthenelse;
@@ -242,8 +243,8 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
         [Infix("GREATER", Associativity.Right, 50)]
         [Infix("EQUALS", Associativity.Right, 50)]
         [Infix("DIFFERENT", Associativity.Right, 50)]
-        public Expression binaryComparisonExpression(Expression left, Token<TemplateLexer> operatorToken,
-            Expression right)
+        public ITemplate binaryComparisonExpression(ITemplate left, Token<TemplateLexer> operatorToken,
+            ITemplate right)
         {
             
             var oper = BinaryOperator.EQUALS;
@@ -257,7 +258,7 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
                 _ => BinaryOperator.EQUALS
             };
 
-            return new BinaryOperation(left, oper, right);
+            return new BinaryOperation(left as Expression, oper, right as Expression);
         }
 
         #endregion
@@ -265,9 +266,9 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
         #region STRING OPERATIONS
 
         // [Operation((int) TemplateLexer.CONCAT, Affix.InFix, Associativity.Right, 10)]
-        // public Expression binaryStringExpression(Expression left, Token<TemplateLexer> operatorToken, Expression right)
+        // public ITemplate binaryStringExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
         // {
-        //     return new BinaryOperation(left, BinaryOperator.CONCAT, right);
+        //     return new BinaryOperation(left as Expression, BinaryOperator.CONCAT, right as Expression);
         // }
 
         #endregion
@@ -276,7 +277,7 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
 
           
         [Production("primary: INT")]
-        public Expression PrimaryInt(Token<TemplateLexer> intToken)
+        public ITemplate PrimaryInt(Token<TemplateLexer> intToken)
         {
             return new IntegerConstant(intToken.IntValue, intToken.Position);
         }
@@ -298,14 +299,14 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
 
         
         [Production("primary: ID")]
-        public Expression PrimaryId(Token<TemplateLexer> varToken)
+        public ITemplate PrimaryId(Token<TemplateLexer> varToken)
         {
             return new Variable(varToken.Value);
         }
 
         [Operand]
         [Production("operand: primary")]
-        public Expression Operand(Expression prim)
+        public ITemplate Operand(ITemplate prim)
         {
             return prim;
         }
@@ -316,8 +317,8 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
 
         [Operation((int) TemplateLexer.PLUS, Affix.InFix, Associativity.Right, 10)]
         [Operation((int) TemplateLexer.MINUS, Affix.InFix, Associativity.Right, 10)]
-        public Expression binaryTermNumericExpression(Expression left, Token<TemplateLexer> operatorToken,
-            Expression right)
+        public ITemplate binaryTermNumericExpression(ITemplate left, Token<TemplateLexer> operatorToken,
+            ITemplate right)
         {
             var oper = BinaryOperator.ADD;
 
@@ -328,13 +329,13 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
                 _ => BinaryOperator.ADD
             };
 
-            return new BinaryOperation(left, oper, right);
+            return new BinaryOperation(left as Expression, oper, right as Expression);
         }
 
         [Operation((int) TemplateLexer.TIMES, Affix.InFix, Associativity.Right, 50)]
         [Operation((int) TemplateLexer.DIVIDE, Affix.InFix, Associativity.Right, 50)]
-        public Expression binaryFactorNumericExpression(Expression left, Token<TemplateLexer> operatorToken,
-            Expression right)
+        public ITemplate binaryFactorNumericExpression(ITemplate left, Token<TemplateLexer> operatorToken,
+            ITemplate right)
         {
             var oper = BinaryOperator.ADD;
 
@@ -345,13 +346,13 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
                 _ => BinaryOperator.MULTIPLY
             };
 
-            return new BinaryOperation(left, oper, right);
+            return new BinaryOperation(left as Expression, oper, right as Expression);
         }
 
         [Prefix((int) TemplateLexer.MINUS, Associativity.Right, 100)]
-        public Expression unaryNumericExpression(Token<TemplateLexer> operation, Expression value)
+        public ITemplate unaryNumericExpression(Token<TemplateLexer> operation, ITemplate value)
         {
-            return new Neg(value, operation.Position);
+            return new Neg(value as Expression, operation.Position);
         }
 
         #endregion
@@ -360,21 +361,21 @@ public partial class Template : AbstractParserGenerator<TemplateLexer, TemplateP
         #region BOOLEAN OPERATIONS
 
         [Operation((int) TemplateLexer.OR, Affix.InFix, Associativity.Right, 10)]
-        public Expression binaryOrExpression(Expression left, Token<TemplateLexer> operatorToken, Expression right)
+        public ITemplate binaryOrExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
         {
-            return new BinaryOperation(left, BinaryOperator.OR, right);
+            return new BinaryOperation(left as Expression, BinaryOperator.OR, right as Expression);
         }
 
         [Operation((int) TemplateLexer.AND, Affix.InFix, Associativity.Right, 50)]
-        public Expression binaryAndExpression(Expression left, Token<TemplateLexer> operatorToken, Expression right)
+        public ITemplate binaryAndExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
         {
-            return new BinaryOperation(left, BinaryOperator.AND, right);
+            return new BinaryOperation(left as Expression, BinaryOperator.AND, right as Expression);
         }
 
         [Operation((int) TemplateLexer.NOT, Affix.PreFix, Associativity.Right, 100)]
-        public Expression binaryOrExpression(Token<TemplateLexer> operatorToken, Expression value)
+        public ITemplate binaryOrExpression(Token<TemplateLexer> operatorToken, ITemplate value)
         {
-            return new Not(value,operatorToken.Position);
+            return new Not(value as Expression,operatorToken.Position);
         }
 
         #endregion
