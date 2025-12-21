@@ -48,23 +48,23 @@ public  class Program
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
         
-        Directory.CreateDirectory(where);
+        Directory.CreateDirectory(Path.Combine(where,"generated"));
 
-        File.WriteAllText(Path.Combine(where, $"{who.Capitalize()}.cs"), parser);
+        File.WriteAllText(Path.Combine(where,"generated", $"{who.Capitalize()}.cs"), parser);
 
         foreach (var file in contents)
         {
             FileInfo fileInfo = new FileInfo(file.Key);
 
-            string fileName = Path.Combine(where, fileInfo.Name);
+            string fileName = Path.Combine(where, "generated",fileInfo.Name);
 
             if (fileInfo.Name.StartsWith("lexer."))
             {
-                fileName = Path.Combine(where, "models", "lexer" + fileInfo.Name);
+                fileName = Path.Combine(where, "generated", "models", "lexer" + fileInfo.Name);
             }
             if (fileInfo.Name.StartsWith("parser."))
             {
-                fileName = Path.Combine(where, "models", "parser" + fileInfo.Name);
+                fileName = Path.Combine(where, "generated", "models", "parser" + fileInfo.Name);
             }
 
             if (File.Exists(fileName))
