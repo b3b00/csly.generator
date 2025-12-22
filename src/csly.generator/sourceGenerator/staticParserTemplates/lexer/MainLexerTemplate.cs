@@ -36,7 +36,9 @@ public class <#LEXER#>_MainLexer
             Console.WriteLine($"=== position {position} ");
             Console.WriteLine($"=== Index={position.Index} / {source.Length}");
             Console.WriteLine($"=== remaining source: '{source.Slice(position.Index).ToString()}'");
-            Console.WriteLine($"\n==============================");
+            Console.WriteLine($"==============================");
+            Console.WriteLine($"=== {string.Join(", ", tokens.Select(x => "[" + x.Value.ToString() + "]"))}");
+            Console.WriteLine($"==============================");
             var currentLexer = lexerStack.Peek();
     var scanResult = currentLexer.Scan(source, position);
     var result = scanResult.Result;
