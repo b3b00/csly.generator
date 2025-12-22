@@ -145,8 +145,8 @@ private Factory _defaultFactory;
 
 public (LexerResult<<#LEXER#>> Result, LexerPosition NewPosition, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source, LexerPosition position) {
         _currentPosition = position;
-_startPosition = new LexerPosition(0,0,0);
-List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
+_startPosition = position.Clone();
+List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
         void AddToken(Token<<#LEXER#>> token) {

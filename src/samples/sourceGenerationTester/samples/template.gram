@@ -18,7 +18,8 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
  
         #region TEXT
    
-        [UpTo("{%", "{=")]
+        [UpTo("{%")]
+        [UpTo("{=")]
         TEXT,
         
         [Sugar("{%")] [Push("code")] OPEN_CODE,

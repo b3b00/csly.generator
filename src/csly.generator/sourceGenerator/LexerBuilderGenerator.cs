@@ -120,7 +120,7 @@ Log("Generating FSM for mode " + mode);
                         var exceptions = lexem.Args.Select(x => x.TrimQuotes()).ToList();
                         exceptions = exceptions.Where(x => !string.IsNullOrEmpty(x)).ToList();
                         exceptions = exceptions.Distinct().ToList();
-                        exceptions = exceptions.Select(x => x.Replace("\\\"", "\"")).ToList();
+                        exceptions = exceptions.Select(x => x.TrimQuotes()).ToList();
                         Log("  Generating UpTo lexeme with exceptions: " + string.Join(", ", exceptions));
                         Func<int, int, string> GetEndLabel = (int exception, int exceptionIndex) =>
                         {

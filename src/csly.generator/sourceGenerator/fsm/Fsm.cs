@@ -60,12 +60,16 @@ internal class Transition
 
     public string StringCondition { get; set; }
 
+    public bool IsException { get; set; }
+
     public Transition(int targetState, Func<char, bool> condition, string stringCondition)
     {
         TargetState = targetState;
         Condition = condition;
         StringCondition = stringCondition;
     }
+
+
 
 }
 
@@ -400,6 +404,17 @@ public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLin
 
     public int ExceptTransitionTo(int target, string except)
     {
+        if (_transitions.TryGetValue(target, out var transitions)) {
+            var exception = transitions.FirstOrDefault(x => x.IsException);
+            if (exception != null)
+            {
+                var exceptChars = except.ToCharArray();
+                string exceptCondition = string.Join(" && ", exceptChars.Select(x => $"ch != '{EscapeChar(x)}'"));
+                exception.StringCondition += " && " + exceptCondition;
+                exception.Condition = (ch) => exception.Condition(ch) && exceptChars.All(x => x != ch);                
+                return exception.TargetState;
+            }            
+        }
         if (_states.ContainsKey(target) == false)
         {
             var newStateId = GetNewState();
@@ -411,7 +426,10 @@ public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLin
         var chars = except.ToCharArray();
         string cond = string.Join(" && ", chars.Select(x => $"ch != '{EscapeChar(x)}'"));
 
-        Transition transition = new Transition(target, (ch) => chars.All(x => x != ch), cond);
+        Transition transition = new Transition(target, (ch) => chars.All(x => x != ch), cond)
+        {
+            IsException = true
+        };
         if (!_transitions.ContainsKey(_currentState))
         {
             _transitions[_currentState] = new List<Transition>();
