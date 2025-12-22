@@ -79,7 +79,7 @@ tokens.AddRange(result.Tokens);
 }
         }
 
-        // TODO : main loop
+        tokens.Add(new Token<<#LEXER#>>());
         return tokens;
     } 
 
