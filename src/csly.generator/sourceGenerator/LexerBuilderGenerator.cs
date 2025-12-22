@@ -363,6 +363,7 @@ Log("Generating FSM for mode " + mode);
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
             {"KEYWORDS", keywords },
+            {"EPSILON_STATES", string.Join(", ", fsm.GetEpsilonStates().Select(x => x.ToString())) } ,
             {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
@@ -377,7 +378,13 @@ Log("Generating FSM for mode " + mode);
         StringBuilder sb = new StringBuilder();
         var transitions = fsm.GetTransitions(state.Id);
 
-        var transitionsCode = string.Join("\n", transitions.Select(transition =>
+        string transitionsCode = "";
+        if (!fsm.IsEpsilonState(state.Id))
+        {
+            transitionsCode = "char ch = GetChar(source, position);";
+        }
+
+        transitionsCode += string.Join("\n", transitions.Select(transition =>
         {
 
 

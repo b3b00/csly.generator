@@ -101,6 +101,8 @@ internal class Fsm
 
     private List<string> _explicitKeywords = new List<string>();
 
+    
+
     public Fsm()
     {
         State startState = new State(0);
@@ -108,6 +110,16 @@ internal class Fsm
         AddState(startState);
         _currentState = startState.Id;
 
+    }
+
+    public List<int> GetEpsilonStates()
+    {
+        return _states.Values.Where(s => _transitions.ContainsKey(s.Id) == false).Select(s => s.Id).ToList();
+    }
+
+    public bool IsEpsilonState(int stateId)
+    {
+        return _transitions.ContainsKey(stateId) == false;
     }
 
     private string EscapeChar(char ch)

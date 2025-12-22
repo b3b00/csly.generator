@@ -31,6 +31,12 @@ public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
         return source[position.Index];
     }
 
+
+    private List<int> _epsilonStates = new List<int>()
+    {
+        <#EPSILON_STATES#>
+    };
+
     private Dictionary<string,<#LEXER#>> _keywords = new Dictionary<string,<#LEXER#>>()        
     {
         <#KEYWORDS#>
@@ -165,7 +171,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
         ConsumeWhiteSpace(source);
 
-        while (_currentPosition.Index < source.Length && !IsModeChanging())
+        while ((_currentPosition.Index < source.Length || _epsilonStates.Contains(_currentState)) && !IsModeChanging())
         {   
             <#STATE_CALLS#>
         }
