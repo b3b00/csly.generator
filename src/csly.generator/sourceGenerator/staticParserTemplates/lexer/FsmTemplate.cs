@@ -149,7 +149,9 @@ _startPosition = position.Clone();
 List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
-        void AddToken(Token<<#LEXER#>> token) {
+        void AddToken(Token <<#LEXER#>> token) {
+            _lastSuccessMatch = null;
+            _currentMatch = null;
             tokens.Add(token);
         }
 
@@ -163,11 +165,25 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
         ConsumeWhiteSpace(source);
 
-        while (_currentPosition.Index <= source.Length && !IsModeChanging())
+        while (_currentPosition.Index < source.Length && !IsModeChanging())
         {   
             <#STATE_CALLS#>
         }
-        var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
+        if (_lastSuccessMatch != null)
+        {
+            //final token to add
+            Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
+
+            if (!_tokenFactories.TryGetValue(_lastSuccessMatch.Token, out factory))
+            {
+                factory = _defaultFactory;
+            }
+            var token = factory(_lastSuccessMatch);
+            _currentPosition = ConsumeComments(token, source.ToArray());
+            AddToken(token);
+            _lastSuccessMatch = null;
+        }
+var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
         bool isPop = lastToken != null && (lastToken.IsPop);
         string pushTarget = lastToken != null ? lastToken.PushTarget : null;
         return (tokens, _currentPosition, isPop, pushTarget);
