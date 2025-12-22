@@ -266,11 +266,11 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
 
         #region STRING OPERATIONS
 
-        // [Operation((int) TemplateLexer.CONCAT, Affix.InFix, Associativity.Right, 10)]
-        // public ITemplate binaryStringExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
-        // {
-        //     return new BinaryOperation(left as Expression, BinaryOperator.CONCAT, right as Expression);
-        // }
+         [Operation((int) TemplateLexer.CONCAT, Affix.InFix, Associativity.Right, 10)]
+         public ITemplate binaryStringExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
+         {
+             return new BinaryOperation(left as Expression, BinaryOperator.CONCAT, right as Expression);
+         }
 
         #endregion
         
