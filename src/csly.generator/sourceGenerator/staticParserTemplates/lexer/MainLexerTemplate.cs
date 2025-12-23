@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using csly.<#ASSEMBLY#>.models;
+using System;
 
 
 namespace <#NAMESPACE#>;

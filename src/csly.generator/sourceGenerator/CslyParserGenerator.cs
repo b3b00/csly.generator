@@ -87,7 +87,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
 
         Dictionary<string, SyntaxNode> declarationsByName = declarations.ToDictionary(x => getName(x));
-
+        bool parserGeneratorFound = false;
         foreach (var declarationSyntax in declarations)
         {
             if (declarationSyntax is ClassDeclarationSyntax classDeclarationSyntax)
@@ -100,6 +100,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
                 if (isParserGenerator)
                 {
+                    parserGeneratorFound = true;
                     var isPartial =
                         classDeclarationSyntax.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PartialKeyword));
                     if (!isPartial)
@@ -314,19 +315,20 @@ public class CslyParserGenerator : IIncrementalGenerator
     {main}
 ";
                     context.AddSource($"Main{className}.g.cs", SourceText.From(code, Encoding.UTF8));
-                }
-                else
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                            new DiagnosticDescriptor(
-                                CslyGeneratorErrors.NO_PARSER_GENERATOR_FOUND,
-                                "No Parser generator found.",
-                                "No parser generator found.",
-                                "csly",
-                                DiagnosticSeverity.Error,
-                                true), classDeclarationSyntax.GetLocation()));
-                }
+                }                
             }
+        }
+        if (!parserGeneratorFound)
+        {
+            var firstDeclaration = declarations.First();
+            context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        CslyGeneratorErrors.NO_PARSER_GENERATOR_FOUND,
+                        "No Parser generator found.",
+                        "No parser generator found.",
+                        "csly",
+                        DiagnosticSeverity.Error,
+                        true), firstDeclaration.GetLocation()));
         }
     }
 
