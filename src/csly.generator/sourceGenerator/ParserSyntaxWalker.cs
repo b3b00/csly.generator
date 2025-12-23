@@ -104,6 +104,16 @@ public class ParserSyntaxWalker : CslySyntaxWalker
 
                 _staticParserBuilder.Model.AddOperation(operation);                
             }
+            if (attribute.Name.ToString() == "Infix")
+            {
+                var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
+                string tokenName = args[0].TrimQuotes();
+                string associativityArg = args[1].TrimQuotes().Replace("Associativity.", "");
+                Associativity associativity = (Associativity)System.Enum.Parse(typeof(Associativity), associativityArg);
+                int precedence = int.Parse(args[2]);
+                var operation = new Operation(methodName, tokenName, Affix.InFix, associativity, precedence);
+                _staticParserBuilder.Model.AddOperation(operation);
+            }
             if (attribute.Name.ToString() == "Left")
             {
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
