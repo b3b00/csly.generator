@@ -15,6 +15,10 @@
     "Template generation": {
       "commandName": "Project",
       "commandLineArgs": "template c:/tmp/generation_template"
+    },
+    "expr generation": {
+      "commandName": "Project",
+      "commandLineArgs": "expr c:/tmp/generation_expr"
     }
   }
 }

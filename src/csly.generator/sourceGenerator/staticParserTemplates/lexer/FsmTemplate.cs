@@ -42,7 +42,12 @@ public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
         <#KEYWORDS#>
     };
 
-        private List<string> _explicitKeywords = new List<string>()
+        private Dictionary<int, <#LEXER#>> _stateTokens = new Dictionary<int, <#LEXER#>>()
+    {
+        <#STATE_TOKENS#>
+    };
+
+    private List<string> _explicitKeywords = new List<string>()
         {
             <#EXPLICIT_KEYWORDS#>
         };

@@ -2,7 +2,20 @@
 {
     var(ok<#STATE#>, newState<#STATE#>, match<#STATE#>, isGoingEnd<#STATE#>) = scanState_<#STATE#>(_currentPosition, source);
     bool continueScanning = false;
-    if(isGoingEnd<#STATE#> && match<#STATE#> != null)
+    if (isGoingEnd<#STATE#> && _currentPosition.Index == source.Length)
+    {
+        // end of source reached and we are in a final state
+        // generate token from _currentState
+        var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
+        var memory = new ReadOnlyMemory<char>(sliced.ToArray());
+        _currentMatch = new FsmMatch<<#LEXER#>>(_stateTokens[newState<#STATE#>], memory, _startPosition)
+        {
+            IsPop = false,
+            PushTarget = ""
+        };
+        _lastSuccessMatch = _currentMatch.Clone();
+    }
+    if (isGoingEnd<#STATE#> && match<#STATE#> != null)
     {
         _lastSuccessMatch = _currentMatch.Clone();
     }

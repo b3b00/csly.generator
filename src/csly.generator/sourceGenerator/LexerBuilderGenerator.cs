@@ -364,6 +364,7 @@ Log("Generating FSM for mode " + mode);
         {
             {"KEYWORDS", keywords },
             {"EPSILON_STATES", string.Join(", ", fsm.GetEpsilonStates().Select(x => x.ToString())) } ,
+            {"STATE_TOKENS", string.Join(",\n", fsm.States.Where(s => s.TokenName != null).Select(s => $@"{{ {s.Id}, {_staticLexerBuilder.LexerName}.{s.TokenName} }}")) },
             {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
