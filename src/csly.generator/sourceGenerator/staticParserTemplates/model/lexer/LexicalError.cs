@@ -24,7 +24,7 @@ public class LexicalError : ParseError
 
     public char UnexpectedChar { get; set; }
 
-    public override string ErrorMessage => string.IsNullOrEmpty(Message) ? $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar} at {Line},{Column}" : Message;
+    public override string ErrorMessage => string.IsNullOrEmpty(Message) ? $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar}) at {Line},{Column}" : Message;
 
     public override string ToString()
     {
