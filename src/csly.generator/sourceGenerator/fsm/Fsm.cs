@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using csly.generator.model.lexer;
 
 namespace csly.generator.sourceGenerator.fsm;
 
@@ -25,6 +26,11 @@ internal class State
 
     public string MultiLineCommentEndString { get; set; }
 
+    public bool IsPop { get; set; } = false;
+
+    public string PushTarget { get; set; } = null;
+
+
     public string TokenName
     {
         get => _tokenName; set
@@ -36,10 +42,12 @@ internal class State
             _tokenName = value;
         }
     }
-    public State(int id, bool isEnd = false)
+    public State(int id, bool isEnd = false, bool isPop = false, string pushTarget = null)
     {
         Id = id;
         IsEnd = isEnd;
+        IsPop = isPop;
+        PushTarget = pushTarget;
     }
 }
 
@@ -52,12 +60,16 @@ internal class Transition
 
     public string StringCondition { get; set; }
 
+    public bool IsException { get; set; }
+
     public Transition(int targetState, Func<char, bool> condition, string stringCondition)
     {
         TargetState = targetState;
         Condition = condition;
         StringCondition = stringCondition;
     }
+
+
 
 }
 
@@ -67,6 +79,8 @@ internal class Transition
 
 internal class Fsm
 {
+
+    public List<Lexeme> Lexemes { get; set; } = new List<Lexeme>();
 
     private Dictionary<int, State> _states = new Dictionary<int, State>();
 
@@ -89,6 +103,8 @@ internal class Fsm
 
     private List<string> _explicitKeywords = new List<string>();
 
+    
+
     public Fsm()
     {
         State startState = new State(0);
@@ -96,6 +112,16 @@ internal class Fsm
         AddState(startState);
         _currentState = startState.Id;
 
+    }
+
+    public List<int> GetEpsilonStates()
+    {
+        return _states.Values.Where(s => _transitions.ContainsKey(s.Id) == false).Select(s => s.Id).ToList();
+    }
+
+    public bool IsEpsilonState(int stateId)
+    {
+        return _transitions.ContainsKey(stateId) == false;
     }
 
     private string EscapeChar(char ch)
@@ -125,6 +151,24 @@ internal class Fsm
         }
     }
 
+    public void Pop()
+    {
+        var state = GetState(_currentState);
+        if (state != null)
+        {
+            state.IsPop = true;
+        }
+    }
+
+    public void PushTo(string target)
+    {
+        var state = GetState(_currentState);
+        if (state != null)
+        {
+            state.PushTarget = target;
+        }
+    }
+
     public void GoTo(int state)
     {
         _currentState = state;
@@ -146,6 +190,19 @@ internal class Fsm
     {
         int id = _states.Count;        
         return id;
+    }
+
+public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLineComment = false)
+    {
+        End(lexeme.Name, lexeme.IsExplicit, isSingleLineComment, isMultiLineComment);
+        if (lexeme.IsPop)
+        {
+            Pop();
+        }
+        if (lexeme.IsPush)
+        {
+            PushTo(lexeme.PushTarget);
+        }
     }
 
     public void End(string tokenName, bool isExplicit = false, bool isSingleLineComment = false, bool isMultiLineComment = false)
@@ -210,7 +267,7 @@ internal class Fsm
         }
     }
 
-    private Transition GetTransition(char input)
+    public Transition GetTransition(char input)
     {
         if (_transitions.TryGetValue(_currentState, out var transitions))
         {
@@ -361,6 +418,17 @@ internal class Fsm
 
     public int ExceptTransitionTo(int target, string except)
     {
+        if (_transitions.TryGetValue(target, out var transitions)) {
+            var exception = transitions.FirstOrDefault(x => x.IsException);
+            if (exception != null)
+            {
+                var exceptChars = except.ToCharArray();
+                string exceptCondition = string.Join(" && ", exceptChars.Select(x => $"ch != '{EscapeChar(x)}'"));
+                exception.StringCondition += " && " + exceptCondition;
+                exception.Condition = (ch) => exception.Condition(ch) && exceptChars.All(x => x != ch);                
+                return exception.TargetState;
+            }            
+        }
         if (_states.ContainsKey(target) == false)
         {
             var newStateId = GetNewState();
@@ -372,7 +440,10 @@ internal class Fsm
         var chars = except.ToCharArray();
         string cond = string.Join(" && ", chars.Select(x => $"ch != '{EscapeChar(x)}'"));
 
-        Transition transition = new Transition(target, (ch) => chars.All(x => x != ch), cond);
+        Transition transition = new Transition(target, (ch) => chars.All(x => x != ch), cond)
+        {
+            IsException = true
+        };
         if (!_transitions.ContainsKey(_currentState))
         {
             _transitions[_currentState] = new List<Transition>();
@@ -448,11 +519,13 @@ internal class Fsm
         StringBuilder sb = new StringBuilder();
         foreach (var state in _states.Values)
         {
-            sb.AppendLine($"State {state.Id} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName} --  {(state.IsMultiLineComment ? "multi line comment" : "")} {(state.IsSingleLineComment ? "single line comment" : "")}");
+            var name = !string.IsNullOrEmpty(state.Name) ? $"[{state.Name}]" : "";
+            sb.AppendLine($"State {state.Id}{name} {(state.IsEnd ? "(End)" : "")} {(string.IsNullOrEmpty(state.Name) ? "" : $"Name: {state.Name}")} Token: {state.TokenName} --  {(state.IsMultiLineComment ? "multi line comment" : "")} {(state.IsSingleLineComment ? "single line comment" : "")}");
             foreach (var transition in GetTransitions(state.Id))
             {
                 var target = GetState(transition.TargetState);
-                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id} {(target.IsEnd ? "(END)": "")}");
+                var targetName = !string.IsNullOrEmpty(target.Name) ? $"[{target.Name}]" : "";
+                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id}{targetName} {(target.IsEnd ? "(END)": "")}");
             }
 
         }

@@ -4,14 +4,19 @@ using Factory = System.Func<csly.<#ASSEMBLY#>.models.FsmMatch<<#NAMESPACE#>.<#LE
 
 namespace <#NAMESPACE#>;
 
+
     
 
-public class <#LEXER#>_FsmLexer
+public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
 {
+
+    public string Name => "<#MODE#>";
 
     private int _currentState = 0;
 
     private FsmMatch<<#LEXER#>> _currentMatch = null;
+
+    private FsmMatch<<#LEXER#>> _lastSuccessMatch = null;
 
     private LexerPosition _currentPosition { get; set; }
 
@@ -26,23 +31,43 @@ public class <#LEXER#>_FsmLexer
         return source[position.Index];
     }
 
+
+    private List<int> _epsilonStates = new List<int>()
+    {
+        <#EPSILON_STATES#>
+    };
+
     private Dictionary<string,<#LEXER#>> _keywords = new Dictionary<string,<#LEXER#>>()        
     {
         <#KEYWORDS#>
     };
 
-        private List<string> _explicitKeywords = new List<string>()
-        {
-            <#EXPLICIT_KEYWORDS#>
-        };
+        private Dictionary<int, <#LEXER#>> _stateTokens = new Dictionary<int, <#LEXER#>>()
+    {
+        <#STATE_TOKENS#>
+    };
+
+    private List<string> _explicitKeywords = new List<string>()
+    {
+        <#EXPLICIT_KEYWORDS#>
+    };
+
+    private Dictionary<string, <#LEXER#>> _uptoTOkens = new Dictionary<string, <#LEXER#>>()
+    {
+        <#UPTOS#>
+    };
 
     private Dictionary<<#LEXER#>, Factory> _tokenFactories = new Dictionary<<#LEXER#>, Factory>();
 
 private Factory _defaultFactory;
 
-    public <#LEXER#>_FsmLexer()
+    public <#LEXER#>_FsmLexer_<#MODE#>()
     {
-        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter);
+        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter) {
+            IsExplicit = match.IsExplicit,
+            IsPop = match.IsPop,
+            PushTarget = match.PushTarget
+        };
         <#FACTORIES#>
     }
 
@@ -132,21 +157,52 @@ private Factory _defaultFactory;
     }
 
 
-    public LexerResult<<#LEXER#>> Scan(ReadOnlySpan<char> source) {
-        _currentPosition = new LexerPosition(0,0,0);
-_startPosition = new LexerPosition(0,0,0);
-List<Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
-        void AddToken(Token<<#LEXER#>> token) {
+public (LexerResult<<#LEXER#>> Result, LexerPosition NewPosition, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source, LexerPosition position) {
+        _currentPosition = position;
+_startPosition = position.Clone();
+List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
+
+
+        void AddToken(Token <<#LEXER#>> token) {
+            _lastSuccessMatch = null;
+            _currentMatch = null;
             tokens.Add(token);
         }
+
+        bool IsModeChanging()
+        {
+            if (tokens.Count == 0)
+                return false;
+            var lastToken = tokens[tokens.Count - 1];
+            return lastToken.IsPop || !string.IsNullOrEmpty(lastToken.PushTarget);
+        }
+
         ConsumeWhiteSpace(source);
-        while (_currentPosition.Index <= source.Length)
+
+        while ((_currentPosition.Index < source.Length || _epsilonStates.Contains(_currentState)) && !IsModeChanging())
         {   
             <#STATE_CALLS#>
         }
-        return tokens;
+        if (_lastSuccessMatch != null)
+        {
+            //final token to add
+            Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
+
+            if (!_tokenFactories.TryGetValue(_lastSuccessMatch.Token, out factory))
+            {
+                factory = _defaultFactory;
+            }
+            var token = factory(_lastSuccessMatch);
+            _currentPosition = ConsumeComments(token, source.ToArray());
+            AddToken(token);
+            _lastSuccessMatch = null;
+        }
+var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
+        bool isPop = lastToken != null && (lastToken.IsPop);
+        string pushTarget = lastToken != null ? lastToken.PushTarget : null;
+        return (tokens, _currentPosition, isPop, pushTarget);
     }
 
 

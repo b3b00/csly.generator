@@ -28,42 +28,43 @@ public  class Program
     public static void Main(string[] args)
     {
         var who = args[0];
-        Generate(who);
+        var where = args.Length > 1 ? args[1] : "c:/tmp/generation/";
+        Generate(who, where);
         //Run();
         /*GoStatic();
         Run();*/
     }
 
 
-    private static void Generate(string who)
+    private static void Generate(string who, string where)
     {
 
         EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
         var parser = fs.ReadAllText($"/samples/{who}.gram");
 
-        var result = GenerateSource(parser, "whileLang");
+        var result = GenerateSource(parser, who);
 
         var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
-        string path = "c:/tmp/generation/";
-        Directory.CreateDirectory(path);
+        
+        Directory.CreateDirectory(Path.Combine(where,"generated"));
 
-        File.WriteAllText(Path.Combine(path, $"{who.Capitalize()}.cs"), parser);
+        File.WriteAllText(Path.Combine(where,"generated", $"{who.Capitalize()}.cs"), parser);
 
         foreach (var file in contents)
         {
             FileInfo fileInfo = new FileInfo(file.Key);
 
-            string fileName = Path.Combine(path, fileInfo.Name);
+            string fileName = Path.Combine(where, "generated",fileInfo.Name);
 
             if (fileInfo.Name.StartsWith("lexer."))
             {
-                fileName = Path.Combine(path, "models", "lexer" + fileInfo.Name);
+                fileName = Path.Combine(where, "generated", "models", "lexer" + fileInfo.Name);
             }
             if (fileInfo.Name.StartsWith("parser."))
             {
-                fileName = Path.Combine(path, "models", "parser" + fileInfo.Name);
+                fileName = Path.Combine(where, "generated", "models", "parser" + fileInfo.Name);
             }
 
             if (File.Exists(fileName))
@@ -76,7 +77,6 @@ public  class Program
             {
                 Directory.CreateDirectory(fi.DirectoryName);
             }
-            Console.WriteLine($"Writing file: {fileName}");
             File.WriteAllText(fileName, file.Value);
         }
 
@@ -107,34 +107,5 @@ public  class Program
 
 
 
-    //private static void Run()
-    //{
-    //var parser = new expressionParser.ExpressionParser();
-    //var main = new sourceGenerationTester.expressionParser.ExpressionParserMain();
-    //var entryPoint = new expressionParser.ExpressionParserMain(parser);
-
-
-
-    //while (true)
-    //{
-    //    var choice = Console.ReadLine();
-    //    if (string.IsNullOrEmpty(choice) || choice == "q" || choice == "quit")
-    //    {
-    //        Environment.Exit(0);
-    //    }
-    //    var r = entryPoint.Parse(choice);
-    //    if (r.IsOk)
-    //    {
-    //        Console.WriteLine($"{choice} = {r.Result}");
-    //        Console.WriteLine(r.SyntaxTree.Dump("  "));
-    //    }
-    //    else
-    //    {
-    //        Console.WriteLine("Parse failed");
-    //        foreach (var err in r.Errors)
-    //        {
-    //            Console.WriteLine(err.ErrorMessage);
-    //        }
-    //    }
-    //}
+    
 }

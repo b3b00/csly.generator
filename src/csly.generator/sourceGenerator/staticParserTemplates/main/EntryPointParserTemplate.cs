@@ -7,7 +7,7 @@ public class <#PARSER#>Main
 
     private readonly <#PARSER#> _instance;
 
-    public <#LEXER#>_FsmLexer Lexer => new <#LEXER#>_FsmLexer();
+    public <#LEXER#>_MainLexer Lexer => new <#LEXER#>_MainLexer();
 
     public <#PARSER#>Main(<#PARSER#> instance)
         {
@@ -17,7 +17,7 @@ public class <#PARSER#>Main
     public ParseResult<<#LEXER#>, <#OUTPUT#>> Parse(string source)
         {
             // lexing
-            <#LEXER#>_FsmLexer scanner = new <#LEXER#>_FsmLexer();
+            <#LEXER#>_MainLexer scanner = new <#LEXER#>_MainLexer();
             var lexerResult = scanner.Scan(source.AsSpan());
             
             if (lexerResult.IsError)

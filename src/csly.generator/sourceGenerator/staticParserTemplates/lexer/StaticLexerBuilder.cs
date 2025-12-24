@@ -41,10 +41,14 @@ internal class StaticLexerBuilder
         }
     }
 
-    public void Add(GenericToken type, string name, List<string> modes, params string[] args)
+    public void Add(GenericToken type, string name, List<string> modes, bool isPop, string pushTarget, params string[] args)
     {
-        var lexem = new Lexeme(type, name, args);
-        lexem.Modes = modes != null && modes.Any() ? modes : new List<string>() { "default"};        
+        var lexem = new Lexeme(type, name, args)
+        {
+            IsPop = isPop,
+            PushTarget = pushTarget,
+            Modes = modes != null && modes.Any() ? modes : new List<string>() { "default"}
+        };
         AddLexeme(lexem);
     }
 
@@ -58,12 +62,12 @@ internal class StaticLexerBuilder
         {            
             token.Name = token.ExplicitValue.Trim('\'');
             if (MatchId(id, token.ExplicitValue))
-            {                
-                AddLexeme(new Lexeme(GenericToken.KeyWord, token.ExplicitValue));
+            {
+                AddLexeme(new Lexeme(GenericToken.KeyWord, token.ExplicitValue) { Modes = new List<string>() { "default" } });
             }
             else
-            {                
-                AddLexeme(new Lexeme(GenericToken.SugarToken, token.ExplicitValue));
+            {
+                AddLexeme(new Lexeme(GenericToken.SugarToken, token.ExplicitValue) { Modes = new List<string>() { "default" } });
                 explicitSugarCount++;
             }
         }

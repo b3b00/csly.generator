@@ -14,6 +14,11 @@ internal class Lexeme
     public string Name => _name;
     public string[] Args => _args;
 
+
+    public string[] Modes {get; set;}
+
+
+
     public Lexeme(GenericToken type, string name, params string[] args)
     {
         _type = type;

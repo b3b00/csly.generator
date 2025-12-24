@@ -1,8 +1,6 @@
 ﻿namespace generatorTests;
 
-using csly.testing.models;
-
-
+using csly.expr.models;
 
 public enum ExprToken
 {

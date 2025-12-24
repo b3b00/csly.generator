@@ -24,6 +24,10 @@ namespace <#NS#> {
 
         public string MultiLineCommentEndDelimiter { get; set; } = null;
 
+        public bool IsPop { get; set; } = false;
+
+        public string PushTarget { get; set; } = null;
+
         public FsmMatch(ReadOnlyMemory<char> value, LexerPosition position)
         {
             Value = value;
@@ -44,5 +48,23 @@ namespace <#NS#> {
         {
             IsMatch = false;
         }
-    }
+
+        public FsmMatch<T> Clone()
+        {
+            return new FsmMatch<T>()
+            {
+                IsMatch = this.IsMatch,
+                IsDone = this.IsDone,
+                Token = this.Token,
+                Value = this.Value,
+                Position = this.Position,
+                IsExplicit = this.IsExplicit,
+                IsSingleLineComment = this.IsSingleLineComment,
+                IsMultiLineComment = this.IsMultiLineComment,
+                MultiLineCommentEndDelimiter = this.MultiLineCommentEndDelimiter,
+                IsPop = this.IsPop,
+                PushTarget = this.PushTarget
+            };
+        }
+}
 }

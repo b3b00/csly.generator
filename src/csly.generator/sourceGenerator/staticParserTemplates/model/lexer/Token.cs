@@ -31,6 +31,10 @@ public class Token<T> where T:struct, Enum
 
     [JsonIgnore] private string _hexaPrefix = "0x";
 
+    [JsonIgnore] public bool IsPop { get; set; } = false;
+
+    [JsonIgnore] public string PushTarget { get; set; } = null;
+
     public string HexaPrefix
     {
         get => _hexaPrefix;

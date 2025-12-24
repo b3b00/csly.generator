@@ -1,0 +1,396 @@
+﻿using csly.template.models;
+using template;
+using template.model;
+using template.model.expressions;
+
+namespace template;
+
+[ParserGenerator]
+
+public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, TemplateParser, ITemplate>
+{
+
+}
+
+ [Lexer(IgnoreEOL = true)]
+    public enum TemplateLexer
+    {
+ 
+        #region TEXT
+   
+        //[UpTo("{%")]
+        [UpTo("{=", "{%")]
+        TEXT,
+        
+        [Sugar("{%")] [Push("code")] OPEN_CODE,
+        
+        [Sugar("{=")] [Push("value")] OPEN_VALUE,
+
+    #endregion
+
+    #region value
+
+    [AlphaId]
+    [Mode("value")]
+    [Mode("code")]
+    ID,
+    
+    [Sugar("=}")]
+    [Mode("value")]
+    [Pop]
+    CLOSE_VALUE,
+
+    #endregion
+    
+    #region code
+    
+    [Sugar("%}")]
+    [Mode("code")]
+    [Pop]
+    CLOSE_CODE,
+    
+    [Keyword("if")]
+    [Mode("code")]
+    IF,
+    
+    [Keyword("endif")]
+    [Mode("code")]
+    ENDIF,
+    
+    [Keyword("else")]
+    [Mode("code")]
+    ELSE,
+    
+    [Keyword("for")] 
+    [Mode("code")]
+    FOR,
+
+    [Keyword("as")] 
+    [Mode("code")]
+    AS,
+    
+    [Keyword("end")] 
+    [Mode("code")]
+    END,
+    
+    [Sugar("..")]
+    [Mode("code")]
+    RANGE,
+    
+    #region literals
+    
+    [String()]
+    [Mode("code")]
+    [Mode("value")]
+    STRING,
+
+    
+    [Int()]
+    [Mode("code")]
+    [Mode("value")]
+    INT,
+    
+    [Lexeme(GenericToken.KeyWord, "TRUE")]
+    [Lexeme(GenericToken.KeyWord, "true")]
+    [Mode("code")]
+    [Mode("value")]
+    TRUE,
+
+    [Lexeme(GenericToken.KeyWord, "FALSE")]
+    [Lexeme(GenericToken.KeyWord, "false")]
+    [Mode("code")]
+    [Mode("value")]
+    FALSE,
+    
+    
+    
+    #endregion
+    
+    #region operators 30 -> 49
+
+    [Sugar( ">")]
+    [Mode("code")]
+    GREATER = 30,
+
+    [Sugar( "<")]
+    [Mode("code")]
+    LESSER = 31,
+
+    [Sugar( "==")]
+    [Mode("code")]
+    EQUALS = 32,
+
+    [Sugar( "!=")]
+    [Mode("code")]
+    DIFFERENT = 33,
+
+    [Sugar( "&")]
+    [Mode("code")]
+    CONCAT = 34,
+
+    [Sugar( ":=")]
+    [Mode("code")]
+    ASSIGN = 35,
+
+    [Sugar( "+")]
+    [Mode("code")]
+    [Mode("value")]
+    PLUS = 36,
+
+    [Sugar( "-")]
+    [Mode("code")]
+    [Mode("value")]
+    MINUS = 37,
+
+
+    [Sugar( "*")]
+    [Mode("code")]
+    [Mode("value")]
+    TIMES = 38,
+
+    [Sugar( "/")]
+    [Mode("code")]
+    [Mode("value")]
+    DIVIDE = 39,
+    
+    
+    #endregion
+    
+    #region sugar 100 -> 150
+    
+    [Sugar("(")]
+    [Mode("code")]
+    [Mode("value")]
+    OPEN_PAREN,
+    
+    [Sugar(")")]
+    [Mode("code")]
+    [Mode("value")]
+    CLOSE_PAREN,
+    
+    [Lexeme(GenericToken.KeyWord, "NOT")] [Lexeme(GenericToken.KeyWord, "not")]
+    [Mode("code")]
+    NOT,
+
+    [Lexeme(GenericToken.KeyWord, "AND")] [Lexeme(GenericToken.KeyWord, "and")]
+    [Mode("code")]
+    AND,
+
+    [Lexeme(GenericToken.KeyWord, "OR")] [Lexeme(GenericToken.KeyWord, "or")]
+    [Mode("code")]
+    OR,
+    
+    #endregion
+    
+    #endregion
+        
+    }
+
+
+    [ParserRoot("template")]
+    public class TemplateParser
+    {
+        
+        #region structure
+
+        [Production("template: item*")]
+        public ITemplate Template(List<ITemplate> items)
+        {
+            return new Template(items);
+        }
+
+        [Production("item : TEXT")]
+        public ITemplate Text(Token<TemplateLexer> text)
+        {
+         return new Text(text.Value);
+        }
+        
+        [Production("item :OPEN_VALUE[d] TemplateParser_expressions CLOSE_VALUE[d]")]
+        public ITemplate Value(ITemplate value) => value;
+        /*{
+            return new Value(value.Value);
+        }*/
+
+        [Production("item : OPEN_CODE[d] IF[d] OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d] CLOSE_CODE[d] item* elseBlock? OPEN_CODE[d] ENDIF[d] CLOSE_CODE[d] ")]
+        public ITemplate Conditional(ITemplate cond, List<ITemplate> thenBlock, ValueOption<ITemplate> elseBlock)
+        {
+            var ifthenelse = new IfThenElse(cond as Expression, new Block(thenBlock), elseBlock.Match(x => x, () => new Block()) as Block);
+            return ifthenelse;
+        }
+
+        [Production("if : OPEN_CODE[d] IF[d] OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d] CLOSE_CODE[d]")]
+        public ITemplate If(ITemplate condition)
+        {
+            return condition;
+        }
+
+        [Production("elseBlock : OPEN_CODE[d] ELSE[d] CLOSE_CODE[d] item*")]
+        public ITemplate elseBlock(List<ITemplate> items)
+        {
+            return new Block(items);
+        }
+        
+
+        [Production("item : OPEN_CODE[d] FOR[d] INT RANGE[d] INT AS[d] ID CLOSE_CODE[d] item* OPEN_CODE[d] END[d] CLOSE_CODE[d]")]
+        public ITemplate fori(Token<TemplateLexer> start, Token<TemplateLexer> end, Token<TemplateLexer> iterator, List<ITemplate> items)
+        {
+            return new ForI(start.IntValue, end.IntValue, iterator.Value, items);
+        }
+        
+        [Production("item : OPEN_CODE[d] FOR[d] ID AS[d] ID CLOSE_CODE[d] item* OPEN_CODE[d] END[d] CLOSE_CODE[d]")]
+        public ITemplate _foreach(Token<TemplateLexer> listName, Token<TemplateLexer> iterator, List<ITemplate> items)
+        {
+            return new ForEach(listName.Value, iterator.Value, items);
+        }
+       
+        #endregion
+        
+        #region COMPARISON OPERATIONS
+
+        [Infix("LESSER", Associativity.Right, 50)]
+        [Infix("GREATER", Associativity.Right, 50)]
+        [Infix("EQUALS", Associativity.Right, 50)]
+        [Infix("DIFFERENT", Associativity.Right, 50)]
+        public ITemplate binaryComparisonExpression(ITemplate left, Token<TemplateLexer> operatorToken,
+            ITemplate right)
+        {
+            
+            var oper = BinaryOperator.EQUALS;
+
+            oper = operatorToken.TokenID switch
+            {
+                TemplateLexer.LESSER => BinaryOperator.LESSER,
+                TemplateLexer.GREATER => BinaryOperator.GREATER,
+                TemplateLexer.EQUALS => BinaryOperator.EQUALS,
+                TemplateLexer.DIFFERENT => BinaryOperator.DIFFERENT,
+                _ => BinaryOperator.EQUALS
+            };
+
+            return new BinaryOperation(left as Expression, oper, right as Expression);
+        }
+
+        #endregion
+
+        #region STRING OPERATIONS
+
+         [Operation((int) TemplateLexer.CONCAT, Affix.InFix, Associativity.Right, 10)]
+         public ITemplate binaryStringExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
+         {
+             return new BinaryOperation(left as Expression, BinaryOperator.CONCAT, right as Expression);
+         }
+
+        #endregion
+        
+          #region OPERANDS
+
+          
+        [Production("primary: INT")]
+        public ITemplate PrimaryInt(Token<TemplateLexer> intToken)
+        {
+            return new IntegerConstant(intToken.IntValue, intToken.Position);
+        }
+
+        
+        [Production("primary: TRUE")]
+        [Production("primary: FALSE")]
+        public ITemplate PrimaryBool(Token<TemplateLexer> boolToken)
+        {
+            return new BoolConstant(bool.Parse(boolToken.StringWithoutQuotes) ? true : false);
+        }
+
+        
+        [Production("primary: STRING")]
+        public ITemplate PrimaryString(Token<TemplateLexer> stringToken)
+        {
+            return new StringConstant(stringToken.StringWithoutQuotes, stringToken.Position);
+        }
+
+        
+        [Production("primary: ID")]
+        public ITemplate PrimaryId(Token<TemplateLexer> varToken)
+        {
+            return new Variable(varToken.Value);
+        }
+
+        [Production("primary: OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d]")]
+        public ITemplate PrimaryParens(ITemplate expr)
+        {
+            return expr;
+        }
+
+        [Operand]
+        [Production("operand: primary")]
+        public ITemplate Operand(ITemplate prim)
+        {
+            return prim;
+        }
+
+        #endregion
+
+        #region NUMERIC OPERATIONS
+
+        [Operation((int) TemplateLexer.PLUS, Affix.InFix, Associativity.Right, 10)]
+        [Operation((int) TemplateLexer.MINUS, Affix.InFix, Associativity.Right, 10)]
+        public ITemplate binaryTermNumericExpression(ITemplate left, Token<TemplateLexer> operatorToken,
+            ITemplate right)
+        {
+            var oper = BinaryOperator.ADD;
+
+            oper = operatorToken.TokenID switch
+            {
+                TemplateLexer.PLUS => BinaryOperator.ADD,
+                TemplateLexer.MINUS => BinaryOperator.SUB,
+                _ => BinaryOperator.ADD
+            };
+
+            return new BinaryOperation(left as Expression, oper, right as Expression);
+        }
+
+        [Operation((int) TemplateLexer.TIMES, Affix.InFix, Associativity.Right, 50)]
+        [Operation((int) TemplateLexer.DIVIDE, Affix.InFix, Associativity.Right, 50)]
+        public ITemplate binaryFactorNumericExpression(ITemplate left, Token<TemplateLexer> operatorToken,
+            ITemplate right)
+        {
+            var oper = BinaryOperator.ADD;
+
+            oper = operatorToken.TokenID switch
+            {
+                TemplateLexer.TIMES => BinaryOperator.MULTIPLY,
+                TemplateLexer.DIVIDE => BinaryOperator.DIVIDE,
+                _ => BinaryOperator.MULTIPLY
+            };
+
+            return new BinaryOperation(left as Expression, oper, right as Expression);
+        }
+
+        [Prefix((int) TemplateLexer.MINUS, Associativity.Right, 100)]
+        public ITemplate unaryNumericExpression(Token<TemplateLexer> operation, ITemplate value)
+        {
+            return new Neg(value as Expression, operation.Position);
+        }
+
+        #endregion
+
+
+        #region BOOLEAN OPERATIONS
+
+        [Operation((int) TemplateLexer.OR, Affix.InFix, Associativity.Right, 10)]
+        public ITemplate binaryOrExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
+        {
+            return new BinaryOperation(left as Expression, BinaryOperator.OR, right as Expression);
+        }
+
+        [Operation((int) TemplateLexer.AND, Affix.InFix, Associativity.Right, 50)]
+        public ITemplate binaryAndExpression(ITemplate left, Token<TemplateLexer> operatorToken, ITemplate right)
+        {
+            return new BinaryOperation(left as Expression, BinaryOperator.AND, right as Expression);
+        }
+
+        [Operation((int) TemplateLexer.NOT, Affix.PreFix, Associativity.Right, 100)]
+        public ITemplate binaryOrExpression(Token<TemplateLexer> operatorToken, ITemplate value)
+        {
+            return new Not(value as Expression,operatorToken.Position);
+        }
+
+        #endregion
+    }

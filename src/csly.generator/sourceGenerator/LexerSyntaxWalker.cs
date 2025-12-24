@@ -135,16 +135,45 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
     private List<string> GetModes(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
     {
         var all = enumMemberDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).ToList();
-        var modes = all.Where(x => x.Name.ToString() == "Mode").ToList();
+        var modes = all.Where(x => x.Name.ToString() == "Mode");
 
         return modes.SelectMany(x =>
         {
             if (x.ArgumentList != null)
             {
-                return x.ArgumentList.Arguments.Select(x => x.Expression.ToString()).ToList();
+                return x.ArgumentList.Arguments.Select(x => x.Expression.ToString().TrimQuotes()).ToList();
             }
             return new List<string>();
         }).ToList();
+    }
+
+     private bool IsPop(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
+    {
+        var all = enumMemberDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).ToList();
+        var modes = all.Where(x => x.Name.ToString() == "Pop").ToList();
+
+        return modes.Any();
+    }
+
+     private string GetPushTarget(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
+    {
+        var all = enumMemberDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).ToList();
+        var modes = all.Where(x => x.Name.ToString() == "Push").ToList();
+
+        if (modes.Any())
+        {
+            var pushAttribute = modes.First();
+            if (pushAttribute.ArgumentList != null && pushAttribute.ArgumentList.Arguments.Count == 1)
+            {
+                var arg = pushAttribute.ArgumentList.Arguments[0];
+                var literal = arg.Expression as LiteralExpressionSyntax;
+                if (literal != null && literal.Kind() == SyntaxKind.StringLiteralExpression)
+                {
+                    return literal.Token.ValueText;
+                }
+            }
+        }
+        return null;
     }
 
     private List<(string lang, string label)> GetLabels(EnumMemberDeclarationSyntax enumMemberDeclarationSyntax)
@@ -189,6 +218,8 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         var name = node.Identifier.ToString();
         _generator.Tokens.Add(name);
         var modes = GetModes(node);
+        bool isPop = IsPop(node);
+        string pushTarget = GetPushTarget(node);
         var labels = GetLabels(node);
 
         if (node.AttributeLists.Any())
@@ -227,14 +258,14 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                             }
                         }
 
-                        _staticLexerBuilder.Add(type, name, modes, arguments.ToArray());
-
+                        _staticLexerBuilder.Add(type, name, modes, isPop, pushTarget, arguments.ToArray());
+                        
                         var channel = GetChannelArg(attributeSyntax);
                         AddChannel(attributeSyntax);
                     }
                     else if (attributeName == "Lexeme")
                     {
-                        VisitLexemeAttribute(attributeSyntax, name, modes);
+                        VisitLexemeAttribute(attributeSyntax, name, modes, isPop, pushTarget);
                     }
                     else if (attributeName == "Push")
                     {
@@ -279,7 +310,7 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         }
     }
 
-    private void VisitLexemeAttribute(AttributeSyntax attributeSyntax, string name, List<string> modes)
+    private void VisitLexemeAttribute(AttributeSyntax attributeSyntax, string name, List<string> modes, bool isPop, string pushTarget)
     {
         var arg0 = attributeSyntax.ArgumentList.Arguments[0].Expression;
         if (arg0 is LiteralExpressionSyntax literal &&
@@ -293,47 +324,48 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
             {
                 var (method, skip) = GetMethodForGenericLexeme(member,
                     attributeSyntax.ArgumentList.Arguments);
-                
+
                 if (!string.IsNullOrEmpty(method))
                 {
                     // todo : manage identifier f(method) in {alphaid, alphanumdahsid, alphanumid, customid}
                     if (method == "Keyword")
                     {
-                        _staticLexerBuilder.Add(GenericToken.KeyWord, name, modes,
+                        _staticLexerBuilder.Add(GenericToken.KeyWord, name, modes, isPop, pushTarget,
                             GetAttributeArgsAsStringArray(attributeSyntax, skip).ToArray());
+                            
                     }
                     else if (method == "Sugar")
                     {
-                        _staticLexerBuilder.Add(GenericToken.SugarToken, name, modes,
+                        _staticLexerBuilder.Add(GenericToken.SugarToken, name, modes, isPop, pushTarget,
                             GetAttributeArgsAsStringArray(attributeSyntax, skip).ToArray());
                     }
                     else if (method == "AlphaId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
-                            name, modes,
+                            name, modes, isPop, pushTarget,
                             new[] {"a-zA-Z","a-zA-Z"});
                     }
                     else if (method == "AlphaNumId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
-                            name, modes,
+                            name, modes, isPop, pushTarget,
                             new[] { "a-zA-Z", "a-zA-Z0-9" });
                     }
                     else if (method == "AlphaNumDashId")
                     {
                         _staticLexerBuilder.Add(GenericToken.Identifier,
-                            name, modes,
+                            name, modes, isPop, pushTarget,
                             new[] { "_a-zA-Z", "-_a-zA-Z0-9" });
                     }
                     else if (method == "Comment")
                     {
-                        _staticLexerBuilder.Add(GenericToken.Comment, name, modes,
+                        _staticLexerBuilder.Add(GenericToken.Comment, name, modes, isPop, pushTarget,
                             GetAttributeArgsAsStringArray(attributeSyntax, skip).ToArray());
                     }
                     else
                     {
                         GenericToken lexemeType = (GenericToken)Enum.Parse(typeof(GenericToken),member.Name.Identifier.Text);                         
-                        _staticLexerBuilder.Add(lexemeType, name, modes, GetAttributeArgsAsStringArray(attributeSyntax, 1).ToArray());
+                        _staticLexerBuilder.Add(lexemeType, name, modes, isPop, pushTarget, GetAttributeArgsAsStringArray(attributeSyntax, 1).ToArray());
                     }
                 }
             }
