@@ -2,11 +2,11 @@
 ///////////////////////////////////////
 // POSTFIX EXPRESSION <#RULESTRING#> TODO !
 ///////////////////////////////////////
-public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(List<Token<<#LEXER#>>> tokens, int position)
+public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(List<Token<<#LEXER#>>> tokens, int position, ParsingContext<<#LEXER#>, <#OUTPUT#>> parsingContext)
 {
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
 
-    var r0 = ParseNonTerminal_<#LOWER_PRECEDENCE#>(tokens, position);
+    var r0 = ParseNonTerminal_<#LOWER_PRECEDENCE#>(tokens, position, parsingContext);
     if (r0.IsError)
     {
         return r0;

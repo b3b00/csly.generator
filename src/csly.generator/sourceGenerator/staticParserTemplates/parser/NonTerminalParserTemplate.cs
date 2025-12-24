@@ -1,5 +1,5 @@
 
-public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position)
+public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position, ParsingContext<<#LEXER#>, <#OUTPUT#>> parsingContext)
     {
     //Console.WriteLine("Parsing <#NAME#> at position " + position);
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();

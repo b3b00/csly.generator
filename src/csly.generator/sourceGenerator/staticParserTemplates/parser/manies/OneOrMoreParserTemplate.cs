@@ -1,5 +1,5 @@
 
-public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseMany_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position)
+public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseMany_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position, ParsingContext<<#LEXER#>, <#OUTPUT#>> parsingContext)
     {
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
     var manyNode = new ManySyntaxNode<<#LEXER#>, <#OUTPUT#>>($"<#INNER_CLAUSE_NAME#>+");
