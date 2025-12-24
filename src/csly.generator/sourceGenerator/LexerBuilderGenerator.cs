@@ -97,8 +97,10 @@ internal class LexerBuilderGenerator
         {
             var lexemsInMode = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Modes.Contains(mode)).ToList();
 Log("Generating FSM for mode " + mode);
-            var subFfsm = GenerateFSM(lexemsInMode);
-            fsms.Add(mode, subFfsm);
+            var subFsm = GenerateFSM(lexemsInMode);
+            subFsm.Lexemes = lexemsInMode;
+
+            fsms.Add(mode, subFsm);
         }
 
         return fsms;
@@ -113,59 +115,7 @@ Log("Generating FSM for mode " + mode);
             Log("\nProcessing lexeme: " + lexem.Type + " -> " + lexem.Name);
             fsm.GoTo(startState);
             switch (lexem.Type)
-            {
-                case model.lexer.GenericToken.UpTo:
-                    { 
-                        
-                        var exceptions = lexem.Args.Select(x => x.TrimQuotes()).ToList();
-                        exceptions = exceptions.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                        exceptions = exceptions.Distinct().ToList();
-                        exceptions = exceptions.Select(x => x.TrimQuotes()).ToList();
-                        Log("  Generating UpTo lexeme with exceptions: " + string.Join(", ", exceptions));
-                        Func<int, int, string> GetEndLabel = (int exception, int exceptionIndex) =>
-                        {
-                            if (exception < 0 || exceptionIndex < 0)
-                            {
-                                return $"in_upto_text_{upToCounter}";
-                            }
-
-                            return $"in_upto_{exception}_{exceptionIndex}_{upToCounter}";
-                        };
-
-                        var upToChars0 = new string(exceptions.Select(x => x.First()).Distinct().ToArray());
-                        string startupTo = GetEndLabel(-1, -1);
-                        // allow move with any char different from exceptions' first char
-                        fsm.ExceptTransition(upToChars0);
-                        fsm.Mark(startupTo);
-                        fsm.End(lexem);
-                        // loop if no exception char found
-                        fsm.ExceptTransitionTo(startupTo, upToChars0);
-
-                        // for each exception, create a path
-                        for (int exceptionIndex = 0; exceptionIndex < exceptions.Count; exceptionIndex++)
-                        {
-                            var exception = exceptions[exceptionIndex];
-                            fsm.GoTo(startupTo);
-                            
-                            
-                            // match rest of exception chars
-                            for (int i = 0; i < exception.Length-1; i++)
-                            {
-                                var current = fsm.GetCurrentState();
-                                fsm.ExceptTransitionTo(startupTo, exception[i].ToString());
-                                fsm.GoTo(current.Id);
-                                var matchingState = GetEndLabel(exceptionIndex, i);
-                                fsm.Transition(exception[i]);
-                                fsm.Mark(matchingState);                                
-                            }
-                            
-                            // if last char is different then go back to upto
-                            fsm.ExceptTransitionTo(startupTo, exception[exception.Length-1].ToString());
-                            
-                        }
-                        upToCounter++;
-                        break;
-                    }
+            {               
                 case model.lexer.GenericToken.SugarToken:
                     {
                         fsm.ConstantTransition(lexem.Arg0);
@@ -360,9 +310,18 @@ Log("Generating FSM for mode " + mode);
             return $@"_tokenFactories.Add({_staticLexerBuilder.LexerName}.{kvp.Key},{kvp.Value});";
         }));
 
+        var uptos = string.Join(",\n", fsm.Lexemes.Where(x => x.Type == model.lexer.GenericToken.UpTo).SelectMany(lexeme =>
+        {
+            return lexeme.Args.Select(arg =>
+            {
+                return $@"{{ ""{arg.TrimQuotes()}"", {_staticLexerBuilder.LexerName}.{lexeme.Name} }}";
+            }).ToList();
+        }));
+
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
             {"KEYWORDS", keywords },
+            {"UPTOS", uptos },
             {"EPSILON_STATES", string.Join(", ", fsm.GetEpsilonStates().Select(x => x.ToString())) } ,
             {"STATE_TOKENS", string.Join(",\n", fsm.States.Where(s => s.TokenName != null).Select(s => $@"{{ {s.Id}, {_staticLexerBuilder.LexerName}.{s.TokenName} }}")) },
             {"EXPLICIT_KEYWORDS", explicitKeywords },
@@ -416,6 +375,10 @@ Log("Generating FSM for mode " + mode);
                 });
 
         }));
+        if (fsm.Lexemes.Any(x => x.Type == model.lexer.GenericToken.UpTo) && state.Id == 0)
+        {
+            transitionsCode += _templateEngine.ApplyTemplate(nameof(LexerTemplates.UpToTransitionsTemplate));
+        }   
 
         var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
         var match = $@"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition) 

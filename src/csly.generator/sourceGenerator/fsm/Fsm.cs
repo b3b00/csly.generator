@@ -80,6 +80,8 @@ internal class Transition
 internal class Fsm
 {
 
+    public List<Lexeme> Lexemes { get; set; } = new List<Lexeme>();
+
     private Dictionary<int, State> _states = new Dictionary<int, State>();
 
     private Dictionary<string, State> _statesByName = new Dictionary<string, State>();

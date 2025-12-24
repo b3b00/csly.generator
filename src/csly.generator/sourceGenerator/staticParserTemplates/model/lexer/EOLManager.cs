@@ -16,7 +16,50 @@ namespace <#NS#> {
         {
             return memory.Span[position.Index];
         }
-    }
+
+        public static ReadOnlyMemory<char> GetUpTo(this ReadOnlyMemory<char> value, string upto, int position)
+        {
+            var CurrentPosition = position;
+            var spanValue = value.Span;
+            var current = spanValue[CurrentPosition];
+            var end = false;
+            while (CurrentPosition < value.Length && !end)
+            {
+                end = value.At<char>(CurrentPosition) == upto[0] &&
+                      CurrentPosition + upto.Length - 1 < value.Length &&
+                      value.Slice(CurrentPosition, upto.Length).Span.SequenceEqual(upto.AsSpan());
+                CurrentPosition++;
+            }
+            if (CurrentPosition == value.Length)
+            {
+                return value.Slice(position);
+            }
+            return value.Slice(position, CurrentPosition - position -1 );
+        }
+
+        public static string[] GetLines(this ReadOnlyMemory<char> value)
+        {
+            var lines = new List<string>();
+            var previousStart = 0;
+            var i = 0;
+            while (i < value.Length)
+            {
+                var end = EOLManager.IsEndOfLine(value, i);
+                if (end != EolType.No)
+                {
+                    if (end == EolType.Windows) i++;
+                    var line = value.Slice(previousStart, i - previousStart);
+                    lines.Add(line.ToString());
+                    previousStart = i + 1;
+                }
+
+                i++;
+            }
+
+            lines.Add(value.Slice(previousStart, i - previousStart).ToString());
+            return lines.ToArray();
+        }
+}
 
 
     public static class EOLManager

@@ -48,9 +48,14 @@ public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
     };
 
     private List<string> _explicitKeywords = new List<string>()
-        {
-            <#EXPLICIT_KEYWORDS#>
-        };
+    {
+        <#EXPLICIT_KEYWORDS#>
+    };
+
+    private Dictionary<string, <#LEXER#>> _uptoTOkens = new Dictionary<string, <#LEXER#>>()
+    {
+        <#UPTOS#>
+    };
 
     private Dictionary<<#LEXER#>, Factory> _tokenFactories = new Dictionary<<#LEXER#>, Factory>();
 
