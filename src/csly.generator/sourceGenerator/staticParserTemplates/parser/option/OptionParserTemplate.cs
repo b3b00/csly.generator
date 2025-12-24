@@ -1,4 +1,4 @@
-
+    
 public SyntaxParseResult<<#LEXER#>,<#OUTPUT#>> ParseOption_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position, ParsingContext<<#LEXER#>, <#OUTPUT#>> parsingContext)
 {
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();

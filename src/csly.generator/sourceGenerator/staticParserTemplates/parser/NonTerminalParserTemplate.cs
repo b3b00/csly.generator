@@ -1,6 +1,11 @@
 
 public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<Token<<#LEXER#>>> tokens, int position, ParsingContext<<#LEXER#>, <#OUTPUT#>> parsingContext)
     {
+
+    if (parsingContext.TryGetParseResult("<#NAME#>", position, out var cachedResult))
+    {
+        return cachedResult;
+    }
     //Console.WriteLine("Parsing <#NAME#> at position " + position);
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
         var token = tokens[position];
@@ -13,7 +18,8 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<T
         var okResult = results.OrderByDescending(r => r.EndingPosition).FirstOrDefault(r => r.IsOk);
         if (okResult != null && okResult.IsOk)
         {
-            return okResult;
+        parsingContext.Memoize("<#NAME#>", position, okResult);
+        return okResult;
         }
 
     result.IsError = true;
@@ -22,6 +28,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseNonTerminal_<#NAME#>(List<T
 
     result.AddErrors(results.SelectMany(x => x.Errors != null && x.Errors.Count > 0 ? x.GetErrors() : new List<UnexpectedTokenSyntaxError<<#LEXER#>>>()).ToList());
     result.AddErrors(allExpected);
-        return result;
+    parsingContext.Memoize("<#NAME#>", position, result);
+    return result;
     }
         

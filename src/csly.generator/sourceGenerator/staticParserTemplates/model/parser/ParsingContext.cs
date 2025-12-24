@@ -15,12 +15,12 @@ namespace <#NS#>
             _useMemoization = useMemoization;
         }
 
-        private string GetKey(IClause clause, int position)
+        private string GetKey(string clause, int position)
         {
-            return $"{clause.Name} -- @{position}";
+            return $"{clause} -- @{position}";
         }
 
-        public void Memoize(IClause clause, int position, SyntaxParseResult<IN, OUT> result)
+        public void Memoize(string clause, int position, SyntaxParseResult<IN, OUT> result)
         {
             if (_useMemoization)
             {
@@ -28,7 +28,7 @@ namespace <#NS#>
             }
         }
 
-        public bool TryGetParseResult(IClause clause, int position, out SyntaxParseResult<IN, OUT> result)
+        public bool TryGetParseResult(string clause, int position, out SyntaxParseResult<IN, OUT> result)
         {
             if (!_useMemoization)
             {
