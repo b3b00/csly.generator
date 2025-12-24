@@ -24,13 +24,10 @@ namespace template;
         {
          return new Text(text.Value);
         }
-        
-        [Production("item :OPEN_VALUE[d] ID CLOSE_VALUE[d]")]
-        public ITemplate Value(Token<TemplateLexer> value)
-        {
-            return new Value(value.Value);
-        }
 
+        [Production("item :OPEN_VALUE[d] TemplateParser_expressions CLOSE_VALUE[d]")]
+        public ITemplate Value(ITemplate value) => value;
+        
         [Production("item : OPEN_CODE[d] IF[d] OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d] CLOSE_CODE[d] item* elseBlock? OPEN_CODE[d] ENDIF[d] CLOSE_CODE[d] ")]
         public ITemplate Conditional(ITemplate cond, List<ITemplate> thenBlock, ValueOption<ITemplate> elseBlock)
         {
@@ -132,7 +129,13 @@ namespace template;
             return new Variable(varToken.Value);
         }
 
-        [Operand]
+        [Production("primary: OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d]")]
+        public ITemplate PrimaryParens(ITemplate expr)
+        {
+            return expr;
+        }
+
+    [Operand]
         [Production("operand: primary")]
         public ITemplate Operand(ITemplate prim)
         {

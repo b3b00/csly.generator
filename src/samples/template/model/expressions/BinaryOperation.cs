@@ -39,10 +39,7 @@ namespace template.model.expressions
 
         public LexerPosition Position { get; set; }
 
-        public string GetValue(Dictionary<string, object> context)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetValue(Dictionary<string, object> context) => Evaluate(context).ToString();
 
         private T binary<T>(object left, object right, string operationName, Func<T, T, T> operation)
         {

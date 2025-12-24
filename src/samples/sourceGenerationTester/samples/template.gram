@@ -81,24 +81,25 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
     
     [String()]
     [Mode("code")]
+    [Mode("value")]
     STRING,
-    
-    // [Int()]
-    // [Mode("code")]
-    // INT,
+
     
     [Int()]
     [Mode("code")]
+    [Mode("value")]
     INT,
     
     [Lexeme(GenericToken.KeyWord, "TRUE")]
     [Lexeme(GenericToken.KeyWord, "true")]
     [Mode("code")]
+    [Mode("value")]
     TRUE,
 
     [Lexeme(GenericToken.KeyWord, "FALSE")]
     [Lexeme(GenericToken.KeyWord, "false")]
     [Mode("code")]
+    [Mode("value")]
     FALSE,
     
     
@@ -133,19 +134,23 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
 
     [Sugar( "+")]
     [Mode("code")]
+    [Mode("value")]
     PLUS = 36,
 
     [Sugar( "-")]
     [Mode("code")]
+    [Mode("value")]
     MINUS = 37,
 
 
     [Sugar( "*")]
     [Mode("code")]
+    [Mode("value")]
     TIMES = 38,
 
     [Sugar( "/")]
     [Mode("code")]
+    [Mode("value")]
     DIVIDE = 39,
     
     
@@ -155,10 +160,12 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
     
     [Sugar("(")]
     [Mode("code")]
+    [Mode("value")]
     OPEN_PAREN,
     
     [Sugar(")")]
     [Mode("code")]
+    [Mode("value")]
     CLOSE_PAREN,
     
     [Lexeme(GenericToken.KeyWord, "NOT")] [Lexeme(GenericToken.KeyWord, "not")]
@@ -198,11 +205,11 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
          return new Text(text.Value);
         }
         
-        [Production("item :OPEN_VALUE[d] ID CLOSE_VALUE[d]")]
-        public ITemplate Value(Token<TemplateLexer> value)
-        {
+        [Production("item :OPEN_VALUE[d] TemplateParser_expressions CLOSE_VALUE[d]")]
+        public ITemplate Value(ITemplate value) => value;
+        /*{
             return new Value(value.Value);
-        }
+        }*/
 
         [Production("item : OPEN_CODE[d] IF[d] OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d] CLOSE_CODE[d] item* elseBlock? OPEN_CODE[d] ENDIF[d] CLOSE_CODE[d] ")]
         public ITemplate Conditional(ITemplate cond, List<ITemplate> thenBlock, ValueOption<ITemplate> elseBlock)
@@ -303,6 +310,12 @@ public partial class TemplateMain : AbstractParserGenerator<TemplateLexer, Templ
         public ITemplate PrimaryId(Token<TemplateLexer> varToken)
         {
             return new Variable(varToken.Value);
+        }
+
+        [Production("primary: OPEN_PAREN[d] TemplateParser_expressions CLOSE_PAREN[d]")]
+        public ITemplate PrimaryParens(ITemplate expr)
+        {
+            return expr;
         }
 
         [Operand]
