@@ -22,7 +22,7 @@
     },
     "backtrack generation": {
       "commandName": "Project",
-      "commandLineArgs": "backtrack c:/tmp/generation_backtrack\r\n"
+      "commandLineArgs": "backtrack c:/tmp/generation/backtrack"
     }
   }
 }
