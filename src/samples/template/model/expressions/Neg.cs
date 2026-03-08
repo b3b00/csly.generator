@@ -23,7 +23,7 @@ namespace template.model.expressions
 
         public object Evaluate(Dictionary<string, object> context)
         {
-            object value = Value.GetValue(context);
+            object value = Value.Evaluate(context);
             if (value is int i)
             {
                 return -i;

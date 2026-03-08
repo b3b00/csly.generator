@@ -30,9 +30,6 @@ public  class Program
         var who = args[0];
         var where = args.Length > 1 ? args[1] : "c:/tmp/generation/";
         Generate(who, where);
-        //Run();
-        /*GoStatic();
-        Run();*/
     }
 
 
@@ -47,8 +44,8 @@ public  class Program
         var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
         var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
 
-        
-        Directory.CreateDirectory(Path.Combine(where,"generated"));
+        var generatedDir = Path.Combine(where, "generated");
+        Directory.CreateDirectory(generatedDir);
 
         File.WriteAllText(Path.Combine(where,"generated", $"{who.Capitalize()}.cs"), parser);
 
