@@ -12,7 +12,7 @@ namespace ebnf.grammar
         public bool IsNonTerminalChoice => Choices.Select(c => c is NonTerminalClause).Aggregate((x, y) => x && y);
             
         public  List<IClause> Choices { get; }
-        public override string Name { get => Choices.Select(c => c.Name).Aggregate((x, y) => x + "_OR_" + y); set {} }
+        public override string Name { get => Choices.Select(c => c.Name).Aggregate((x, y) => x + "_or_" + y); set {} }
 
         public ChoiceClause(IClause clause)
         {
