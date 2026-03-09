@@ -219,10 +219,10 @@ Log("Generating FSM for mode " + mode);
                             fsm.End(lexem);
                         }
                         var tailPatterns = lexem.IdentifierTailPatterns();
-                        for (var i = 0; i < startPattern.Count(); i++)
+                        for (var i = 0; i < tailPatterns.Count(); i++)
                         {
                             fsm.GoTo(inIdentifierState);
-                            var pattern = startPattern.ElementAt(i);
+                            var pattern = tailPatterns.ElementAt(i);
                             if (pattern.Length == 1)
                             {
                                 fsm.TransitionTo(inIdentifierState, pattern[0]);
@@ -314,7 +314,7 @@ Log("Generating FSM for mode " + mode);
         {
             return lexeme.Args.Select(arg =>
             {
-                return $@"{{ ""{arg.TrimQuotes()}"", {_staticLexerBuilder.LexerName}.{lexeme.Name} }}";
+                return $@"{{ ""{arg.TrimQuotes().Replace("\"","\\\"")}"", {_staticLexerBuilder.LexerName}.{lexeme.Name} }}";
             }).ToList();
         }));
 

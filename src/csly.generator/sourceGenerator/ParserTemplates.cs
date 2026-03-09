@@ -14,6 +14,8 @@ internal enum ParserTemplates
     RuleCallTemplate,
     RuleParserTemplate,
     TerminalClauseTemplate,
+    TerminalClauseIndentTemplate,
+    TerminalClauseUIndentTemplate,
     ExplicitTerminalClauseTemplate,
     TerminalParserTemplate,
     ZeroOrMoreParserTemplate,

@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace ebnf.grammar
 {
-    public record Leader(bool IsExplicit, string Value);
+    public record Leader(bool IsExplicit, string Value, bool isIndent, bool isUIndent);
     public class Rule : GrammarNode
     {
         public Rule()

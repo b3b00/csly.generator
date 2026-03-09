@@ -12,6 +12,7 @@ public static class StringExtensions
         {
             str = str.Substring(0, str.Length - 1);
         }
+        str = str.Replace("\\\"", "\"");
         return str;
     }
 }

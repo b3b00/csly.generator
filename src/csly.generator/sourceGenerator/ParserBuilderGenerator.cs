@@ -64,7 +64,7 @@ public class ParserBuilderGenerator
         _staticParserBuilder.ComputeLeaders();
 
         
-        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
+        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOptions.StartingNonTerminal);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
@@ -216,6 +216,11 @@ public class ParserBuilderGenerator
         if (l.IsExplicit)
         {
             return $"new LeadingToken<{_lexerName}>(\"{l.Value}\")";
+        }
+
+        if (l.isIndent || l.isUIndent)
+        {
+            return $"new LeadingToken<{_lexerName}>({l.isIndent.ToString().ToLower()}, {l.isUIndent.ToString().ToLower()})";
         }
         else
         {
@@ -473,6 +478,24 @@ public class ParserBuilderGenerator
                                     });
                                 AddClause(terminalClause);
                             }
+                            else if (terminalClause.IsIndent)
+                            {
+                                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseIndentTemplate), terminalClause.Name,
+                                    additional: new Dictionary<string, string>()
+                                    {
+                                        {"INDEX",i.ToString()},
+                                        {"DISCARDED", terminalClause.Discarded.ToString().ToLower() }
+                                    });
+                            }
+                            else if (terminalClause.IsUIndent)
+                            {
+                                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseUIndentTemplate), terminalClause.Name,
+                                    additional: new Dictionary<string, string>()
+                                    {
+                                        {"INDEX",i.ToString()},
+                                        {"DISCARDED", terminalClause.Discarded.ToString().ToLower() }
+                                    });
+                            }
                             else
                             {
                                 call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseTemplate), terminalClause.Name,
@@ -715,7 +738,7 @@ public class ParserBuilderGenerator
 
     public string GenerateEntryPoint(string ns)
     {
-        var root = _staticParserBuilder.ParserOPtions.StartingNonTerminal;
+        var root = _staticParserBuilder.ParserOptions.StartingNonTerminal;
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
             {"ROOT",root },
