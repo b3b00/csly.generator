@@ -43,6 +43,14 @@ internal class StaticLexerBuilder
 
     public void Add(GenericToken type, string name, List<string> modes, bool isPop, string pushTarget, params string[] args)
     {
+        if (modes == null)
+        {
+            modes = new List<string>();
+        }
+        else
+        {
+            modes = modes.Select(x => x.EndsWith("ModeAttribute.DefaultLexerMode") ? "default" : x).ToList();
+        }
         var lexem = new Lexeme(type, name, args)
         {
             IsPop = isPop,

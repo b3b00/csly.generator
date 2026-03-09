@@ -1,7 +1,8 @@
 ﻿
 using csly.indented.whileLang;
 using csly.indented.whileLang.model;
-namespace csly.indented.whileLang;
+using csly.indentedwhile.models;
+namespace csly.indentedwhile;
 
 
 [ParserGenerator]
@@ -242,7 +243,7 @@ public class IndentedWhileParserGeneric
         }
         
         [Production("block : INDENT[d] sequence UINDENT[d]")]
-        public WhileAST sequenceStatements(SequenceStatement seq)
+        public WhileAST sequenceStatements(WhileAST seq)
         {
             return seq;
         }
