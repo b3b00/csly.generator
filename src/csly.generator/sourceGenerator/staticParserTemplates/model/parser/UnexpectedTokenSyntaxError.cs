@@ -45,6 +45,7 @@ public class UnexpectedTokenSyntaxError<T> : ParseError, IComparable where T : s
     private readonly Dictionary<T, Dictionary<string, string>> _labels = new Dictionary<T, Dictionary<string, string>>();
     public UnexpectedTokenSyntaxError(Token<T> unexpectedToken, Dictionary<T, Dictionary<string, string>> labels, string i18n=null, params LeadingToken<T>[] expectedTokens )
     {
+        Position = unexpectedToken.Position;
         _labels = labels;
         _i18N = i18n;
         ErrorType = unexpectedToken.IsEOS ? ErrorType.UnexpectedEOS : ErrorType.UnexpectedToken;

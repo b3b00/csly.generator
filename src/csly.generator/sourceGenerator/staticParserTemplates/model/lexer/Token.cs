@@ -306,6 +306,16 @@ public class Token<T> where T:struct, Enum
 
     public string GetDebug()
     {
+        if (IsIndent)
+        {
+            return $"<<INDENT({IndentationLevel})>>";
+        }
+
+        if (IsUnIndent)
+        {
+            return $"<<UINDENT({IndentationLevel})>>";
+        }
+        
         if (IsEOS)
         {
             return "<<EOS>>";

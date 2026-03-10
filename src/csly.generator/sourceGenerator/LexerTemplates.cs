@@ -6,5 +6,6 @@ internal enum LexerTemplates
     StateTemplate,
     TransitionTemplate,
     StateCallTemplate,
-    UpToTransitionsTemplate
+    UpToTransitionsTemplate,
+    ConsumeIndentsTemplate
 }

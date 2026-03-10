@@ -408,6 +408,8 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                                     }
                                 case "IndentationAWare":
                                     {
+                                        var isAware = argument.Expression.Kind() == SyntaxKind.TrueLiteralExpression;
+                                        _staticLexerBuilder.IsIndentationAware = isAware;
                                         break;
                                     }
                                 case "Indentation":

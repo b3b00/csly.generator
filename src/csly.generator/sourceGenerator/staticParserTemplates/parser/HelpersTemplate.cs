@@ -61,7 +61,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminalIndent(List<Token<<
     var leading = new LeadingToken<<#LEXER#>>(true, false);
 
     var token = tokens[position];
-    result.IsError = token.IsIndent;
+    result.IsError = !token.IsIndent;
     
     if (result.IsOk)
     {
@@ -87,7 +87,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminalUIndent(List<Token<
     var leading = new LeadingToken<<#LEXER#>>(false,true);
 
     var token = tokens[position];
-    result.IsError = token.IsUnIndent;
+    result.IsError = !token.IsUnIndent;
     
     if (result.IsOk)
     {
