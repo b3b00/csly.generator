@@ -327,12 +327,9 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
                 factory = _defaultFactory;
             }
             var token = factory(_lastSuccessMatch);
-            
-            <#CONSUME_INDENTS#>
-            
+
             _currentPosition = ConsumeComments(token, source.ToArray());
             
-            <#CONSUME_INDENTS#>
             AddToken(token);
             _lastSuccessMatch = null;
         }

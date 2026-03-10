@@ -35,11 +35,9 @@
         continueScanning = true;
         _currentState = 0;
         
-        <#CONSUME_INDENTS#>
         
         _currentPosition = ConsumeComments(token, source.ToArray());
         
-        <#CONSUME_INDENTS#>
         
         AddToken(token);
         _currentMatch = null;
@@ -67,11 +65,9 @@
             }
             var token = factory(match<#STATE#>);
             
-            <#CONSUME_INDENTS#>
             
             _currentPosition = ConsumeComments(token, source.ToArray());
             
-            <#CONSUME_INDENTS#>
             
             AddToken(token);
                 _currentMatch = null;

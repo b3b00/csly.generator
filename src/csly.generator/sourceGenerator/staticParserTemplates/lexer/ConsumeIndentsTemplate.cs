@@ -8,6 +8,6 @@ if (<#IS_INDENTATION_AWARE#>)
             
     if (ind != null && ind.IsIndent || ind.IsUnIndent)
     {
-        tokens.Add(ind);
+        AddToken(ind);
     }
 }
