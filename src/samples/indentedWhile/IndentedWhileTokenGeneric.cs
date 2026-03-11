@@ -51,7 +51,7 @@ namespace csly.indentedWhile.whileLang;
         #region literals 20 -> 29
 
         [Mode(ModeAttribute.DefaultLexerMode, "fstringExpression")]
-        [Lexeme(GenericToken.Identifier, IdentifierType.AlphaNumericDash)]
+        [Lexeme(GenericToken.Identifier, IdentifierType.AlphaNumeric)]
         IDENTIFIER = 20,
 
         [Lexeme(GenericToken.Int)] INT = 22,

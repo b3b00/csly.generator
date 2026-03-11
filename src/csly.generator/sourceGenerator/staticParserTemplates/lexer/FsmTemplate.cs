@@ -77,6 +77,11 @@ private Factory _defaultFactory;
     
     public List<char> GetIndentations(ReadOnlySpan<char> source, int index)
     {
+        if (index >= source.Length)
+        {
+            return new List<char>();
+        }
+        
         var c = source[index];
         List<Char> indentations = new List<char>();
         int i = 0;
@@ -201,7 +206,7 @@ private Factory _defaultFactory;
             {
                 _currentPosition.Line++;
                 _currentPosition.Column = 0;
-                _currentPosition.Index++;
+                
                 
                 bool isNextWhite = _currentPosition.Index+1 < source.Length ? 
                     (source[_currentPosition.Index + 1] == ' ' || source[_currentPosition.Index + 1] == '\t')
@@ -209,6 +214,7 @@ private Factory _defaultFactory;
                 
                 if (<#IS_INDENTATION_AWARE#> && isNextWhite) // TODO indentation aware : stop consuming white spaces if we are at the start of a new line, indents will be consumed separately
                 {
+                    _currentPosition.Index++;   
                     break;
                 }
             }

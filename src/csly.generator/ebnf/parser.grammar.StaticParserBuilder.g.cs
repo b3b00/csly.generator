@@ -168,7 +168,7 @@ namespace csly.ebnf.builder
             }
             var rules = Model.Rules.Where(r => r.Head == nonTerminal).ToList();
 
-
+            
 
             foreach (var rule in rules)
             {
@@ -178,15 +178,24 @@ namespace csly.ebnf.builder
 
 
         }
+        
+        List<Rule> GetRulesForNonTerminal(string nonTerminal)
+        {
+            return Model.Rules.Where(r => r.Head == nonTerminal).ToList();
+        }
 
 
         private void ComputeLeaderForRule(Rule rule, Dictionary<string, List<Leader>> leadersForNTs)
         {
             int i = 0;
             var first = rule.Clauses[0];
+            bool mayBeEmpty = true;
             do
             {
                 first = rule.Clauses[i];
+                
+                mayBeEmpty = first.MayBeEmpty();
+                
                 if (first is TerminalClause term)
                 {
                     var leader = term.IsExplicit ? 
@@ -209,6 +218,9 @@ namespace csly.ebnf.builder
                 }
                 else if (first is NonTerminalClause nt)
                 {
+                    var rules = GetRulesForNonTerminal(nt.Name);
+                    mayBeEmpty = rules.Any(r => r.MayBeEmpty);
+                    
                     // get leaders for nt
                     if (leadersForNTs.ContainsKey(nt.Name))
                     {
@@ -351,7 +363,7 @@ namespace csly.ebnf.builder
                 }
                 i++;
             }
-            while (first.MayBeEmpty() && i < rule.Clauses.Count);
+            while (mayBeEmpty && i < rule.Clauses.Count);
         }
 
         private List<string> FindStartingPoints()
