@@ -97,7 +97,7 @@ private Factory _defaultFactory;
     }
 
     // INDENT indentations
-    private Token<IndentedWhileTokenGeneric> ConsumeIndents3(ReadOnlySpan<char> source, LexerPosition lexerPosition)
+    private Token<<#LEXER#>> ConsumeIndents3(ReadOnlySpan<char> source, LexerPosition lexerPosition)
         {   
             if (lexerPosition.IsStartOfLine && lexerPosition.Index < source.Length)
             {
@@ -116,7 +116,7 @@ private Factory _defaultFactory;
                         position.Index += currentShift.Length;
                         position.Column += currentShift.Length;
                         
-                        var indent = new Token<IndentedWhileTokenGeneric>
+                        var indent = new Token<<#LEXER#>>
                         {
                             IsIndent = true,
                             IsUnIndent = false,
@@ -135,7 +135,7 @@ private Factory _defaultFactory;
                         position.Index += currentShift.Length;
                         position.Column += currentShift.Length;
                         
-                        var indent = new Token<IndentedWhileTokenGeneric>
+                        var indent = new Token<<#LEXER#>>
                         {
                             IsIndent = false,
                             IsUnIndent = true,
@@ -154,7 +154,7 @@ private Factory _defaultFactory;
                         position.Index += currentShift.Length;
                         position.Column += currentShift.Length;
                         
-                        var indent = new Token<IndentedWhileTokenGeneric>
+                        var indent = new Token<<#LEXER#>>
                         {
                             IsIndent = false,
                             IsUnIndent = false,
@@ -173,7 +173,7 @@ private Factory _defaultFactory;
                         position.Index += currentShift.Length;
                         position.Column += currentShift.Length;
                         
-                        var indent = new Token<IndentedWhileTokenGeneric>
+                        var indent = new Token<<#LEXER#>>
                         {
                             IsIndent = false,
                             IsUnIndent = false,
@@ -185,7 +185,7 @@ private Factory _defaultFactory;
                 } 
             }
 
-            return new Token<IndentedWhileTokenGeneric>()
+            return new Token<<#LEXER#>>()
             {
                 IsIndent = false,
                 IsUnIndent = false,
@@ -202,7 +202,12 @@ private Factory _defaultFactory;
                 _currentPosition.Line++;
                 _currentPosition.Column = 0;
                 _currentPosition.Index++;
-                if (true) // TODO indentation aware : stop consuming white spaces if we are at the start of a new line, indents will be consumed separately
+                
+                bool isNextWhite = _currentPosition.Index+1 < source.Length ? 
+                    (source[_currentPosition.Index + 1] == ' ' || source[_currentPosition.Index + 1] == '\t')
+                    : true; 
+                
+                if (<#IS_INDENTATION_AWARE#> && isNextWhite) // TODO indentation aware : stop consuming white spaces if we are at the start of a new line, indents will be consumed separately
                 {
                     break;
                 }

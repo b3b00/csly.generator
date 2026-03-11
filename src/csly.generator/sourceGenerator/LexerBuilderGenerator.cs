@@ -303,7 +303,9 @@ Log("Generating FSM for mode " + mode);
             {
                 { "STATE", state.Id.ToString() },
                 {"TOKEN", state.TokenName },
-                {"CONSUME_INDENTS", consumeIndents }
+                {"CONSUME_INDENTS", consumeIndents },
+                {"IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() }
+                
             });
         }));
 
@@ -339,7 +341,8 @@ Log("Generating FSM for mode " + mode);
             { "MODE", mode },
             { "STATE_CALLS", statesCall },
             {"ASSEMBLY", _assemblyName},
-            {"CONSUME_INDENTS", consumeIndents}
+            {"CONSUME_INDENTS", consumeIndents},
+            {"IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() }
         });
     }
 
