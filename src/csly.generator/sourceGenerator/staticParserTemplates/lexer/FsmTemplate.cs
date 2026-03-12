@@ -73,7 +73,20 @@ private Factory _defaultFactory;
 
     
 
-    /// consumes all whitspaces starting from _currentPosition and move _currentPosition accordingly
+    private static Token<<#LEXER#>>? GetLastNonIndentToken(List<Token<<#LEXER#>>> tokens)
+    {
+        int lastIndex = tokens.Count - 1;
+        for (int i = tokens.Count - 1; i >= 0; i--)
+        {
+            if (!tokens[i].IsIndentation)
+            {
+                lastIndex = i;
+                break;
+            }
+        }
+        var lastToken = tokens[lastIndex];
+        return lastToken;
+    }
     
     public List<char> GetIndentations(ReadOnlySpan<char> source, int index)
     {
@@ -312,7 +325,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
         {
             if (tokens.Count == 0)
                 return false;
-            var lastToken = tokens[tokens.Count - 1];
+            var lastToken = GetLastNonIndentToken(tokens);
             return lastToken.IsPop || !string.IsNullOrEmpty(lastToken.PushTarget);
         }
 
@@ -344,7 +357,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
             AddToken(token);
             _lastSuccessMatch = null;
         }
-var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
+        var lastToken = GetLastNonIndentToken(tokens);
         bool isPop = lastToken != null && (lastToken.IsPop);
         string pushTarget = lastToken != null ? lastToken.PushTarget : null;
         return (tokens, _currentPosition, isPop, pushTarget);

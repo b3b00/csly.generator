@@ -368,7 +368,7 @@ while true do
             Check.That(result.Errors).CountIs(1);
             var error = result.Errors.First();
             Check.That(error.ErrorType).IsEqualTo(ErrorType.IndentationError);
-            Check.That(error.Line).IsEqualTo(4);
+            Check.That(error.Line).IsEqualTo(3);
             Check.That(error.ErrorMessage).Contains("Indentation error");
             
             result = parser.Parse(@"
