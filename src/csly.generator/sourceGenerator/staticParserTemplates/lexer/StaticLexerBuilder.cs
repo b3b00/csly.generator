@@ -19,6 +19,9 @@ internal class StaticLexerBuilder
     private readonly string _nameSpace;
     public string NameSpace => _nameSpace;
     public bool IsIndentationAware { get; set; }
+    public bool IgnoreKeyworkCasing { get; set; }
+    
+    public bool AutoCloseIndentations { get; set; }
 
 
     public StaticLexerBuilder(string lexerName, string nameSpace)

@@ -85,6 +85,41 @@ public class Token<T> where T:struct, Enum
         Position = new LexerPosition(0, 0, 0);
         DecimalSeparator = '.';
     }
+
+    public static Token<T> EOS()
+    {
+        return new Token<T>()
+        {
+            IsEOS = true,
+            End = true,
+            Position = new LexerPosition(0, 0, 0),
+            DecimalSeparator = '.'
+        };
+    }
+    
+    public static Token<T> Indent(LexerPosition position)
+    {
+        return new Token<T>()
+        {
+            IsEOS = false,
+            IsIndent = true,
+            IsUnIndent = false,
+            Position = new LexerPosition(0, 0, 0),
+            DecimalSeparator = '.'
+        };
+    }
+    
+    public static Token<T> UIndent(LexerPosition position)
+    {
+        return new Token<T>()
+        {
+            IsEOS = false,
+            IsIndent = false,
+            IsUnIndent = true,
+            Position = new LexerPosition(0, 0, 0),
+            DecimalSeparator = '.'
+        };
+    }
     
     
     public List<Token<T>> NextTokens(int channelId)

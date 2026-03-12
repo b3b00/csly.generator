@@ -12,7 +12,6 @@ public partial class IndentedWhileTrack : AbstractParserGenerator<IndentedWhileT
 }
 
 [UseMemoization]
-[AutoCloseIndentations]
 [ParserRoot("program")]
 public class IndentedWhileParserGeneric
 {
@@ -105,7 +104,7 @@ public class IndentedWhileParserGeneric
         public WhileAST ifStmt( WhileAST cond, WhileAST thenStmt, ValueOption<Group<IndentedWhileTokenGeneric, WhileAST>> optionalElseStmt)
         {
             var elseGroup = optionalElseStmt.Match(
-                x => x, () => null)?.Value(0);
+                x => x.Value(1), () => null);
             
             var stmt = new IfStatement(cond as Expression, thenStmt as Statement, elseGroup as Statement);
             return stmt;

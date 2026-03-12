@@ -3,6 +3,7 @@
 namespace csly.indentedWhile.whileLang;
 
 [Lexer(IndentationAWare = true, Indentation = "\t")]
+[AutoCloseIndentations]
     public enum IndentedWhileTokenGeneric
     {
         #region keywords 0 -> 19

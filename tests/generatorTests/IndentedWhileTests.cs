@@ -81,7 +81,7 @@ while a < 10 do
             var context = interpreter.Interprete(result.Result, true);
             Check.That(context.variables).CountIs(1);
             var a = context.GetVariable("a");
-            Check.That(a.Value).IsEqualTo(1);
+            Check.That(a.Value).IsEqualTo(10);
             Check.That(a.ValueType).IsEqualTo(WhileType.INT);
         }
 

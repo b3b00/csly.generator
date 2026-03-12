@@ -80,7 +80,9 @@ tokens.AddRange(result.Tokens);
 }
         }
 
-        tokens.Add(new Token<<#LEXER#>>());
+        <#AUTO_CLOSE#>
+        
+        tokens.Add(Token<<#LEXER#>>.EOS());
         return tokens;
     } 
 

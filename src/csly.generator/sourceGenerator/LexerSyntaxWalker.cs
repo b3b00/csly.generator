@@ -372,6 +372,16 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         }
     }
 
+    public void SetLexerFlag(AttributeArgumentSyntax argument, string name, Action<bool> setter)
+    {
+        string argumentName = argument.NameEquals.Name.ToString();
+        if (argumentName == name)
+        {
+            bool value = argument.Expression.Kind() == SyntaxKind.TrueLiteralExpression;
+            setter(value);
+        }
+    }
+    
     public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
         var name = node.Identifier.ToString();
@@ -385,7 +395,9 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                     {
                         foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                         {
-
+                            SetLexerFlag(argument,"IndentationAWare", (value) => _staticLexerBuilder.IsIndentationAware = value);
+                            SetLexerFlag(argument,"KeyWordIgnoreCase", (value) => _staticLexerBuilder.IgnoreKeyworkCasing = value);
+                            SetLexerFlag(argument,"AutoCloseIndentations", (value) => _staticLexerBuilder.AutoCloseIndentations = value);
                             string argumentName = argument.NameEquals.Name.ToString();
 
                             switch (argumentName)
@@ -455,6 +467,12 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
                             }
                         }
                     }
+                    
+                    if (attributeSyntax.Name.ToString() == "AutoCloseIndentations")
+                    {
+                        _staticLexerBuilder.AutoCloseIndentations = true;
+                    }
+                    
                 }
             }
         }
