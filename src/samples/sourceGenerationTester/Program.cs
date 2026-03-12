@@ -4,6 +4,7 @@
 using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting;
 using SharpFileSystem.FileSystems;
 using System;
 using System.IO;
@@ -74,9 +75,18 @@ public  class Program
             {
                 Directory.CreateDirectory(fi.DirectoryName);
             }
-            File.WriteAllText(fileName, file.Value);
+            File.WriteAllText(fileName, PrettyPrint(file.Value));
         }
 
+    }
+
+    private static string PrettyPrint(string source)
+    {
+        var syntaxTree = CSharpSyntaxTree.ParseText(source);
+        var root = syntaxTree.GetRoot();
+        using var workspace = new AdhocWorkspace();
+        var formattedRoot = Formatter.Format(root, workspace);
+        return formattedRoot.ToFullString();
     }
 
     private static GeneratorDriverRunResult GenerateSource(string source, string className)

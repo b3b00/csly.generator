@@ -302,7 +302,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
         void AddToken(Token <<#LEXER#>> token) {
-            Console.WriteLine("\t"+token);
+            //Console.WriteLine("\t"+token);
             _lastSuccessMatch = null;
             _currentMatch = null;
             tokens.Add(token);
