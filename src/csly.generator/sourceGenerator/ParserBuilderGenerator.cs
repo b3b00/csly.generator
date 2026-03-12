@@ -740,10 +740,23 @@ public class ParserBuilderGenerator
     public string GenerateEntryPoint(string ns)
     {
         var root = _staticParserBuilder.ParserOptions.StartingNonTerminal;
+        
+        StringBuilder nonTerminalCases = new StringBuilder();
+        foreach (var nonTerminal in _ruleParsers.Select(x => x.Key))
+        {
+            var nonTerminalCase = _templateEngine.ApplyTemplate("NonTerminalStartCall", additional: new Dictionary<string, string>()
+            {
+                {"ROOT",root },
+                {"NAME",nonTerminal }
+            });    
+            nonTerminalCases.AppendLine().AppendLine(nonTerminalCase);
+        }
+        
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
             {"ROOT",root },
-            {"NAMESPACE",ns   }
+            {"NAMESPACE",ns   },
+            {"NONTERMINALCASES", nonTerminalCases.ToString() }
         });
         return content;
     }
