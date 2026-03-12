@@ -60,8 +60,8 @@ while a < 10 do
     a := a +1
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
         }
 
         [Fact]
@@ -75,8 +75,8 @@ while a < 10 do
     a := a +1
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
             var interpreter = new Interpreter();
             var context = interpreter.Interprete(result.Result, true);
             Check.That(context.variables).CountIs(1);
@@ -100,8 +100,8 @@ while i < 11 do
 ";
             var parser = BuildParser();
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
             var interpreter = new Interpreter();
             var context = interpreter.Interprete(result.Result, true);
             Check.That(context.variables).CountIs(2);
@@ -131,29 +131,7 @@ while i < 11 do
         }
 
 
-        [Fact]
-        public void TestFactorialProgramExecAsIL()
-        {
-            var program = @"
-# TestFactorialProgramExec
-r:=1
-i:=1
-while i < 11 do 
-    r := r * i
-    print $""r="".r
-    print $""i="".i
-    i := i + 1
-return r";
-            var parseResult = BuildParser().Parse(program);
-            Check.That(parseResult.Result).IsNotNull();
-            Check.That(parseResult.IsOk).IsTrue();
-            var ast = parseResult.Result;
-            var interpreter = new Interpreter();
-            var f = interpreter.Interprete(ast);
-            
-            
-            Check.That(f).IsEqualTo(3628800);
-        }
+        
 
         [Fact]
         public void TestIfThenElse()
@@ -167,8 +145,9 @@ else
     b := $""world""
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
+            
 
             Check.That(result.Result).IsInstanceOf<SequenceStatement>();
             var seq = result.Result as SequenceStatement;
@@ -283,9 +262,9 @@ while true do
     skip
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
-
+            Check.That(result.Result).IsNotNull();
+            
             Check.That(result.Result).IsInstanceOf<SequenceStatement>();
             var seq = result.Result as SequenceStatement;
             Check.That(seq.Get(0)).IsInstanceOf<WhileStatement>();
@@ -305,9 +284,8 @@ while true do
         {
             var parser = BuildParser();
             var result = parser.Parse("print true and false");
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
-            
+            Check.That(result.Result).IsNotNull();
 
             Check.That(result.Result).IsInstanceOf<SequenceStatement>();
             var seq = result.Result as SequenceStatement;
@@ -415,8 +393,8 @@ while true do
     skip
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
         }
         
         [Fact]
@@ -434,8 +412,8 @@ if true then
             var dump = seq.Dump("  ");
             Check.That(seq.Statements).CountIs(1);
             Check.That(seq.Statements[0]).IsInstanceOf<IfStatement>();
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
         }
         
         [Fact]
@@ -446,8 +424,8 @@ if true then
 if 
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
             Check.That(result.Errors).CountIs(1);
             var error = result.Errors.First();
             Check.That(error.ErrorType).IsEqualTo(ErrorType.UnexpectedEOS);

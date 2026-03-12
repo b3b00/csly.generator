@@ -752,11 +752,15 @@ public class ParserBuilderGenerator
             nonTerminalCases.AppendLine().AppendLine(nonTerminalCase);
         }
         
+        string nonTerminalValues = _ruleParsers.Select(x => x.Key)
+            .Select(x => $"_{x},").Aggregate((a, b) => a + "\n" + b);    
+
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
             {"ROOT",root },
             {"NAMESPACE",ns   },
-            {"NONTERMINALCASES", nonTerminalCases.ToString() }
+            {"NONTERMINALCASES", nonTerminalCases.ToString() },
+            {"NONTERMINALS", nonTerminalValues }
         });
         return content;
     }

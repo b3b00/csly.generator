@@ -2,6 +2,10 @@
 
 namespace <#NAMESPACE#>;
 
+public enum <#PARSER#>NonTerminal {
+    <#NONTERMINALS#>
+}
+
 public class <#PARSER#>Main
     {
 
@@ -53,7 +57,11 @@ public class <#PARSER#>Main
         }
     }
     
-    
+    public ParseResult<<#LEXER#>, <#OUTPUT#>> ParseFrom(string source, <#PARSER#>NonTerminal nonTerminal)
+    {
+        return ParseFrom(source, nonTerminal.ToString().Substring(1));
+    }
+
     public ParseResult<<#LEXER#>, <#OUTPUT#>> ParseFrom(string source, string nonTerminal)
     {
         // lexing
