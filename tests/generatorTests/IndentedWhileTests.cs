@@ -462,26 +462,25 @@ if
         [Fact]
         public void TestIndentationError_emptyIndentLine()
         {
-            // TODO : check lexing
             
-//             BuildResult<ILexer<IndentedWhileTokenGeneric>> _lexer = LexerBuilder.BuildLexer<IndentedWhileTokenGeneric>();
-//
-//             Check.That(_lexer).IsOk();
-//             
-//             var program = @"
-// if true then
-//
-//         if false then
-//             x := 28";
-//             var lexed = _lexer.Result.Tokenize(program);
-//             Check.That(lexed).IsOkLexing();
-//             var mainTokens = lexed.Tokens.MainTokens();
-//             Check.That(mainTokens).Not.IsEmpty();
-//             Check.That(mainTokens.Last().IsEOS).IsTrue();
-//             var lastToken = mainTokens[mainTokens.Count - 2];
-//             Check.That(lastToken).IsNotNull();
-//             Check.That(lastToken.TokenID)
-//                 .IsEqualTo(IndentedWhileTokenGeneric.INT);
-//             Check.That(lastToken.IntValue).IsEqualTo(28);
+            var parser = BuildParser();
+            var lexer = parser.Lexer;
+            
+
+            var program = @"
+if true then
+
+        if false then
+            x := 28";
+            var lexed = lexer.Scan(program);
+            Check.That(lexed.IsOk).IsTrue();
+            var mainTokens = lexed.Tokens;
+            Check.That(mainTokens).Not.IsEmpty();
+            Check.That(mainTokens.Last().IsEOS).IsTrue();
+            var lastToken = mainTokens[mainTokens.Count - 2];
+            Check.That(lastToken).IsNotNull();
+            Check.That(lastToken.TokenID)
+                .IsEqualTo(IndentedWhileTokenGeneric.INT);
+            Check.That(lastToken.IntValue).IsEqualTo(28);
         }
 }

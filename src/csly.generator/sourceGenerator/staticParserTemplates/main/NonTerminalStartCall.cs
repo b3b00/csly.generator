@@ -8,7 +8,7 @@ case "<#NAME#>": {
             return notEndedResult;
         }
         // visiting
-        var visitor = new DummyParserVisitor2(_instance);
+        var visitor = new <#PARSER#>Visitor2(_instance);
         var output = visitor.Visit(result<#NAME#>.Root as SyntaxNode <<#LEXER#>, <#OUTPUT#>>);
         return new ParseResult <<#LEXER#>, <#OUTPUT#>>(output, result<#NAME#>.Root);
     }
