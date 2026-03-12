@@ -256,7 +256,8 @@ public class ParserBuilderGenerator
                     additional: new Dictionary<string, string>()
                 {
                 {"LEADINGS",leaders}, // static : compute leadings for rule
-                {"INDEX",i.ToString()}
+                {"INDEX",i.ToString()},
+                {"MAY_BE_EMPTY",rule.MayBeEmpty.ToString().ToLower() }
                 });
                 calls.AppendLine(callTemplate);
             }
