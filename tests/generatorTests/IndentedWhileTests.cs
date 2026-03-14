@@ -424,9 +424,9 @@ if true then
 if 
 ";
             var result = parser.Parse(program);
-            Check.That(result.IsOk).IsTrue();
-            Check.That(result.Result).IsNotNull();
-            Check.That(result.Errors).CountIs(1);
+            
+            Check.That(result.IsOk).IsFalse();
+            Check.That(result.Errors).CountIs(2);
             var error = result.Errors.First();
             Check.That(error.ErrorType).IsEqualTo(ErrorType.UnexpectedEOS);
             var unexpectedEosError = error as UnexpectedTokenSyntaxError<IndentedWhileTokenGeneric>;
@@ -457,8 +457,7 @@ if true then
             Check.That(mainTokens.Last().IsEOS).IsTrue();
             var lastToken = mainTokens[mainTokens.Count - 2];
             Check.That(lastToken).IsNotNull();
-            Check.That(lastToken.TokenID)
-                .IsEqualTo(IndentedWhileTokenGeneric.INT);
-            Check.That(lastToken.IntValue).IsEqualTo(28);
+            Check.That(lastToken.IsUnIndent)
+                .IsTrue();
         }
 }

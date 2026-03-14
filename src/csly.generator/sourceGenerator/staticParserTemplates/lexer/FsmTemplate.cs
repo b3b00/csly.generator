@@ -183,19 +183,19 @@ private Factory _defaultFactory;
                     }
                     case LexerIndentationType.Error:
                     {
-                        // INDENT handle indentation error
                         var position = lexerPosition.Clone();
                         position.IsPush = false;
                         position.IsPop = false;
                         position.Mode = null;
                         position.Index += currentShift.Length;
                         position.Column += currentShift.Length;
-                        
+
                         var indent = new Token<<#LEXER#>>
                         {
                             IsIndent = false,
                             IsUnIndent = false,
                             IsNoIndent = false,
+                            IsIndentationError = true,
                             Position = position
                         };
                         return indent;

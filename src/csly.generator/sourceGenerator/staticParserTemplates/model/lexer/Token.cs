@@ -241,6 +241,8 @@ public class Token<T> where T:struct, Enum
 
     public bool IsIndentation => IsIndent || IsUnIndent || IsNoIndent;
     
+    public bool IsIndentationError { get; set; }
+    
     public int IndentationLevel { get; set; }
     
     public bool IsWhiteSpace { get; set; }

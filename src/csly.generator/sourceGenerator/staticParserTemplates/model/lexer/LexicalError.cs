@@ -53,3 +53,18 @@ public class LexicalError : ParseError
         return "TODO";
     }
 }
+
+public class IndentationError : LexicalError
+{
+    public IndentationError(LexerPosition position, string i18n) : base(position, ' ', i18n)
+    {
+        ErrorType = ErrorType.IndentationError;
+    }
+
+    public override string ErrorMessage =>
+        $"Indentation error at  (line {Line}, column {Column}).";
+        
+    protected override string GetContextualMessage(string fullSource) => ErrorMessage;
+    
+
+}
