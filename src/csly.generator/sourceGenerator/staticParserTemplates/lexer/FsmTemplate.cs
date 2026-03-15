@@ -315,12 +315,13 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
         void AddToken(Token <<#LEXER#>> token) {
-            Console.WriteLine($"[<#MODE#>] {token}");
+            //Console.WriteLine($"[<#MODE#>] {token}");
             _lastSuccessMatch = null;
             _currentMatch = null;
             tokens.Add(token);
         }
 
+        
         bool IsModeChanging()
         {
             if (tokens.Count == 0)
@@ -331,7 +332,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
         <#CONSUME_INDENTS#>
 
-        if (!IsModeChanging())
+        if (!IsModeChanging() && _uptoTOkens.Count == 0)
         {
             ConsumeWhiteSpace(source);
         }
