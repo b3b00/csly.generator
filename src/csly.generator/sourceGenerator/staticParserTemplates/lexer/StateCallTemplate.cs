@@ -77,11 +77,15 @@
             //consume whit spaces on token boundaries
             
             <#CONSUME_INDENTS#>
-            
-            ConsumeWhiteSpace(source);
-            
-            
-            <#CONSUME_INDENTS#>
+                if (!token.IsPop && string.IsNullOrEmpty(token.PushTarget))
+                {
+
+
+                    ConsumeWhiteSpace(source);
+                }
+
+
+                <#CONSUME_INDENTS#>
 
             _startPosition = new LexerPosition(_currentPosition.Index, _currentPosition.Line, _currentPosition.Column);
         }

@@ -330,9 +330,12 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
         }
 
         <#CONSUME_INDENTS#>
-        
-        ConsumeWhiteSpace(source);
-        
+
+        if (!IsModeChanging())
+        {
+            ConsumeWhiteSpace(source);
+        }
+
         <#CONSUME_INDENTS#>
         
        
