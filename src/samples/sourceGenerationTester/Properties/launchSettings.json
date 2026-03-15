@@ -27,6 +27,10 @@
     "indented while generation": {
       "commandName": "Project",
       "commandLineArgs": "indentedwhile c:/tmp/generation/indentedWhile"
+    },
+    "dummy generation": {
+      "commandName": "Project",
+      "commandLineArgs": "dummy c:/tmp/generation/dummy"
     }
   }
 }
