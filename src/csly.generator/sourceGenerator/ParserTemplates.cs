@@ -19,6 +19,7 @@ internal enum ParserTemplates
     ZeroOrMoreParserTemplate,
     OneOrMoreParserTemplate,
     NonTerminalClauseForManyTemplate,
+    ChoiceClauseForManyTemplate,
     OptionParserTemplate,
     TerminalClauseForManyTemplate,
     ManyClauseTemplate,

@@ -11,6 +11,12 @@ namespace ebnf.grammar
 
     public sealed class GroupClause : IClause
     {
+        
+        public GrammarNode Parent { get; set; }
+        public bool IsRoot => Parent == null;
+        
+        public GrammarNode Root =>  IsRoot ? Root : Parent.Root;
+        
         public GroupClause(IClause clause)
         {
             Clauses = new List<IClause> { clause };

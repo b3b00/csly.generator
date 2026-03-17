@@ -26,6 +26,7 @@ namespace ebnf.grammar
             var rule = new Rule();
             rule.NonTerminalName = name.Value;
             rule.Clauses = (clauses as ClauseSequence).Clauses;
+            rule.Clauses.ForEach(clause => clause.Parent = rule);
             return rule;
         }
 
@@ -35,6 +36,7 @@ namespace ebnf.grammar
         {
             var list = new ClauseSequence(clause as IClause);
             if (clauses != null) list.AddRange(clauses as ClauseSequence);
+            list.Clauses.ForEach(x => x.Parent = list);
             return list;
         }
 
@@ -49,14 +51,18 @@ namespace ebnf.grammar
         public GrammarNode ZeroMoreClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
             var innerClause = BuildTerminalOrNonTerminal(id.Value, true);
-            return new ZeroOrMoreClause(innerClause as IClause);
+            var zeroOrMore = new ZeroOrMoreClause(innerClause as IClause);
+            innerClause.Parent = zeroOrMore;
+            return zeroOrMore;
         }
 
         [Production("clause : IDENTIFIER ONEORMORE")]
         public GrammarNode OneMoreClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
             var innerClause = BuildTerminalOrNonTerminal(id.Value);
-            return new OneOrMoreClause(innerClause as IClause);
+            var oneOrMore = new  OneOrMoreClause(innerClause as IClause);
+            innerClause.Parent = oneOrMore;
+            return oneOrMore;
         }
 
 
@@ -65,21 +71,27 @@ namespace ebnf.grammar
         public GrammarNode RepeatClauseMinMax(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> lcurl, Token<EbnfTokenGeneric> min, Token<EbnfTokenGeneric> dash, Token<EbnfTokenGeneric> max, Token<EbnfTokenGeneric> rcurl)
         {
             var innerClause = BuildTerminalOrNonTerminal(id.Value);
-            return new RepeatClause(innerClause as IClause, min.IntValue, max.IntValue);
+            var repeat = new RepeatClause(innerClause as IClause, min.IntValue, max.IntValue);
+            innerClause.Parent = repeat;
+            return repeat;
         }
 
         [Production("clause : IDENTIFIER LCURLY INT RCURLY")]
         public GrammarNode RepeatClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> lcurl, Token<EbnfTokenGeneric> min, Token<EbnfTokenGeneric> rcurl)
         {
             var innerClause = BuildTerminalOrNonTerminal(id.Value);
-            return new RepeatClause(innerClause as IClause, min.IntValue, min.IntValue);
+            var repeat = new RepeatClause(innerClause as IClause, min.IntValue, min.IntValue);
+            innerClause.Parent = repeat;
+            return repeat;
         }
 
         [Production("clause : IDENTIFIER OPTION")]
         public GrammarNode OptionClause(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
             var innerClause = BuildTerminalOrNonTerminal(id.Value);
-            return new OptionClause(innerClause as IClause);
+            var option = new OptionClause(innerClause as IClause);
+            innerClause.Parent = option;
+            return option;
         }
 
         [Production("clause : IDENTIFIER DISCARD ")]
@@ -112,29 +124,37 @@ namespace ebnf.grammar
         [Production("choices : IDENTIFIER  ")]
         public GrammarNode ChoicesOne(Token<EbnfTokenGeneric> head)
         {
-            var choice = BuildTerminalOrNonTerminal(head.Value);
-            return new ChoiceClause(choice as IClause);
+            var innerClause = BuildTerminalOrNonTerminal(head.Value);
+            var choice = new ChoiceClause(innerClause as IClause);
+            innerClause.Parent = choice;
+            return choice;
         }
 
         [Production("choices : STRING")]
         public GrammarNode ChoicesString(Token<EbnfTokenGeneric> head)
         {
-            var choice = BuildTerminalOrNonTerminal(head.Value, discard: false);
-            return new ChoiceClause(choice as IClause);
+            var innerClause = BuildTerminalOrNonTerminal(head.Value, discard: false);
+            var choice = new ChoiceClause(innerClause as IClause);
+            innerClause.Parent = choice;
+            return choice;
         }
 
         [Production("choices : IDENTIFIER OR choices ")]
         public GrammarNode ChoicesMany(Token<EbnfTokenGeneric> head, Token<EbnfTokenGeneric> discardOr, GrammarNode tail)
         {
             var headClause = BuildTerminalOrNonTerminal(head.Value);
-            return new ChoiceClause(headClause as IClause, (tail as ChoiceClause).Choices);
+            var choice = new  ChoiceClause(headClause as IClause, (tail as ChoiceClause).Choices);
+            choice.Choices.ForEach(x => x.Parent = choice);
+            return choice;
         }
 
         [Production("choices : STRING OR choices ")]
         public GrammarNode ChoicesManyExplicit(Token<EbnfTokenGeneric> head, Token<EbnfTokenGeneric> discardOr, GrammarNode tail)
         {
             var headClause = BuildTerminalOrNonTerminal(head.Value, discard: false);
-            return new ChoiceClause(headClause as IClause, (tail as ChoiceClause).Choices);
+            var choice = new ChoiceClause(headClause as IClause, (tail as ChoiceClause).Choices);
+            choice.Choices.ForEach(x => x.Parent = choice);
+            return choice;
         }
 
 
@@ -172,13 +192,17 @@ namespace ebnf.grammar
         [Production("clause : choiceclause ONEORMORE ")]
         public GrammarNode ChoiceOneOrMore(GrammarNode choices, Token<EbnfTokenGeneric> discardOneOrMore)
         {
-            return new OneOrMoreClause(choices as IClause);
+            var oneOrMore = new OneOrMoreClause(choices as IClause);
+            oneOrMore.manyClause.Parent = oneOrMore;
+            return oneOrMore;
         }
 
         [Production("clause : choiceclause ZEROORMORE ")]
         public GrammarNode ChoiceZeroOrMore(GrammarNode choices, Token<EbnfTokenGeneric> discardZeroOrMore)
         {
-            return new ZeroOrMoreClause(choices as IClause);
+            var zeroOrMore = new ZeroOrMoreClause(choices as IClause);
+            zeroOrMore.manyClause.Parent = zeroOrMore;
+            return zeroOrMore;
         }
 
         [Production("clause : choiceclause LCURLY INT DASH INT RCURLY")]
@@ -186,35 +210,45 @@ namespace ebnf.grammar
             Token<EbnfTokenGeneric> min, Token<EbnfTokenGeneric> discardDash, Token<EbnfTokenGeneric> max,
             Token<EbnfTokenGeneric> discardRcurl)
         {
-            return new RepeatClause(choices as IClause, min.IntValue, max.IntValue);
+            var repeat = new RepeatClause(choices as IClause, min.IntValue, max.IntValue);
+            repeat.manyClause.Parent = repeat;
+            return repeat;
         }
 
         [Production("clause : choiceclause LCURLY INT RCURLY")]
         public GrammarNode ChoiceRepeat(GrammarNode choices, Token<EbnfTokenGeneric> dicardLcurl,
             Token<EbnfTokenGeneric> min, Token<EbnfTokenGeneric> discardRcurl)
         {
-            return new RepeatClause(choices as IClause, min.IntValue, min.IntValue);
+            var repeat = new RepeatClause(choices as IClause, min.IntValue, min.IntValue);
+            repeat.manyClause.Parent = repeat;
+            return repeat;
         }
 
 
         [Production("clause : choiceclause OPTION ")]
         public GrammarNode ChoiceOptional(GrammarNode choices, Token<EbnfTokenGeneric> discardOption)
         {
-            return new OptionClause(choices as IClause);
+            var option = new OptionClause(choices as IClause);
+            option.Clause.Parent = option;
+            return option;
         }
 
         [Production("clause : LPAREN  groupclauses RPAREN ONEORMORE ")]
         public GrammarNode GroupOneOrMore(Token<EbnfTokenGeneric> discardLeft, GrammarNode clauses,
             Token<EbnfTokenGeneric> discardRight, Token<EbnfTokenGeneric> oneZeroOrMore)
         {
-            return new OneOrMoreClause(clauses as IClause);
+            var oneOrMore = new OneOrMoreClause(clauses as IClause);
+            oneOrMore.manyClause.Parent = oneOrMore;
+            return oneOrMore;
         }
 
         [Production("clause : LPAREN  groupclauses RPAREN ZEROORMORE ")]
         public GrammarNode GroupZeroOrMore(Token<EbnfTokenGeneric> discardLeft, GrammarNode clauses,
             Token<EbnfTokenGeneric> discardRight, Token<EbnfTokenGeneric> discardZeroOrMore)
         {
-            return new ZeroOrMoreClause(clauses as IClause);
+            var zeroOrMore = new ZeroOrMoreClause(clauses as IClause);
+            zeroOrMore.manyClause.Parent = zeroOrMore;
+            return zeroOrMore;
         }
 
         [Production("clause : LPAREN  groupclauses RPAREN LCURLY INT DASH INT RCURLY")]
@@ -222,7 +256,9 @@ namespace ebnf.grammar
             Token<EbnfTokenGeneric> discardRight, Token<EbnfTokenGeneric> discardLcurl, Token<EbnfTokenGeneric> min,
             Token<EbnfTokenGeneric> discarddash, Token<EbnfTokenGeneric> max, Token<EbnfTokenGeneric> discardRcurl)
         {
-            return new RepeatClause(clauses as IClause, min.IntValue, max.IntValue);
+            var repeat = new RepeatClause(clauses as IClause, min.IntValue, max.IntValue);
+            repeat.manyClause.Parent = repeat;
+            return repeat;
         }
 
         [Production("clause : LPAREN  groupclauses RPAREN LCURLY INT RCURLY")]
@@ -230,22 +266,30 @@ namespace ebnf.grammar
             Token<EbnfTokenGeneric> discardRight, Token<EbnfTokenGeneric> discardLcurl, Token<EbnfTokenGeneric> min,
             Token<EbnfTokenGeneric> discardRcurl)
         {
-            return new RepeatClause(clauses as IClause, min.IntValue, min.IntValue);
+            var repeat = new RepeatClause(clauses as IClause, min.IntValue, min.IntValue);
+            repeat.manyClause.Parent = repeat;
+            return repeat;
         }
 
 
         [Production("clause : LPAREN  groupclauses RPAREN OPTION ")]
         public GrammarNode GroupOptional(Token<EbnfTokenGeneric> discardLeft, GrammarNode group,
-            Token<EbnfTokenGeneric> discardRight, Token<EbnfTokenGeneric> option)
+            Token<EbnfTokenGeneric> discardRight, Token<EbnfTokenGeneric> _option)
         {
-            return new OptionClause(group as IClause);
+            var option = new OptionClause(group as IClause);
+            option.Clause.Parent = option;
+            return option;
         }
 
 
         [Production("groupclauses : groupclause groupclauses")]
         public GrammarNode GroupClauses(GrammarNode group, GrammarNode groups)
         {
-            if (groups != null) (group as GroupClause).AddRange(groups as GroupClause);
+            if (groups != null)
+            {
+                (group as GroupClause).AddRange(groups as GroupClause);
+                (group as GroupClause).Clauses.ForEach(clause => clause.Parent = group);
+            }
             return group;
         }
 
@@ -259,14 +303,18 @@ namespace ebnf.grammar
         public GrammarNode GroupClause(Token<EbnfTokenGeneric> id)
         {
             var clause = BuildTerminalOrNonTerminal(id.Value);
-            return new GroupClause(clause as IClause);
+            var group = new GroupClause(clause as IClause);
+            group.Clauses.ForEach(x => x.Parent = group);
+            return group;
         }
 
         [Production("groupclause : STRING ")]
         public GrammarNode GroupClauseExplicit(Token<EbnfTokenGeneric> explicitToken)
         {
             var clause = BuildTerminalOrNonTerminal(explicitToken.Value, discard: false);
-            return new GroupClause(clause as IClause);
+            var group = new GroupClause(clause as IClause);
+            group.Clauses.ForEach(x => x.Parent = group);
+            return group;
         }
 
 
@@ -276,20 +324,26 @@ namespace ebnf.grammar
         public GrammarNode GroupClauseDiscarded(Token<EbnfTokenGeneric> id, Token<EbnfTokenGeneric> discarded)
         {
             var clause = BuildTerminalOrNonTerminal(id.Value, true);
-            return new GroupClause(clause as IClause);
+            var group = new GroupClause(clause as IClause);
+            group.Clauses.ForEach(x => x.Parent = group);
+            return group;
         }
 
         [Production("groupclause : STRING DISCARD ")]
         public GrammarNode GroupClauseExplicitDiscarded(Token<EbnfTokenGeneric> explicitToken, Token<EbnfTokenGeneric> discarded)
         {
             var clause = BuildTerminalOrNonTerminal(explicitToken.Value, true);
-            return new GroupClause(clause as IClause);
+            var group = new GroupClause(clause as IClause);
+            group.Clauses.ForEach(x => x.Parent = group);
+            return group;
         }
 
         [Production("groupclause : choiceclause ")]
         public GrammarNode GroupChoiceClause(GrammarNode choices)
         {
-            return new GroupClause(choices as IClause);
+            var group = new GroupClause(choices as IClause);
+            group.Clauses.ForEach(x => x.Parent = group);
+            return group;
         }
 
 

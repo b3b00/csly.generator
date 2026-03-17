@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\src\samples\indentedWhile\indentedWhile.csproj" />
     <ProjectReference Include="..\..\src\samples\template\template.csproj" />
     <ProjectReference Include="..\..\src\samples\while\while.csproj" />
+    <ProjectReference Include="..\..\src\samples\XML\XML.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

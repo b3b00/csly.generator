@@ -156,7 +156,18 @@ namespace csly.generator.sourceGenerator
                     else if (many.manyClause is TerminalClause t)
                     {
                         compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i});");
-                    }                    
+                    }
+                    else if (many.manyClause is ChoiceClause c)
+                    {
+                        if (c.IsNonTerminalChoice)
+                        {
+                            compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i});");
+                        }
+                        else if (c.IsTerminalChoice)
+                        {
+                            compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i});");
+                        }
+                    }
                 }
                 else if (clause is GroupClause)
                 {

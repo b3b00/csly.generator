@@ -1,0 +1,86 @@
+﻿using System;
+using csly.XML.models;
+
+namespace XML
+{
+    [Lexer()]
+    public enum MinimalXmlLexer
+    {
+        EOS = 0,
+        
+        
+        #region sea
+        [Sugar("<")]
+        [Mode()]
+        [Push("tag")]
+        OPEN,
+        
+        [UpTo("<")]
+        CONTENT,
+        
+        [Sugar("<?")]
+        [Mode]
+        [Push("pi")]
+        OPEN_PI,
+
+
+        #endregion
+        
+        
+        [Sugar("<!--")]
+        [Push("comment")]
+        OPEN_COMMENT,
+        
+        [UpTo("-->")]
+        [Mode("comment")]
+        COMMENT_CONTENT,
+        
+        [Sugar("-->")]
+        [Mode("comment")]
+        [Pop]
+        CLOSE_COMMENT,
+        
+        
+        #region pi
+        
+        #endregion
+        
+        
+        #region in tag
+        
+        [AlphaId]
+        [Mode("tag")]
+        [Mode("pi")]
+        ID,
+        
+        [Sugar("/")]
+        [Mode("tag")]
+        SLASH,
+        
+        [Sugar("=")]
+        [Mode("tag","pi")]
+        EQUALS,
+        
+        [String]
+        [Mode("tag","pi")]
+        [Mode("pi")]
+        VALUE,
+        
+        [Sugar("?>")]
+        [Mode("pi")]
+        [Pop]
+        CLOSE_PI,
+        
+        
+        
+        [Sugar(">")]
+        [Mode("tag")]
+        [Pop]
+        CLOSE,
+        
+        #endregion
+        
+        
+        
+    }
+}

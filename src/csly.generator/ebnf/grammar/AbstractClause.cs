@@ -8,5 +8,9 @@ namespace ebnf.grammar
         public abstract string Dump();
 
         public abstract bool MayBeEmpty();
+        public GrammarNode Parent { get; set; }
+        public bool IsRoot => Parent == null;
+        
+        public GrammarNode Root =>  IsRoot ? this : Parent.Root;
     }
 }

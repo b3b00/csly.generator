@@ -6,7 +6,7 @@
     },
     "json generation": {
       "commandName": "Project",
-      "commandLineArgs": "json"
+      "commandLineArgs": "json c:/tmp/generation/json"
     },
     "test": {
       "commandName": "Project",
@@ -27,6 +27,15 @@
     "indented while generation": {
       "commandName": "Project",
       "commandLineArgs": "indentedwhile c:/tmp/generation/indentedWhile"
+    },
+    "xml2 generation": {
+      "commandName": "Project",
+      "commandLineArgs": "xml2 c:/tmp/generation/xml2"
+    },
+    "xml generation": {
+      "commandName": "Project",
+      "commandLineArgs": "xml c:/tmp/generation/xml"
     }
+    
   }
 }
