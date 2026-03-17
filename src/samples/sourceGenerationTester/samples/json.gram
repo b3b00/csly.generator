@@ -1,5 +1,6 @@
-﻿using csly.models;
-using jsonparser.JsonModel;
+﻿
+
+using csly.json.models;
 
 namespace json;
 
@@ -181,3 +182,135 @@ namespace json;
         #endregion
     }
 
+    public abstract class JSon
+    {
+        public virtual bool IsObject { get; set; }
+        public virtual bool IsList { get; set; }
+        public virtual bool IsValue { get; set; }
+        public virtual bool IsNull { get; set; }
+        
+    }
+        public class JNull : JSon
+        {
+            public override bool IsNull => true;
+        }
+        
+         public class JObject : JSon
+             {
+                 public JObject(string key, JSon value)
+                 {
+                     Values = new Dictionary<string, JSon>();
+                     Values[key] = value;
+                 }
+         
+                 public JObject()
+                 {
+                     Values = new Dictionary<string, JSon>();
+                 }
+         
+                 public JObject(Dictionary<string, JSon> dic)
+                 {
+                     Values = dic;
+                 }
+         
+                 public override bool IsObject => true;
+         
+                 public override bool IsList => true;
+         
+                 private Dictionary<string, JSon> Values { get; }
+         
+                 public int Count => Values.Count;
+         
+                 public JSon this[string key]
+                 {
+                     get => Values[key];
+                     set => Values[key] = value;
+                 }
+         
+         
+                 public void Merge(JObject obj)
+                 {
+                     foreach (var pair in obj.Values) this[pair.Key] = pair.Value;
+                 }
+         
+                 public bool ContainsKey(string key)
+                 {
+                     return Values.ContainsKey(key);
+                 }
+             }
+             
+               
+                 
+ public class JValue : JSon
+    {
+        private readonly object value;
+
+        public JValue(object val)
+        {
+            value = val;
+        }
+
+        public override bool IsValue => true;
+
+        public bool IsString => value is string;
+
+        public bool IsInt => value is int;
+
+        public bool IsDouble => value is double;
+
+        public bool IsBool => value is bool;
+
+        public T GetValue<T>()
+        {
+            return (T) value;
+        }
+    }
+    
+    public class JList : JSon
+    
+        {
+            public JList()
+            {
+                Items = new List<JSon>();
+            }
+    
+            public JList(List<JSon> lst)
+            {
+                Items = lst;
+            }
+    
+    
+            public JList(JSon item)
+            {
+                Items = new List<JSon>();
+                Items.Add(item);
+            }
+    
+            public override bool IsList => true;
+    
+            public List<JSon> Items { get; }
+    
+            public int Count => Items.Count;
+    
+            public JSon this[int index]
+            {
+                get => Items[index];
+                set => Items[index] = value;
+            }
+    
+            public void Add(JSon item)
+            {
+                Items.Add(item);
+            }
+    
+            public void AddRange(JList items)
+            {
+                Items.AddRange(items.Items);
+            }
+    
+            public void AddRange(List<JSon> items)
+            {
+                Items.AddRange(items);
+            }
+        }                 
+    

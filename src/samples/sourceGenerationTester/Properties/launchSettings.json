@@ -35,6 +35,10 @@
     "xml generation": {
       "commandName": "Project",
       "commandLineArgs": "xml c:/tmp/generation/xml"
+    },
+    "json generation": {
+      "commandName": "Project",
+      "commandLineArgs": "json c:/tmp/generation/json"
     }
     
   }

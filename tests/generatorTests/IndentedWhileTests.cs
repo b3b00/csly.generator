@@ -1,9 +1,6 @@
-﻿using Xunit;
-using csly.indented.whileLang;
-using csly.indented.whileLang.compiler;
+﻿using csly.indented.whileLang.compiler;
 using csly.indented.whileLang.model;
 using NFluent;
-using csly.indented.whileLang.interpreter;
 using csly.indented.whileLang.interpreter;
 using csly.indentedWhile.models;
 using csly.indentedWhile.whileLang;
