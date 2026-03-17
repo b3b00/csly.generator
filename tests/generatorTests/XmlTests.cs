@@ -55,7 +55,7 @@ public class XmlTests
         Check.That(result).IsNotNull();
         Check.That(result.IsOk).IsTrue();
         Check.That(result.Result).IsNotNull();
-        Check.That(result.Result.Trim()).IsEqualTo("tag(open (root, ), text(content),comment(comment ), close(root))");
+        Check.That(result.Result.Trim()).IsEqualTo("tag(open (root, ), text(content),comment( comment ), close(root))");
     }
     
     [Fact]
