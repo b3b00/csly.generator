@@ -23,6 +23,10 @@
     "backtrack generation": {
       "commandName": "Project",
       "commandLineArgs": "backtrack c:/tmp/generation/backtrack"
+    },
+    "indented while generation": {
+      "commandName": "Project",
+      "commandLineArgs": "indentedwhile c:/tmp/generation/indentedWhile"
     }
   }
 }
