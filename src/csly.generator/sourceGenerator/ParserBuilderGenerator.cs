@@ -119,14 +119,16 @@ public class ParserBuilderGenerator
 
         }
 
-        foreach (var choiceParser in _choiceParsers)
-        {
-            GenerateChoice(choiceParser.Value, parsers);
-        }
+        
 
         foreach (var zeroOrMoreParser in _zeroOrMoreParsers)
         {
             GenerateZeroOrMore(zeroOrMoreParser.Value, parsers);
+        }
+        
+        foreach (var choiceParser in _choiceParsers)
+        {
+            GenerateChoice(choiceParser.Value, parsers);
         }
 
         foreach (var oneOrMoreParser in _oneOrMoreParsers)
@@ -357,9 +359,22 @@ public class ParserBuilderGenerator
                     AddClause(nonTerminalClause);
                     break;
                 }
+            case ChoiceClause choiceClause:
+            {
+                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.ChoiceClauseForManyTemplate), innerClause.Name,
+                    additional: new Dictionary<string, string>() {
+                        { "INDEX", index.ToString() },
+                        {"IS_GROUP", "false" }
+                    });
+                AddClause(choiceClause);
+                break; 
+            }
             default:
                 {
-                    throw new NotImplementedException("many clause not implemented for " + innerClause.GetType().Name);
+                    
+                    var rule = innerClause.Root as Rule;
+                    var ruleDefinition = rule?.Dump();
+                    throw new NotImplementedException($"many clause not implemented for {innerClause.GetType().Name} ({innerClause.Dump()} in rule {ruleDefinition}");
                 }
         }
         return call;

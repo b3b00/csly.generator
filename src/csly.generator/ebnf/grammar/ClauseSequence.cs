@@ -8,6 +8,11 @@ namespace ebnf.grammar
 
     public sealed class ClauseSequence : GrammarNode
     {
+        public GrammarNode Parent { get; set; }
+        public bool IsRoot => Parent == null;
+        
+        public GrammarNode Root =>  IsRoot ? Root : Parent.Root;
+        
         public ClauseSequence(IClause item)
         {
             Clauses = new List<IClause>();

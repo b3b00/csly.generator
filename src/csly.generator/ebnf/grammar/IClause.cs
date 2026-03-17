@@ -5,5 +5,9 @@ namespace ebnf.grammar
     {
         string Name { get; set; }
         bool MayBeEmpty();
+
+        public GrammarNode Parent { get; set; }
+
+        public bool IsRoot { get; }
     }
 }

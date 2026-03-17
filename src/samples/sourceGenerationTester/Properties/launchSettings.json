@@ -6,7 +6,7 @@
     },
     "json generation": {
       "commandName": "Project",
-      "commandLineArgs": "json"
+      "commandLineArgs": "json c:/tmp/generation/json"
     },
     "test": {
       "commandName": "Project",
@@ -31,6 +31,15 @@
     "dummy generation": {
       "commandName": "Project",
       "commandLineArgs": "dummy c:/tmp/generation/dummy"
+    },
+    "xml2 generation": {
+      "commandName": "Project",
+      "commandLineArgs": "xml2 c:/tmp/generation/xml2"
+    },
+    "xml generation": {
+      "commandName": "Project",
+      "commandLineArgs": "xml c:/tmp/generation/xml"
     }
+    
   }
 }

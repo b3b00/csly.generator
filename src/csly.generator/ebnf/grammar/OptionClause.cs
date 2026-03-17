@@ -6,6 +6,12 @@ namespace ebnf.grammar
 
     public sealed class OptionClause : IClause
     {
+        
+        public GrammarNode Parent { get; set; }
+        public bool IsRoot => Parent == null;
+        
+        public GrammarNode Root =>  IsRoot ? Root : Parent.Root;
+        
         public OptionClause(IClause clause)
         {
             Clause = clause;

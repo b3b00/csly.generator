@@ -13,6 +13,11 @@ namespace ebnf.grammar
     public record Leader(bool IsExplicit, string Value, bool isIndent, bool isUIndent);
     public class Rule : GrammarNode
     {
+        public GrammarNode Parent { get; set; } = null;
+        public bool IsRoot => true;
+        
+        public GrammarNode Root =>  this;
+        
         public Rule()
         {
             Clauses = new List<IClause>();
