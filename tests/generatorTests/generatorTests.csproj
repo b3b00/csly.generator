@@ -30,9 +30,10 @@
     <ProjectReference Include="..\..\src\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
     <ProjectReference Include="..\..\src\samples\backtrack\backtrack.csproj" />
     <ProjectReference Include="..\..\src\samples\indentedWhile\indentedWhile.csproj" />
+    <ProjectReference Include="..\..\src\samples\sourceGenerationTester\sourceGenerationTester.csproj" />
     <ProjectReference Include="..\..\src\samples\template\template.csproj" />
-    <ProjectReference Include="..\..\src\samples\Tester\Tester.csproj" />
     <ProjectReference Include="..\..\src\samples\while\while.csproj" />
+    <ProjectReference Include="..\..\src\samples\dummy\dummy.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

@@ -84,8 +84,15 @@ private Factory _defaultFactory;
                 break;
             }
         }
-        var lastToken = tokens[lastIndex];
-        return lastToken;
+
+        if (lastIndex >= 0 && lastIndex < tokens.Count)
+        {
+            var lastToken = tokens[lastIndex];
+            return lastToken;    
+        }
+
+        return null;
+
     }
     
     public List<char> GetIndentations(ReadOnlySpan<char> source, int index)

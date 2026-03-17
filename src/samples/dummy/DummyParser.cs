@@ -1,4 +1,4 @@
-﻿using csly.Tester.models;
+﻿using csly.dummy.models;
 
 namespace Tester;
 
