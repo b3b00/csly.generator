@@ -4,6 +4,7 @@ namespace json;
 
 public enum JsonTokenGeneric
 {
+    //[AlphaId] PSEUDO_ID = 404,
     [String] STRING = 1,
     [Double(channel:0)] DOUBLE = 2,
     [Lexeme(GenericToken.Int,channel:0)] INT = 3,

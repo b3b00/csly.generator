@@ -27,7 +27,7 @@
         //backtracking
         Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
 
-        if (!_tokenFactories.TryGetValue(_lastSuccessMatch.Token, out factory))
+        if (!_tokenFactories.TryGetValue(_lastSuccessMatch.TokenName, out factory))
         {
             factory = _defaultFactory;
         }
@@ -59,7 +59,7 @@
             // TODO : call action if any
             Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
 
-            if (!_tokenFactories.TryGetValue(match<#STATE#>.Token, out factory))
+            if (!_tokenFactories.TryGetValue(match<#STATE#>.TokenName, out factory))
             {
                 factory = _defaultFactory;
             }

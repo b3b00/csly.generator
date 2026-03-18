@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using GenericToken = csly.generator.model.lexer.GenericToken;
 
 namespace csly.generator.sourceGenerator;
 
@@ -93,6 +94,16 @@ internal class LexerBuilderGenerator
                 return new List<string>() { "default" };
             }
         }).Distinct();
+
+        var keyWords = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Type == GenericToken.KeyWord).ToList();
+        var identifiers = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Type == GenericToken.Identifier).ToList();
+
+        if (keyWords.Count > 0 && identifiers.Count == 0)
+        {
+            var keywordModes = identifiers.SelectMany(lexem => lexem.Modes).Distinct().ToList();
+            _staticLexerBuilder.Add(GenericToken.Identifier,Constants.ShadowId, keywordModes,false,null, new[]{"a-zA-Z","a-zA-Z"});
+        }
+        
         foreach (var mode in modes)
         {
             var lexemsInMode = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Modes.Contains(mode)).ToList();
@@ -316,7 +327,7 @@ Log("Generating FSM for mode " + mode);
         var explicitKeywords = string.Join(", ", fsm.ExplicitKeywords.Select(kw => $@"""{kw}"""));
         var factories = string.Join("\n", fsm.Factories.Select(kvp =>
         {
-            return $@"_tokenFactories.Add({_staticLexerBuilder.LexerName}.{kvp.Key},{kvp.Value});";
+            return $@"_tokenFactories.Add(""{kvp.Key}"",{kvp.Value});";
         }));
 
         var uptos = string.Join(",\n", fsm.Lexemes.Where(x => x.Type == model.lexer.GenericToken.UpTo).SelectMany(lexeme =>
@@ -334,7 +345,7 @@ Log("Generating FSM for mode " + mode);
             {"KEYWORDS", keywords },
             {"UPTOS", uptos },
             {"EPSILON_STATES", string.Join(", ", fsm.GetEpsilonStates().Select(x => x.ToString())) } ,
-            {"STATE_TOKENS", string.Join(",\n", fsm.States.Where(s => s.TokenName != null).Select(s => $@"{{ {s.Id}, {_staticLexerBuilder.LexerName}.{s.TokenName} }}")) },
+            {"STATE_TOKENS", string.Join(",\n", fsm.States.Where(s => s.TokenName != null).Select(s => $@"{{ {s.Id}, ""{s.TokenName}"" }}")) },
             {"EXPLICIT_KEYWORDS", explicitKeywords },
             {"FACTORIES", factories },
             { "STATES", statesCode },
@@ -394,7 +405,7 @@ Log("Generating FSM for mode " + mode);
         }   
 
         var explicitMatch = $"new FsmMatch<{_staticLexerBuilder.LexerName} > (memory, _startPosition);";
-        var match = $@"new FsmMatch<{_staticLexerBuilder.LexerName} > ({_staticLexerBuilder.LexerName}.{state.TokenName}, memory, _startPosition) 
+        var match = $@"new FsmMatch<{_staticLexerBuilder.LexerName} > (""{state.TokenName}"", memory, _startPosition) 
     {{ 
         IsPop = {state.IsPop.ToString().ToLower()},
         PushTarget = ""{state.PushTarget}""

@@ -9,8 +9,17 @@
   <ItemGroup>
     <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Remove="Generated\**\*.cs" />
+    <Compile Remove="**\*.cs" />
+    <Compile Include="JsonModel\JList.cs" />
+    <Compile Include="JsonModel\JNull.cs" />
+    <Compile Include="JsonModel\JObject.cs" />
+    <Compile Include="JsonModel\JSon.cs" />
+    <Compile Include="JsonModel\JValue.cs" />
+    <Compile Include="jsonparser.cs" />
+    <Compile Include="JSONParserGenerator.cs" />
+    <Compile Include="JsonTokenGeneric.cs" />
   </ItemGroup>
 
 </Project>
