@@ -17,9 +17,9 @@ public class JsonParserTests
 
 
 
-    public JSONParserMain BuildParser()
+    public JsonParserMain BuildParser()
     {
-        var parser = new JSONParserMain(new JsonParser(), useMemoization: true);
+        var parser = new JsonParserMain(new JsonParser(), useMemoization: true);
         return parser;
     }
 
