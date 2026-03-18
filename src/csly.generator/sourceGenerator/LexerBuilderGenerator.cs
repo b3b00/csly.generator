@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using GenericToken = csly.generator.model.lexer.GenericToken;
 
 namespace csly.generator.sourceGenerator;
 
@@ -93,6 +94,16 @@ internal class LexerBuilderGenerator
                 return new List<string>() { "default" };
             }
         }).Distinct();
+
+        var keyWords = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Type == GenericToken.KeyWord).ToList();
+        var identifiers = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Type == GenericToken.Identifier).ToList();
+
+        if (keyWords.Count > 0 && identifiers.Count == 0)
+        {
+            var keywordModes = identifiers.SelectMany(lexem => lexem.Modes).Distinct().ToList();
+            _staticLexerBuilder.Add(GenericToken.Identifier,"PSEUDOID", keywordModes,false,null, new[]{"a-zA-Z","a-zA-Z"});
+        }
+        
         foreach (var mode in modes)
         {
             var lexemsInMode = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Modes.Contains(mode)).ToList();

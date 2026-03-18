@@ -74,40 +74,70 @@ public class JsonParserTests
     }
 
     [Fact]
-    public void parse_Null()
+    public void scan_Null()
     {
         var parser = BuildParser();
-        var json = @"null";
-        var result =  parser.Parse(json);
-        Check.That(result.IsOk).IsTrue();
-        Check.That(result.Result).IsNotNull();
-        Check.That(result.Result).IsInstanceOf<JNull>();
+
+        var lexer = parser.Lexer;
+        
+        var lexResult = lexer.Scan("null");
+        Check.That(lexResult.IsOk).IsTrue();
+        Check.That(lexResult.MainTokens).CountIs(2);
+        var nullToken = lexResult.MainTokens[0];
+        Check.That(nullToken).IsNotNull();
+        Check.That(nullToken.TokenID).IsEqualTo(JsonTokenGeneric.NULL);
+        
+        var parseResult = parser.Parse("null");
+        Check.That(parseResult.IsOk).IsTrue();
+        Check.That(parseResult.Result).IsNotNull();
+        Check.That(parseResult.Result).IsInstanceOf<JNull>();
+        
     }
     
     [Fact]
-    public void parse_True()
+    public void scan_True()
     {
         var parser = BuildParser();
-        var json = @"true";
-        var result =  parser.Parse(json);
-        Check.That(result.IsOk).IsTrue();
-        Check.That(result.Result).IsNotNull();
-        Check.That(result.Result).IsInstanceOf<JValue>();
-        var value = (JValue)result.Result;
-        Check.That(value.GetValue<bool>()).IsTrue();
+
+        var lexer = parser.Lexer;
+        
+        var lexResult = lexer.Scan("true");
+        Check.That(lexResult.IsOk).IsTrue();
+        Check.That(lexResult.MainTokens).CountIs(2);
+        var nullToken = lexResult.MainTokens[0];
+        Check.That(nullToken).IsNotNull();
+        Check.That(nullToken.TokenID).IsEqualTo(JsonTokenGeneric.BOOLEAN);
+        Check.That(nullToken.Value).IsEqualTo("true");
+        
+        var parseResult = parser.Parse("true");
+        Check.That(parseResult.IsOk).IsTrue();
+        Check.That(parseResult.Result).IsNotNull();
+        Check.That(parseResult.Result).IsInstanceOf<JValue>();
+        Check.That((parseResult.Result as JValue).GetValue<bool>()).IsTrue();
+
+
     }
     
     [Fact]
-    public void parse_False()
+    public void scan_False()
     {
         var parser = BuildParser();
-        var json = @"false";
-        var result =  parser.Parse(json);
-        Check.That(result.IsOk).IsTrue();
-        Check.That(result.Result).IsNotNull();
-        Check.That(result.Result).IsInstanceOf<JValue>();
-        var value = (JValue)result.Result;
-        Check.That(value.GetValue<bool>()).IsFalse();
+
+        var lexer = parser.Lexer;
+        
+        var lexResult = lexer.Scan("false");
+        Check.That(lexResult.IsOk).IsTrue();
+        Check.That(lexResult.MainTokens).CountIs(2);
+        var nullToken = lexResult.MainTokens[0];
+        Check.That(nullToken).IsNotNull();
+        Check.That(nullToken.TokenID).IsEqualTo(JsonTokenGeneric.BOOLEAN);
+        Check.That(nullToken.Value).IsEqualTo("false");
+        
+        var parseResult = parser.Parse("false");
+        Check.That(parseResult.IsOk).IsTrue();
+        Check.That(parseResult.Result).IsNotNull();
+        Check.That(parseResult.Result).IsInstanceOf<JValue>();
+        Check.That((parseResult.Result as JValue).GetValue<bool>()).IsFalse();
     }
 
 
