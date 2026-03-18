@@ -18,8 +18,11 @@ internal class StaticLexerBuilder
 
     private readonly string _nameSpace;
     public string NameSpace => _nameSpace;
-
+    public bool IsIndentationAware { get; set; }
+    public bool IgnoreKeyworkCasing { get; set; }
     
+    public bool AutoCloseIndentations { get; set; }
+
 
     public StaticLexerBuilder(string lexerName, string nameSpace)
     {
@@ -43,6 +46,14 @@ internal class StaticLexerBuilder
 
     public void Add(GenericToken type, string name, List<string> modes, bool isPop, string pushTarget, params string[] args)
     {
+        if (modes == null)
+        {
+            modes = new List<string>();
+        }
+        else
+        {
+            modes = modes.Select(x => x.EndsWith("ModeAttribute.DefaultLexerMode") ? "default" : x).ToList();
+        }
         var lexem = new Lexeme(type, name, args)
         {
             IsPop = isPop,

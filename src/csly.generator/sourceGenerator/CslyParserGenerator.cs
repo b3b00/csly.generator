@@ -280,11 +280,18 @@ public class CslyParserGenerator : IIncrementalGenerator
                         });
                         context.AddSource($"ISubLexer.g.cs", SourceText.From(iSubLexer, Encoding.UTF8));
 
+                        var autoCloseIndentations = templateEngine.ApplyTemplate("AutoCloseIndentationsTemplate", additional : new Dictionary<string, string>()
+                        {
+                            {"AUTO_CLOSE_INDENTATIONS",staticLexerBuilder.AutoCloseIndentations.ToString().ToLower()},
+                            {"IS_INDENTATION_AWARE", staticLexerBuilder.IsIndentationAware.ToString().ToLower()}
+                        });
+                        
                         var mainLexer = templateEngine.ApplyTemplate("MainLexerTemplate", additional : new Dictionary<string, string>
                         {
                             {"LEXER", lexerName },
                             {"ASSEMBLY", assemblyName },
                             {"NAMESPACE", ns },
+                            {"AUTO_CLOSE", autoCloseIndentations},
                             {"SUB_LEXERS", string.Join($",{Environment.NewLine}", subLexers.Select(x => $"{{ \"{x.mode}\", new {lexerName}_FsmLexer_{x.mode}() }}")) }
                         });
 

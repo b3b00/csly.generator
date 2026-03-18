@@ -4,6 +4,10 @@ public static class StringExtensions
 {
        public static string TrimQuotes(this string str)
     {
+        if (str.Length == 1)
+        {
+            return str;
+        }
         if (str.StartsWith("\""))
         {
             str = str.Substring(1);

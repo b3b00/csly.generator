@@ -73,7 +73,151 @@ private Factory _defaultFactory;
 
     
 
-    /// consumes all whitspaces starting from _currentPosition and move _currentPosition accordingly
+    private static Token<<#LEXER#>>? GetLastNonIndentToken(List<Token<<#LEXER#>>> tokens)
+    {
+        int lastIndex = tokens.Count - 1;
+        for (int i = tokens.Count - 1; i >= 0; i--)
+        {
+            if (!tokens[i].IsIndentation)
+            {
+                lastIndex = i;
+                break;
+            }
+        }
+
+        if (lastIndex >= 0 && lastIndex < tokens.Count)
+        {
+            var lastToken = tokens[lastIndex];
+            return lastToken;    
+        }
+
+        return null;
+
+    }
+    
+    public List<char> GetIndentations(ReadOnlySpan<char> source, int index)
+    {
+        if (index >= source.Length)
+        {
+            return new List<char>();
+        }
+        
+        var c = source[index];
+        List<Char> indentations = new List<char>();
+        int i = 0;
+        if (index >= source.Length)
+        {
+            return new List<char>();
+        }
+
+        char current = source[index + i];
+        while (i < source.Length && (current == ' ' || current == '\t'))
+        {
+            indentations.Add(current);
+            i++;
+            current = source[index + i];
+        }
+
+        return indentations;
+    }
+
+    // INDENT indentations
+    private Token<<#LEXER#>> ConsumeIndents3(ReadOnlySpan<char> source, LexerPosition lexerPosition)
+        {   
+            if (lexerPosition.IsStartOfLine && lexerPosition.Index < source.Length)
+            {
+                var shifts = GetIndentations(source, lexerPosition.Index);
+                string currentShift = string.Join("", shifts);
+                lexerPosition.Indentation = lexerPosition.Indentation ?? new LexerIndentation();
+                var indentation = lexerPosition.Indentation.Indent(currentShift);
+                switch (indentation.type)
+                {
+                    case LexerIndentationType.Indent:
+                    {
+                        var position = lexerPosition.Clone();
+                        position.IsPush = false;
+                        position.IsPop = false;
+                        position.Mode = null;
+                        position.Index += currentShift.Length;
+                        position.Column += currentShift.Length;
+                        
+                        var indent = new Token<<#LEXER#>>
+                        {
+                            IsIndent = true,
+                            IsUnIndent = false,
+                            IsNoIndent = false,
+                            Position = position,
+                            IsEOS = false
+                        };
+                        return indent;
+                    }
+                    case LexerIndentationType.UIndent:
+                    {
+                        var position = lexerPosition.Clone();
+                        position.IsPush = false;
+                        position.IsPop = false;
+                        position.Mode = null;
+                        position.Index += currentShift.Length;
+                        position.Column += currentShift.Length;
+                        
+                        var indent = new Token<<#LEXER#>>
+                        {
+                            IsIndent = false,
+                            IsUnIndent = true,
+                            IsNoIndent = false,
+                            Position = position,
+                            IsEOS = false
+                        };
+                        return indent;
+                    }
+                    case LexerIndentationType.None:
+                    {
+                        var position = lexerPosition.Clone();
+                        position.IsPush = false;
+                        position.IsPop = false;
+                        position.Mode = null;
+                        position.Index += currentShift.Length;
+                        position.Column += currentShift.Length;
+                        
+                        var indent = new Token<<#LEXER#>>
+                        {
+                            IsIndent = false,
+                            IsUnIndent = false,
+                            IsNoIndent = true,
+                            Position = position
+                        };
+                        return indent;
+                    }
+                    case LexerIndentationType.Error:
+                    {
+                        var position = lexerPosition.Clone();
+                        position.IsPush = false;
+                        position.IsPop = false;
+                        position.Mode = null;
+                        position.Index += currentShift.Length;
+                        position.Column += currentShift.Length;
+
+                        var indent = new Token<<#LEXER#>>
+                        {
+                            IsIndent = false,
+                            IsUnIndent = false,
+                            IsNoIndent = false,
+                            IsIndentationError = true,
+                            Position = position
+                        };
+                        return indent;
+                    }
+                } 
+            }
+
+            return new Token<<#LEXER#>>()
+            {
+                IsIndent = false,
+                IsUnIndent = false,
+                IsNoIndent = true,
+                Position = lexerPosition.Clone()
+            };
+        }
     private void ConsumeWhiteSpace(ReadOnlySpan<char> source)
     {
         while (_currentPosition.Index < source.Length && char.IsWhiteSpace(source[_currentPosition.Index]))
@@ -82,12 +226,24 @@ private Factory _defaultFactory;
             {
                 _currentPosition.Line++;
                 _currentPosition.Column = 0;
+                
+                
+                bool isNextWhite = _currentPosition.Index+1 < source.Length ? 
+                    (source[_currentPosition.Index + 1] == ' ' || source[_currentPosition.Index + 1] == '\t')
+                    : true; 
+                
+                if (<#IS_INDENTATION_AWARE#> && isNextWhite) // TODO indentation aware : stop consuming white spaces if we are at the start of a new line, indents will be consumed separately
+                {
+                    _currentPosition.Index++;   
+                    break;
+                }
             }
             else
             {
                 _currentPosition.Column++;
             }
             _currentPosition.Index++;
+            _startPosition.Index = _currentPosition.Index;
         }
     }
 
@@ -166,20 +322,31 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
         void AddToken(Token <<#LEXER#>> token) {
+            //Console.WriteLine($"[<#MODE#>] {token}");
             _lastSuccessMatch = null;
             _currentMatch = null;
             tokens.Add(token);
         }
 
+        
         bool IsModeChanging()
         {
             if (tokens.Count == 0)
                 return false;
-            var lastToken = tokens[tokens.Count - 1];
+            var lastToken = GetLastNonIndentToken(tokens);
             return lastToken.IsPop || !string.IsNullOrEmpty(lastToken.PushTarget);
         }
 
-        ConsumeWhiteSpace(source);
+        <#CONSUME_INDENTS#>
+
+        if (!IsModeChanging() && _uptoTOkens.Count == 0)
+        {
+            ConsumeWhiteSpace(source);
+        }
+
+        <#CONSUME_INDENTS#>
+        
+       
 
         while ((_currentPosition.Index < source.Length || _epsilonStates.Contains(_currentState)) && !IsModeChanging())
         {   
@@ -195,11 +362,13 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
                 factory = _defaultFactory;
             }
             var token = factory(_lastSuccessMatch);
+
             _currentPosition = ConsumeComments(token, source.ToArray());
+            
             AddToken(token);
             _lastSuccessMatch = null;
         }
-var lastToken = tokens.Count > 0 ? tokens[tokens.Count - 1] : null;
+        var lastToken = GetLastNonIndentToken(tokens);
         bool isPop = lastToken != null && (lastToken.IsPop);
         string pushTarget = lastToken != null ? lastToken.PushTarget : null;
         return (tokens, _currentPosition, isPop, pushTarget);

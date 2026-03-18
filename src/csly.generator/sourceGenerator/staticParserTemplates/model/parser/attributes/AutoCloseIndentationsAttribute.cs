@@ -2,7 +2,7 @@ using System;
 
 namespace <#NS#>;
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
 public class AutoCloseIndentationsAttribute : Attribute
 {
     public AutoCloseIndentationsAttribute()

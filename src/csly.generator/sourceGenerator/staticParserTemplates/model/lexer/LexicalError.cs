@@ -1,13 +1,11 @@
 ﻿
-
 namespace <#NS#>;
 
 public class LexicalError : ParseError
 {
-    public LexicalError(int line, int column, char unexpectedChar, string i18n)
+    public LexicalError(LexerPosition position, char unexpectedChar, string i18n)
     {
-        Line = line;
-        Column = column;
+        Position = position;
         UnexpectedChar = unexpectedChar;
         ErrorType = ErrorType.UnexpectedChar;
         _i18N = i18n;
@@ -24,7 +22,23 @@ public class LexicalError : ParseError
 
     public char UnexpectedChar { get; set; }
 
-    public override string ErrorMessage => string.IsNullOrEmpty(Message) ? $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar}) at {Line},{Column}" : Message;
+    public override string ErrorMessage => GetErrorMessage();
+
+    private string GetErrorMessage()
+    {
+        if (UnexpectedChar != (char)10 && UnexpectedChar != (char)13)
+        {
+            return string.IsNullOrEmpty(Message) ? $"Unexpected char '{UnexpectedChar}' ({(int)UnexpectedChar}) at {Line},{Column}" : Message;
+        }
+        else
+        {
+            var charName = UnexpectedChar == (char)10 ? "LF" : "CR";
+            return string.IsNullOrEmpty(Message) ? $"Unexpected char '{charName}' ({(int)UnexpectedChar}) at {Line},{Column}" : Message;
+        }
+    }
+    
+    public override int Line => Position.Line;
+    public override int Column => Position.Column;
 
     public override string ToString()
     {
@@ -38,4 +52,19 @@ public class LexicalError : ParseError
         return GetContextualMessage(fullSource, Line, Column, message);*/
         return "TODO";
     }
+}
+
+public class IndentationError : LexicalError
+{
+    public IndentationError(LexerPosition position, string i18n) : base(position, ' ', i18n)
+    {
+        ErrorType = ErrorType.IndentationError;
+    }
+
+    public override string ErrorMessage =>
+        $"Indentation error at  (line {Line}, column {Column}).";
+        
+    protected override string GetContextualMessage(string fullSource) => ErrorMessage;
+    
+
 }

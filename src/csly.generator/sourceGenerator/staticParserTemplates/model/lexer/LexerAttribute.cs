@@ -31,5 +31,7 @@ public class LexerAttribute : Attribute
     public bool IndentationAWare { get; set; } = false;
 
     public string Indentation { get; set; } = "";
+    
+    public bool AutoCloseIndentations { get; set; } = false;
 
 }

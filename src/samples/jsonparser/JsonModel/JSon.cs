@@ -1,6 +1,4 @@
-﻿using csly.jsonparser.models;
-
-namespace json;
+﻿namespace jsonparser.JsonModel;
 
 public abstract class JSon
 {
@@ -8,10 +6,4 @@ public abstract class JSon
     public virtual bool IsList { get; set; }
     public virtual bool IsValue { get; set; }
     public virtual bool IsNull { get; set; }
-        
-}
-
-[ParserGenerator]
-public partial class JSON : AbstractParserGenerator<JsonTokenGeneric, JSONParser, JSon>
-{
 }

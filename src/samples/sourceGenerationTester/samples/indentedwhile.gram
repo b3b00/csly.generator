@@ -1,7 +1,8 @@
 ﻿
 using csly.indented.whileLang;
 using csly.indented.whileLang.model;
-namespace csly.indented.whileLang;
+using csly.indentedwhile.models;
+namespace csly.indentedwhile;
 
 
 [ParserGenerator]
@@ -15,6 +16,7 @@ public partial class IndentedWhileTrack : AbstractParserGenerator<IndentedWhileT
  
  
  [Lexer(IndentationAWare = true, Indentation = "\t")]
+ [AutoCloseIndentations]
      public enum IndentedWhileTokenGeneric
      {
          #region keywords 0 -> 19
@@ -63,7 +65,7 @@ public partial class IndentedWhileTrack : AbstractParserGenerator<IndentedWhileT
          #region literals 20 -> 29
  
          [Mode(ModeAttribute.DefaultLexerMode, "fstringExpression")]
-         [Lexeme(GenericToken.Identifier, IdentifierType.AlphaNumericDash)]
+         [Lexeme(GenericToken.Identifier, IdentifierType.AlphaNumeric)]
          IDENTIFIER = 20,
  
          [Lexeme(GenericToken.Int)] INT = 22,
@@ -176,7 +178,6 @@ public partial class IndentedWhileTrack : AbstractParserGenerator<IndentedWhileT
      }
 
 [UseMemoization]
-[AutoCloseIndentations]
 [ParserRoot("program")]
 public class IndentedWhileParserGeneric
 {
@@ -242,7 +243,7 @@ public class IndentedWhileParserGeneric
         }
         
         [Production("block : INDENT[d] sequence UINDENT[d]")]
-        public WhileAST sequenceStatements(SequenceStatement seq)
+        public WhileAST sequenceStatements(WhileAST seq)
         {
             return seq;
         }
@@ -269,7 +270,7 @@ public class IndentedWhileParserGeneric
         public WhileAST ifStmt( WhileAST cond, WhileAST thenStmt, ValueOption<Group<IndentedWhileTokenGeneric, WhileAST>> optionalElseStmt)
         {
             var elseGroup = optionalElseStmt.Match(
-                x => x, () => null)?.Value(0);
+                x => x.Value(1), () => null);
             
             var stmt = new IfStatement(cond as Expression, thenStmt as Statement, elseGroup as Statement);
             return stmt;

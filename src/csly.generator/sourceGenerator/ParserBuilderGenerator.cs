@@ -64,7 +64,7 @@ public class ParserBuilderGenerator
         _staticParserBuilder.ComputeLeaders();
 
         
-        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOPtions.StartingNonTerminal);
+        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOptions.StartingNonTerminal);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
@@ -219,6 +219,11 @@ public class ParserBuilderGenerator
         {
             return $"new LeadingToken<{_lexerName}>(\"{l.Value}\")";
         }
+
+        if (l.isIndent || l.isUIndent)
+        {
+            return $"new LeadingToken<{_lexerName}>({l.isIndent.ToString().ToLower()}, {l.isUIndent.ToString().ToLower()})";
+        }
         else
         {
             return $"new LeadingToken<{_lexerName}>({_lexerName}.{l.Value})";
@@ -253,7 +258,8 @@ public class ParserBuilderGenerator
                     additional: new Dictionary<string, string>()
                 {
                 {"LEADINGS",leaders}, // static : compute leadings for rule
-                {"INDEX",i.ToString()}
+                {"INDEX",i.ToString()},
+                {"MAY_BE_EMPTY",rule.MayBeEmpty.ToString().ToLower() }
                 });
                 calls.AppendLine(callTemplate);
             }
@@ -487,6 +493,24 @@ public class ParserBuilderGenerator
                             {"INDEX",i.ToString()}
                                     });
                                 AddClause(terminalClause);
+                            }
+                            else if (terminalClause.IsIndent)
+                            {
+                                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseIndentTemplate), terminalClause.Name,
+                                    additional: new Dictionary<string, string>()
+                                    {
+                                        {"INDEX",i.ToString()},
+                                        {"DISCARDED", terminalClause.Discarded.ToString().ToLower() }
+                                    });
+                            }
+                            else if (terminalClause.IsUIndent)
+                            {
+                                call = _templateEngine.ApplyTemplate(nameof(ParserTemplates.TerminalClauseUIndentTemplate), terminalClause.Name,
+                                    additional: new Dictionary<string, string>()
+                                    {
+                                        {"INDEX",i.ToString()},
+                                        {"DISCARDED", terminalClause.Discarded.ToString().ToLower() }
+                                    });
                             }
                             else
                             {
@@ -730,11 +754,28 @@ public class ParserBuilderGenerator
 
     public string GenerateEntryPoint(string ns)
     {
-        var root = _staticParserBuilder.ParserOPtions.StartingNonTerminal;
+        var root = _staticParserBuilder.ParserOptions.StartingNonTerminal;
+        
+        StringBuilder nonTerminalCases = new StringBuilder();
+        foreach (var nonTerminal in _ruleParsers.Select(x => x.Key))
+        {
+            var nonTerminalCase = _templateEngine.ApplyTemplate("NonTerminalStartCall", additional: new Dictionary<string, string>()
+            {
+                {"ROOT",root },
+                {"NAME",nonTerminal }
+            });    
+            nonTerminalCases.AppendLine().AppendLine(nonTerminalCase);
+        }
+        
+        string nonTerminalValues = _ruleParsers.Select(x => x.Key)
+            .Select(x => $"_{x},").Aggregate((a, b) => a + "\n" + b);    
+
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
             {"ROOT",root },
-            {"NAMESPACE",ns   }
+            {"NAMESPACE",ns   },
+            {"NONTERMINALCASES", nonTerminalCases.ToString() },
+            {"NONTERMINALS", nonTerminalValues }
         });
         return content;
     }

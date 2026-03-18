@@ -34,13 +34,18 @@
         var token = factory(_lastSuccessMatch);
         continueScanning = true;
         _currentState = 0;
+        
+        
         _currentPosition = ConsumeComments(token, source.ToArray());
-
+        
+        
         AddToken(token);
         _currentMatch = null;
         _lastSuccessMatch = null;
         //consume white spaces on token boundaries
+        <#CONSUME_INDENTS#>
         ConsumeWhiteSpace(source);
+        <#CONSUME_INDENTS#>
         // TODO : compute ending position = lastSuccessMatch.Position + lastSuccessMatch.Value.Length
         _currentPosition = token.Position.Forward(token.SpanValue.ToString());
         _startPosition = _currentPosition.Clone();
@@ -60,12 +65,27 @@
             }
             var token = factory(match<#STATE#>);
             
+            
             _currentPosition = ConsumeComments(token, source.ToArray());
+            
             
             AddToken(token);
                 _currentMatch = null;
+                
+                            
+                
             //consume whit spaces on token boundaries
-            ConsumeWhiteSpace(source);
+            
+            <#CONSUME_INDENTS#>
+                if (!token.IsPop && string.IsNullOrEmpty(token.PushTarget))
+                {
+
+
+                    ConsumeWhiteSpace(source);
+                }
+
+
+                <#CONSUME_INDENTS#>
 
             _startPosition = new LexerPosition(_currentPosition.Index, _currentPosition.Line, _currentPosition.Column);
         }
@@ -79,7 +99,7 @@
         else
         {
             char ch = GetChar(source, _currentPosition);
-            var error = new LexicalError(_currentPosition.Line, _currentPosition.Column, ch, "en");
+            var error = new LexicalError(_currentPosition, ch, "en");
             return (error, _currentPosition, false, null);
         }
     }

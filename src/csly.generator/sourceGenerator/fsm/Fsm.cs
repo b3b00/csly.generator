@@ -525,7 +525,7 @@ public void End(Lexeme lexeme, bool isSingleLineComment = false, bool isMultiLin
             {
                 var target = GetState(transition.TargetState);
                 var targetName = !string.IsNullOrEmpty(target.Name) ? $"[{target.Name}]" : "";
-                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id}{targetName} {(target.IsEnd ? "(END)": "")}");
+                sb.AppendLine($"\t-- [{transition.StringCondition}] => State {target.Id}{targetName} {(target.IsEnd ? $"(END:{target.TokenName})": "")}");
             }
 
         }

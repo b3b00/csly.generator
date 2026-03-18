@@ -4,6 +4,7 @@
 using csly.generator.sourceGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting;
 using SharpFileSystem.FileSystems;
 using System;
 using System.IO;
@@ -35,57 +36,57 @@ public  class Program
 
     private static void Generate(string who, string where)
     {
-        try
+
+        EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
+        var parser = fs.ReadAllText($"/samples/{who}.gram");
+
+        var result = GenerateSource(parser, who);
+
+        var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
+        var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
+
+        var generatedDir = Path.Combine(where, "generated");
+        Directory.CreateDirectory(generatedDir);
+
+        File.WriteAllText(Path.Combine(where,"generated", $"{who.Capitalize()}.cs"), parser);
+
+        foreach (var file in contents)
         {
-            EmbeddedResourceFileSystem fs = new EmbeddedResourceFileSystem(typeof(Program).Assembly);
-            var parser = fs.ReadAllText($"/samples/{who}.gram");
+            FileInfo fileInfo = new FileInfo(file.Key);
 
-            var result = GenerateSource(parser, who);
+            string fileName = Path.Combine(where, "generated",fileInfo.Name);
 
-            var contents = result.GeneratedTrees.ToList().ToDictionary(x => x.FilePath, x => x.ToString());
-            var generatedFiles = result.GeneratedTrees.Select(x => new FileInfo(x.FilePath).Name);
-
-            var generatedDir = Path.Combine(where, "generated");
-            Directory.CreateDirectory(generatedDir);
-
-            File.WriteAllText(Path.Combine(where, "generated", $"{who.Capitalize()}.cs"), parser);
-
-            foreach (var file in contents)
+            if (fileInfo.Name.StartsWith("lexer."))
             {
-                FileInfo fileInfo = new FileInfo(file.Key);
-
-                string fileName = Path.Combine(where, "generated", fileInfo.Name);
-
-                if (fileInfo.Name.StartsWith("lexer."))
-                {
-                    fileName = Path.Combine(where, "generated", "models", "lexer" + fileInfo.Name);
-                }
-
-                if (fileInfo.Name.StartsWith("parser."))
-                {
-                    fileName = Path.Combine(where, "generated", "models", "parser" + fileInfo.Name);
-                }
-
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-
-                FileInfo fi = new FileInfo(fileName);
-                if (fi.Directory != null && !fi.Directory.Exists)
-                {
-                    Directory.CreateDirectory(fi.DirectoryName);
-                }
-
-                File.WriteAllText(fileName, file.Value);
+                fileName = Path.Combine(where, "generated", "models", "lexer" + fileInfo.Name);
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            Console.WriteLine(ex.StackTrace);
+            if (fileInfo.Name.StartsWith("parser."))
+            {
+                fileName = Path.Combine(where, "generated", "models", "parser" + fileInfo.Name);
+            }
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            FileInfo fi = new FileInfo(fileName);
+            if (fi.Directory != null && !fi.Directory.Exists)
+            {
+                Directory.CreateDirectory(fi.DirectoryName);
+            }
+            File.WriteAllText(fileName, PrettyPrint(file.Value));
         }
 
+    }
+
+    private static string PrettyPrint(string source)
+    {
+        var syntaxTree = CSharpSyntaxTree.ParseText(source);
+        var root = syntaxTree.GetRoot();
+        using var workspace = new AdhocWorkspace();
+        var formattedRoot = Formatter.Format(root, workspace);
+        return formattedRoot.ToFullString();
     }
 
     private static GeneratorDriverRunResult GenerateSource(string source, string className)
@@ -107,10 +108,7 @@ public  class Program
 
         // Run generators. Don't forget to use the new compilation rather than the previous one.
         var runResult = driver.RunGenerators(compilation).GetRunResult();
-        if (runResult.Diagnostics.Any(x => x.Severity == DiagnosticSeverity.Error))
-        {
-            Console.WriteLine(string.Join("\n",runResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).Select(x => x.GetMessage())));
-        }
+
         return runResult;
     }
 

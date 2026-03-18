@@ -85,6 +85,41 @@ public class Token<T> where T:struct, Enum
         Position = new LexerPosition(0, 0, 0);
         DecimalSeparator = '.';
     }
+
+    public static Token<T> EOS()
+    {
+        return new Token<T>()
+        {
+            IsEOS = true,
+            End = true,
+            Position = new LexerPosition(0, 0, 0),
+            DecimalSeparator = '.'
+        };
+    }
+    
+    public static Token<T> Indent(LexerPosition position)
+    {
+        return new Token<T>()
+        {
+            IsEOS = false,
+            IsIndent = true,
+            IsUnIndent = false,
+            Position = new LexerPosition(0, 0, 0),
+            DecimalSeparator = '.'
+        };
+    }
+    
+    public static Token<T> UIndent(LexerPosition position)
+    {
+        return new Token<T>()
+        {
+            IsEOS = false,
+            IsIndent = false,
+            IsUnIndent = true,
+            Position = new LexerPosition(0, 0, 0),
+            DecimalSeparator = '.'
+        };
+    }
     
     
     public List<Token<T>> NextTokens(int channelId)
@@ -206,6 +241,8 @@ public class Token<T> where T:struct, Enum
 
     public bool IsIndentation => IsIndent || IsUnIndent || IsNoIndent;
     
+    public bool IsIndentationError { get; set; }
+    
     public int IndentationLevel { get; set; }
     
     public bool IsWhiteSpace { get; set; }
@@ -306,6 +343,16 @@ public class Token<T> where T:struct, Enum
 
     public string GetDebug()
     {
+        if (IsIndent)
+        {
+            return $"<<INDENT({IndentationLevel})>>";
+        }
+
+        if (IsUnIndent)
+        {
+            return $"<<UINDENT({IndentationLevel})>>";
+        }
+        
         if (IsEOS)
         {
             return "<<EOS>>";

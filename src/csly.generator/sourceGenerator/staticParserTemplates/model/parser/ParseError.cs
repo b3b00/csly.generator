@@ -13,6 +13,7 @@ public enum ErrorType
 
 public abstract class ParseError
 {
+    public virtual LexerPosition Position { get; protected set; }
     public virtual ErrorType ErrorType { get; protected set; }
     public virtual int Column { get; protected set; }
     public virtual string ErrorMessage { get; protected set; }

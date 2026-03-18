@@ -219,10 +219,10 @@ Log("Generating FSM for mode " + mode);
                             fsm.End(lexem);
                         }
                         var tailPatterns = lexem.IdentifierTailPatterns();
-                        for (var i = 0; i < startPattern.Count(); i++)
+                        for (var i = 0; i < tailPatterns.Count(); i++)
                         {
                             fsm.GoTo(inIdentifierState);
-                            var pattern = startPattern.ElementAt(i);
+                            var pattern = tailPatterns.ElementAt(i);
                             if (pattern.Length == 1)
                             {
                                 fsm.TransitionTo(inIdentifierState, pattern[0]);
@@ -291,12 +291,21 @@ Log("Generating FSM for mode " + mode);
     {
         var statesCode = string.Join("\n", fsm.States.Select(state => Generate(fsm, state)));
 
-        var statesCall = string.Join("\n else ", fsm.States.Select(state =>
+        var consumeIndents = _templateEngine.ApplyTemplate(nameof(LexerTemplates.ConsumeIndentsTemplate),
+            additional: new Dictionary<string, string>()
+                { 
+                    { "IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() }
+    });
+
+    var statesCall = string.Join("\n else ", fsm.States.Select(state =>
         {
             return _templateEngine.ApplyTemplate(nameof(LexerTemplates.StateCallTemplate), additional: new Dictionary<string, string>()
             {
                 { "STATE", state.Id.ToString() },
-                {"TOKEN", state.TokenName }
+                {"TOKEN", state.TokenName },
+                {"CONSUME_INDENTS", consumeIndents },
+                {"IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() }
+                
             });
         }));
 
@@ -314,10 +323,12 @@ Log("Generating FSM for mode " + mode);
         {
             return lexeme.Args.Select(arg =>
             {
-                return $@"{{ ""{arg.TrimQuotes()}"", {_staticLexerBuilder.LexerName}.{lexeme.Name} }}";
+                return $@"{{ ""{arg.TrimQuotes().Replace("\"","\\\"")}"", {_staticLexerBuilder.LexerName}.{lexeme.Name} }}";
             }).ToList();
         }));
 
+        
+        
         return _templateEngine.ApplyTemplate(nameof(LexerTemplates.FsmTemplate), additional: new Dictionary<string, string>()
         {
             {"KEYWORDS", keywords },
@@ -329,7 +340,9 @@ Log("Generating FSM for mode " + mode);
             { "STATES", statesCode },
             { "MODE", mode },
             { "STATE_CALLS", statesCall },
-            {"ASSEMBLY", _assemblyName}
+            {"ASSEMBLY", _assemblyName},
+            {"CONSUME_INDENTS", consumeIndents},
+            {"IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() }
         });
     }
 

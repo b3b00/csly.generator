@@ -12,7 +12,6 @@ public partial class IndentedWhileTrack : AbstractParserGenerator<IndentedWhileT
 }
 
 [UseMemoization]
-[AutoCloseIndentations]
 [ParserRoot("program")]
 public class IndentedWhileParserGeneric
 {
@@ -78,7 +77,7 @@ public class IndentedWhileParserGeneric
         }
         
         [Production("block : INDENT[d] sequence UINDENT[d]")]
-        public WhileAST sequenceStatements(SequenceStatement seq)
+        public WhileAST sequenceStatements(WhileAST seq)
         {
             return seq;
         }
@@ -105,7 +104,7 @@ public class IndentedWhileParserGeneric
         public WhileAST ifStmt( WhileAST cond, WhileAST thenStmt, ValueOption<Group<IndentedWhileTokenGeneric, WhileAST>> optionalElseStmt)
         {
             var elseGroup = optionalElseStmt.Match(
-                x => x, () => null)?.Value(0);
+                x => x.Value(1), () => null);
             
             var stmt = new IfStatement(cond as Expression, thenStmt as Statement, elseGroup as Statement);
             return stmt;
@@ -119,9 +118,9 @@ public class IndentedWhileParserGeneric
         }
 
         [Production("statement: IDENTIFIER ASSIGN[d] IndentedWhileParserGeneric_expressions")]
-        public WhileAST assignStmt(Token<IndentedWhileTokenGeneric> variable, Expression value)
+        public WhileAST assignStmt(Token<IndentedWhileTokenGeneric> variable, WhileAST value)
         {
-            var assign = new AssignStatement(variable.StringWithoutQuotes, value);
+            var assign = new AssignStatement(variable.StringWithoutQuotes, value as Expression);
             return assign;
         }
 
@@ -132,9 +131,9 @@ public class IndentedWhileParserGeneric
         }
         
         [Production("statement: RETURN[d] IndentedWhileParserGeneric_expressions")]
-        public WhileAST ReturnStmt(Expression expression)
+        public WhileAST ReturnStmt(WhileAST expression)
         {
-            return new ReturnStatement(expression);
+            return new ReturnStatement(expression as Expression);
         }
 
         [Production("statement: PRINT[d] IndentedWhileParserGeneric_expressions")]

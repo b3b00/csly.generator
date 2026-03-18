@@ -46,23 +46,23 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         {
             case "AutoCloseIndentations":
                 {
-                    _staticParserBuilder.ParserOPtions.AutoCloseIndentations = true;
+                    _staticParserBuilder.ParserOptions.AutoCloseIndentations = true;
                     break;
                 }
             case "UseMemoization":
                 {
-                    _staticParserBuilder.ParserOPtions.UseMemoization = true;
+                    _staticParserBuilder.ParserOptions.UseMemoization = true;
                     break;
                 }
             case "BroadenTokenWindow":
                 {
-                    _staticParserBuilder.ParserOPtions.BroadenTokenWindow = true;   
+                    _staticParserBuilder.ParserOptions.BroadenTokenWindow = true;   
                     break;
                 }
             case "ParserRoot":
                 {
                     var value = GetAttributeArgs(node, withLeadingComma: false).TrimQuotes();
-                    _staticParserBuilder.ParserOPtions.StartingNonTerminal = value;
+                    _staticParserBuilder.ParserOptions.StartingNonTerminal = value;
                     break;
                 }
         }        

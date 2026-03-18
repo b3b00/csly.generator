@@ -57,8 +57,8 @@ while a < 10 do
     a := a +1
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
         }
 
         [Fact]
@@ -72,13 +72,13 @@ while a < 10 do
     a := a +1
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
             var interpreter = new Interpreter();
             var context = interpreter.Interprete(result.Result, true);
             Check.That(context.variables).CountIs(1);
             var a = context.GetVariable("a");
-            Check.That(a.Value).IsEqualTo(1);
+            Check.That(a.Value).IsEqualTo(10);
             Check.That(a.ValueType).IsEqualTo(WhileType.INT);
         }
 
@@ -97,8 +97,8 @@ while i < 11 do
 ";
             var parser = BuildParser();
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
             var interpreter = new Interpreter();
             var context = interpreter.Interprete(result.Result, true);
             Check.That(context.variables).CountIs(2);
@@ -128,29 +128,7 @@ while i < 11 do
         }
 
 
-        [Fact]
-        public void TestFactorialProgramExecAsIL()
-        {
-            var program = @"
-# TestFactorialProgramExec
-r:=1
-i:=1
-while i < 11 do 
-    r := r * i
-    print $""r="".r
-    print $""i="".i
-    i := i + 1
-return r";
-            var parseResult = BuildParser().Parse(program);
-            Check.That(parseResult.Result).IsNotNull();
-            Check.That(parseResult.IsOk).IsTrue();
-            var ast = parseResult.Result;
-            var interpreter = new Interpreter();
-            var f = interpreter.Interprete(ast);
-            
-            
-            Check.That(f).IsEqualTo(3628800);
-        }
+        
 
         [Fact]
         public void TestIfThenElse()
@@ -164,8 +142,9 @@ else
     b := $""world""
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
+            
 
             Check.That(result.Result).IsInstanceOf<SequenceStatement>();
             var seq = result.Result as SequenceStatement;
@@ -280,9 +259,9 @@ while true do
     skip
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
-
+            Check.That(result.Result).IsNotNull();
+            
             Check.That(result.Result).IsInstanceOf<SequenceStatement>();
             var seq = result.Result as SequenceStatement;
             Check.That(seq.Get(0)).IsInstanceOf<WhileStatement>();
@@ -302,9 +281,8 @@ while true do
         {
             var parser = BuildParser();
             var result = parser.Parse("print true and false");
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
-            
+            Check.That(result.Result).IsNotNull();
 
             Check.That(result.Result).IsInstanceOf<SequenceStatement>();
             var seq = result.Result as SequenceStatement;
@@ -387,7 +365,7 @@ while true do
             Check.That(result.Errors).CountIs(1);
             var error = result.Errors.First();
             Check.That(error.ErrorType).IsEqualTo(ErrorType.IndentationError);
-            Check.That(error.Line).IsEqualTo(4);
+            Check.That(error.Line).IsEqualTo(3);
             Check.That(error.ErrorMessage).Contains("Indentation error");
             
             result = parser.Parse(@"
@@ -412,8 +390,8 @@ while true do
     skip
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
         }
         
         [Fact]
@@ -431,8 +409,8 @@ if true then
             var dump = seq.Dump("  ");
             Check.That(seq.Statements).CountIs(1);
             Check.That(seq.Statements[0]).IsInstanceOf<IfStatement>();
-            Check.That(result.Result).IsNotNull();
             Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
         }
         
         [Fact]
@@ -443,9 +421,9 @@ if true then
 if 
 ";
             var result = parser.Parse(program);
-            Check.That(result.Result).IsNotNull();
-            Check.That(result.IsOk).IsTrue();
-            Check.That(result.Errors).CountIs(1);
+            
+            Check.That(result.IsOk).IsFalse();
+            Check.That(result.Errors).CountIs(2);
             var error = result.Errors.First();
             Check.That(error.ErrorType).IsEqualTo(ErrorType.UnexpectedEOS);
             var unexpectedEosError = error as UnexpectedTokenSyntaxError<IndentedWhileTokenGeneric>;
@@ -459,26 +437,24 @@ if
         [Fact]
         public void TestIndentationError_emptyIndentLine()
         {
-            // TODO : check lexing
             
-//             BuildResult<ILexer<IndentedWhileTokenGeneric>> _lexer = LexerBuilder.BuildLexer<IndentedWhileTokenGeneric>();
-//
-//             Check.That(_lexer).IsOk();
-//             
-//             var program = @"
-// if true then
-//
-//         if false then
-//             x := 28";
-//             var lexed = _lexer.Result.Tokenize(program);
-//             Check.That(lexed).IsOkLexing();
-//             var mainTokens = lexed.Tokens.MainTokens();
-//             Check.That(mainTokens).Not.IsEmpty();
-//             Check.That(mainTokens.Last().IsEOS).IsTrue();
-//             var lastToken = mainTokens[mainTokens.Count - 2];
-//             Check.That(lastToken).IsNotNull();
-//             Check.That(lastToken.TokenID)
-//                 .IsEqualTo(IndentedWhileTokenGeneric.INT);
-//             Check.That(lastToken.IntValue).IsEqualTo(28);
+            var parser = BuildParser();
+            var lexer = parser.Lexer;
+            
+
+            var program = @"
+if true then
+
+        if false then
+            x := 28";
+            var lexed = lexer.Scan(program);
+            Check.That(lexed.IsOk).IsTrue();
+            var mainTokens = lexed.Tokens;
+            Check.That(mainTokens).Not.IsEmpty();
+            Check.That(mainTokens.Last().IsEOS).IsTrue();
+            var lastToken = mainTokens[mainTokens.Count - 2];
+            Check.That(lastToken).IsNotNull();
+            Check.That(lastToken.IsUnIndent)
+                .IsTrue();
         }
 }

@@ -8,9 +8,18 @@ namespace ebnf.grammar
     {
 
         private bool _isExplicit;
+        
+        protected bool _isIndent;
+        
+        protected bool _isUIndent;
         public bool Discarded { get; set; }
 
         public bool IsExplicit => _isExplicit;
+        
+        public bool IsIndent => _isIndent;
+        
+        public bool IsUIndent => _isUIndent;
+        
 
         public string ExplicitValue { get; set; }
         public TerminalClause(string name, bool discarded = false)
@@ -20,6 +29,14 @@ namespace ebnf.grammar
             {
                 _isExplicit = true;
                 Name = Name.Substring(1, Name.Length - 2);
+            }
+            if (Name == "INDENT")
+            {
+                _isIndent = true;
+            }
+            else if (Name == "UINDENT")
+            {
+                _isUIndent = true;
             }
             Discarded = discarded;
         }
@@ -52,6 +69,8 @@ namespace ebnf.grammar
         public IndentTerminalClause(IndentationType expectedIndentation, bool discard) : base(IndentationType.Indent.ToString())
         {
             ExpectedIndentation = expectedIndentation;
+            _isIndent = expectedIndentation == IndentationType.Indent;
+            _isUIndent = expectedIndentation == IndentationType.UnIndent;
             Discarded = discard;
         }
 
