@@ -42,7 +42,7 @@ public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
         <#KEYWORDS#>
     };
 
-        private Dictionary<int, <#LEXER#>> _stateTokens = new Dictionary<int, <#LEXER#>>()
+        private Dictionary<int, string> _stateTokens = new Dictionary<int, string>()
     {
         <#STATE_TOKENS#>
     };
@@ -57,7 +57,7 @@ public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
         <#UPTOS#>
     };
 
-    private Dictionary<<#LEXER#>, Factory> _tokenFactories = new Dictionary<<#LEXER#>, Factory>();
+    private Dictionary<string, Factory> _tokenFactories = new Dictionary<string, Factory>();
 
 private Factory _defaultFactory;
 
@@ -357,7 +357,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
             //final token to add
             Func<FsmMatch <<#LEXER#>>, Token<<#LEXER#>>> factory;
 
-            if (!_tokenFactories.TryGetValue(_lastSuccessMatch.Token, out factory))
+            if (!_tokenFactories.TryGetValue(_lastSuccessMatch.TokenName, out factory))
             {
                 factory = _defaultFactory;
             }

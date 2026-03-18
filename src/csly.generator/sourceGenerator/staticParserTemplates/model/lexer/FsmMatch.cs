@@ -3,13 +3,17 @@ using System;
 namespace <#NS#> {
 
 
-    public class FsmMatch<T>
+    public class FsmMatch<T>  where T : struct, Enum
     {
         public bool IsMatch { get; set; } = false;
 
         public bool IsDone { get; set; } = false;
 
         public T Token { get; set; }
+        
+        public string TokenName { get; set; }
+        
+        public bool IsShadowId { get; private set; }
 
         public ReadOnlyMemory<char> Value { get; set; }
 
@@ -42,6 +46,22 @@ namespace <#NS#> {
             Value = value;
             Position = position;
             IsMatch = true;
+            TokenName = token.ToString();
+        }
+        
+        public FsmMatch(string tokenName, ReadOnlyMemory<char> value, LexerPosition position)
+        {
+            Token = default(T);
+            Value = value;
+            Position = position;
+            IsMatch = true;
+            TokenName = tokenName;
+            IsShadowId = TokenName == Constants.ShadowId;
+            if (Enum.TryParse<T>(TokenName, out var tok))
+            {
+                
+                Token = tok;
+            }
         }
 
         public FsmMatch()
@@ -56,6 +76,8 @@ namespace <#NS#> {
                 IsMatch = this.IsMatch,
                 IsDone = this.IsDone,
                 Token = this.Token,
+                TokenName = this.TokenName,
+                IsShadowId = this.IsShadowId,
                 Value = this.Value,
                 Position = this.Position,
                 IsExplicit = this.IsExplicit,
