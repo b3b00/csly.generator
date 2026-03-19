@@ -7,7 +7,7 @@ using System.Linq;
 namespace <#NAMESPACE#>;
 
 
-public enum  Visitors
+public enum  <#PARSER#>Visitors
 {
     <#VISITORS#>
 }

@@ -34,6 +34,8 @@ public  class Program
     }
 
 
+    
+    
     private static void Generate(string who, string where)
     {
 
@@ -47,7 +49,7 @@ public  class Program
 
         var generatedDir = Path.Combine(where, "generated");
         Directory.CreateDirectory(generatedDir);
-
+        Console.WriteLine($"writing {who.Capitalize()}.cs");
         File.WriteAllText(Path.Combine(where,"generated", $"{who.Capitalize()}.cs"), parser);
 
         foreach (var file in contents)
@@ -75,6 +77,7 @@ public  class Program
             {
                 Directory.CreateDirectory(fi.DirectoryName);
             }
+            Console.WriteLine($"writing {fileName}.cs");
             File.WriteAllText(fileName, PrettyPrint(file.Value));
         }
 
@@ -109,6 +112,14 @@ public  class Program
         // Run generators. Don't forget to use the new compilation rather than the previous one.
         var runResult = driver.RunGenerators(compilation).GetRunResult();
 
+        if (runResult.Diagnostics.Any())
+        {
+            foreach (var runResultDiagnostic in runResult.Diagnostics)
+            {
+                Console.WriteLine(runResultDiagnostic.ToString());
+            }
+        }
+        
         return runResult;
     }
 
