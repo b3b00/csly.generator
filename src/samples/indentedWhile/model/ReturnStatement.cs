@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using csly.indented.whileLang.compiler;
-using csly.indentedWhile.models;
+﻿using csly.indented.whileLang.compiler;
+using csly.indentedWhile.indentedwhileparsergeneric.models;
 using Sigil;
 using System.Text;
 

@@ -2,8 +2,9 @@
 using csly.indented.whileLang.model;
 using NFluent;
 using csly.indented.whileLang.interpreter;
-using csly.indentedWhile.models;
+using csly.indentedWhile.indentedwhileparsergeneric.models;
 using csly.indentedWhile.whileLang;
+using csly.indentedWhile.whileLang.indentedwhileparsergeneric;
 
 
 namespace ParserTests.samples;

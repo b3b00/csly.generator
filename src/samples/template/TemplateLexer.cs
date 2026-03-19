@@ -1,4 +1,4 @@
-﻿using csly.template.models;
+﻿using csly.template.templateparser.models;
 
 namespace template;
 

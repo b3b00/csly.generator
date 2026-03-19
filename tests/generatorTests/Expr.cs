@@ -1,6 +1,6 @@
 namespace generatorTests;
 
-using csly.testing.models;
+using csly.testing.exprparser.models;
 
 
 

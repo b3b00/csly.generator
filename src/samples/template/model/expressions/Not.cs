@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using template.model;
-using csly.template.models;
+﻿using System.Collections.Generic;
+using csly.template.templateparser.models;
 
 namespace template.model.expressions
 {

@@ -4,7 +4,7 @@ using csly.whileLang.model;
 using NFluent;
 using csly.whileLang.interpreter;
 using csly.whileLang.compiler;
-
+using csly.whileLang.whileparsergeneric;
 
 
 namespace ParserTests.samples;

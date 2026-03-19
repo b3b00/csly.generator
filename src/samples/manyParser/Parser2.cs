@@ -1,5 +1,5 @@
 ﻿
-using csly.manyParser.models;
+using csly.manyParser.parser2.models;
 
 namespace manyParser;
 
@@ -12,13 +12,13 @@ public partial class Parser2Generator : AbstractParserGenerator<Token2, Parser2 
 public class Parser2
 {
 
-    [Production("root2 : ID ints2")]
-    public string Root1(Token<Token1> id, string ids)
+    [Production("root2 : ID2 ints2")]
+    public string Root1(Token<Token2> id, string ids)
     {
         return $"{id.Value} : {ids}";
     }
 
-    [Production("ids: INT*")]
+    [Production("ints2: INT2*")]
     public string ints(List<Token<Token2>> ids)
     {
         return string.Join(" ", ids.Select(i => i.Value));
@@ -26,12 +26,12 @@ public class Parser2
     
 }
 
-public enum Token1
+public enum Token2
 {
     
     [AlphaId]
-    ID1,
+    ID2,
     
     [Int]
-    INT1
+    INT2
 }

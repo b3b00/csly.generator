@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using csly.whileLang.compiler;
-using csly.whiley.models;
+using csly.whiley.whileparsergeneric.models;
 using Sigil;
 using System.Text;
 

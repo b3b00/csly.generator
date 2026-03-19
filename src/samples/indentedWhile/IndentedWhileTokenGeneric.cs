@@ -1,4 +1,4 @@
-﻿using csly.indentedWhile.models;
+﻿using csly.indentedWhile.indentedwhileparsergeneric.models;
 
 namespace csly.indentedWhile.whileLang;
 

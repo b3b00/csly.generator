@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace <#NAMESPACE#>;
+namespace <#NS#>;
 
 
 public enum  <#PARSER#>Visitors

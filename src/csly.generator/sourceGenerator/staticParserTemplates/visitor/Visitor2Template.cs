@@ -1,6 +1,6 @@
 ﻿
 
-namespace <#NAMESPACE#>;
+namespace <#NS#>;
 
 internal class <#PARSER#>Visitor2
 {

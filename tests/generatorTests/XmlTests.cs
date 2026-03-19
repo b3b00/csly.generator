@@ -5,6 +5,7 @@ using NFluent;
 using csly.whileLang.interpreter;
 using csly.whileLang.compiler;
 using XML;
+using XML.minimalxmlparser;
 
 
 namespace ParserTests.samples;

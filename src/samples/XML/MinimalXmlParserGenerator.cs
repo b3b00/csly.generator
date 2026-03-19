@@ -1,4 +1,4 @@
-﻿using csly.XML.models;
+﻿using csly.XML.minimalxmlparser.models;
 
 namespace XML;
 

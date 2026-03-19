@@ -1,6 +1,5 @@
-﻿using csly.template.models;
+﻿using csly.template.templateparser.models;
 using System.Collections.Generic;
-using template;
 using template.model;
 using template.model.expressions;
 

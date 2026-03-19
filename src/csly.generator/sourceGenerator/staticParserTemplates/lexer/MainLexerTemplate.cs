@@ -1,10 +1,10 @@
 ﻿
 using System.Collections.Generic;
-using csly.<#ASSEMBLY#>.models;
+using csly.<#ASSEMBLY#>.<#PARSER_NS#>.models;
 using System;
 
 
-namespace <#NAMESPACE#>;
+namespace <#NAMESPACE#>.<#PARSER_NS#>;
 
 
     

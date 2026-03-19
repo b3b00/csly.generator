@@ -1,6 +1,7 @@
 ﻿using csly.whileLang.model;
 using csly.whileLang.interpreter;
 using System;
+using csly.whileLang.whileparsergeneric;
 
 namespace csly.whileLang
 {

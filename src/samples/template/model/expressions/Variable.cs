@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using csly.template.models;
+using csly.template.templateparser.models;
 
 namespace template.model.expressions
 {
