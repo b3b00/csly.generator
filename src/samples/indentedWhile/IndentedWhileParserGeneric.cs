@@ -1,4 +1,4 @@
-﻿using csly.indentedWhile.models;
+﻿using csly.indentedWhile.indentedwhileparsergeneric.models;
 using csly.indented.whileLang.model;
 using Expression = csly.indented.whileLang.model.Expression;
 

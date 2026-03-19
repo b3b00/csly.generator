@@ -24,11 +24,11 @@ internal class LexerBuilderGenerator
 
     protected int upToCounter;
 
-    public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax,
+    public void AnalyseLexer(EnumDeclarationSyntax enumDeclarationSyntax,string parserName,
         Dictionary<string, SyntaxNode> declarationsByName)
     {
         string name = enumDeclarationSyntax.Identifier.ToString();
-        _templateEngine = new TemplateEngine(name, "", "", _staticLexerBuilder.NameSpace);
+        _templateEngine = new TemplateEngine(name, parserName, "", _staticLexerBuilder.NameSpace);
 
         LexerSyntaxWalker walker = new(name, declarationsByName, this, _staticLexerBuilder);
         walker.Visit(enumDeclarationSyntax);
@@ -353,7 +353,7 @@ Log("Generating FSM for mode " + mode);
             { "STATE_CALLS", statesCall },
             {"ASSEMBLY", _assemblyName},
             {"CONSUME_INDENTS", consumeIndents},
-            {"IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() }
+            {"IS_INDENTATION_AWARE", _staticLexerBuilder.IsIndentationAware.ToString().ToLower() },
         });
     }
 

@@ -1,0 +1,71 @@
+﻿
+
+namespace many;
+
+
+[ParserGenerator]
+public partial class Parser1Generator : AbstractParserGenerator<Token1, Parser1 , string>
+{
+}
+
+[ParserRoot("root1")]
+public class Parser1
+{
+
+    [Production("root1 : ID1 ints1")]
+    public string Root1(Token<Token1> id, string ints)
+    {
+        return $"{id.Value} : {ints}";
+    }
+
+    [Production("ints1: INT1*")]
+    public string ints(List<Token<Token1>> ints)
+    {
+        return ints.Select(x => x.IntValue).Sum().ToString();
+    }
+    
+}
+
+public enum Token1
+{
+    
+    [AlphaId]
+    ID1,
+    
+    [Int]
+    INT1
+}
+
+
+[ParserGenerator]
+public partial class Parser2Generator : AbstractParserGenerator<Token2, Parser2 , string>
+{
+}
+
+[ParserRoot("root2")]
+public class Parser2
+{
+
+    [Production("root2 : ID2 ints2")]
+    public string Root1(Token<Token2> id, string ids)
+    {
+        return $"{id.Value} : {ids}";
+    }
+
+    [Production("ints2: INT2*")]
+    public string ints(List<Token<Token2>> ids)
+    {
+        return string.Join(" ", ids.Select(i => i.Value));
+    }
+    
+}
+
+public enum Token2
+{
+    
+    [AlphaId]
+    ID2,
+    
+    [Int]
+    INT2
+}

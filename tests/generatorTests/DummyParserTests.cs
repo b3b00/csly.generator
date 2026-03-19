@@ -1,5 +1,6 @@
 ﻿using NFluent;
 using Tester;
+using Tester.dummyparser;
 
 namespace generatorTests;
 

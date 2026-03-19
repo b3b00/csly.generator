@@ -57,14 +57,14 @@ public class ParserBuilderGenerator
 
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model.Rules;
-        _visitor2Generator = new Visitor2Generator(_lexerName, _parserName, _outputType, _namespace, _templateEngine, _staticParserBuilder.Model.Rules);
+        _visitor2Generator = new Visitor2Generator(_lexerName, _parserName, _outputType, classDeclarationSyntax.GetNameSpace()+"."+name.ToLower(), _templateEngine, _staticParserBuilder.Model.Rules);
 
         ExpressionRulesGenerator expressionRulesGenerator = new();
         expressionRulesGenerator.Generate(_staticParserBuilder.Model);
         _staticParserBuilder.ComputeLeaders();
 
-        
-        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOptions.StartingNonTerminal);
+        var nameSpace = classDeclarationSyntax.GetNameSpace()+"."+classDeclarationSyntax.Identifier.ToString().ToLower();
+        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOptions.StartingNonTerminal,nameSpace);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
@@ -100,7 +100,7 @@ public class ParserBuilderGenerator
         return root;
     }
 
-    private string GenerateStaticParser(List<Rule> rules, string startingNonTerminal)
+    private string GenerateStaticParser(List<Rule> rules, string startingNonTerminal, string ns)
     {
         StringBuilder builder = new();
         StringBuilder visitors = new StringBuilder();
@@ -175,7 +175,7 @@ public class ParserBuilderGenerator
             {
                 { "HELPERS", helpers },
                 { "PARSERS", parsers.ToString() },
-                { "NAMESPACE", _namespace },
+                { "NS", ns },
                 { "VISITORS", visitors.ToString()}
             });
 
@@ -773,7 +773,7 @@ public class ParserBuilderGenerator
         var content = _templateEngine.ApplyTemplate("EntryPointParserTemplate", additional: new Dictionary<string, string>()
         {
             {"ROOT",root },
-            {"NAMESPACE",ns   },
+            {"NS",ns+"."+_parserName.ToLower() },
             {"NONTERMINALCASES", nonTerminalCases.ToString() },
             {"NONTERMINALS", nonTerminalValues }
         });

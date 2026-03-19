@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace <#NAMESPACE#>;
+namespace <#NS#>;
 
 
-public enum  Visitors
+public enum  <#PARSER#>Visitors
 {
     <#VISITORS#>
 }

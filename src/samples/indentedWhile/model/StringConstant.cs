@@ -1,5 +1,5 @@
 ﻿using csly.indented.whileLang.compiler;
-using csly.indentedWhile.models;
+using csly.indentedWhile.indentedwhileparsergeneric.models;
 using Sigil;
 
 namespace csly.indented.whileLang.model

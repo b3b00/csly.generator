@@ -1,8 +1,8 @@
 ﻿
 using System.Collections.Generic;
-using Factory = System.Func<csly.<#ASSEMBLY#>.models.FsmMatch<<#NAMESPACE#>.<#LEXER#>>, csly.<#ASSEMBLY#>.models.Token<<#NAMESPACE#>.<#LEXER#>>>;
+using Factory = System.Func<csly.<#ASSEMBLY#>.<#PARSER#>.models.FsmMatch<<#NAMESPACE#>.<#LEXER#>>, csly.<#ASSEMBLY#>.<#PARSER#>.models.Token<<#NAMESPACE#>.<#LEXER#>>>;
 
-namespace <#NAMESPACE#>;
+namespace <#NAMESPACE#>.<#PARSER_NS#>;
 
 
     
@@ -63,7 +63,7 @@ private Factory _defaultFactory;
 
     public <#LEXER#>_FsmLexer_<#MODE#>()
     {
-        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value, match.Position, match.CommentType, match.MultiLineCommentEndDelimiter) {
+        _defaultFactory = match => new Token<<#LEXER#>>(match.Token, match.Value.ToString(), match.Position, match.CommentType, match.MultiLineCommentEndDelimiter) {
             IsExplicit = match.IsExplicit,
             IsPop = match.IsPop,
             PushTarget = match.PushTarget

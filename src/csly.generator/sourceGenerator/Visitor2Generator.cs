@@ -106,11 +106,11 @@ namespace csly.generator.sourceGenerator
             }
 
 
-            var visitor = _templateEngine.ApplyTemplate("Visitor2Template",
+                var visitor = _templateEngine.ApplyTemplate("Visitor2Template",
                 additional: new Dictionary<string, string>()
                 {
                 { "VISITORS", visitors.ToString() },
-                { "NAMESPACE", _namespace },
+                { "NS", _namespace },
                 {"DISPATCHERS", dispatchers.ToString() }
                 });
             return visitor;

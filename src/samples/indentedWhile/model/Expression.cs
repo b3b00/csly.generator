@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using csly.indented.whileLang.compiler;
+﻿using csly.indented.whileLang.compiler;
 
 namespace csly.indented.whileLang.model
 {

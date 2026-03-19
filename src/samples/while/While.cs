@@ -1,4 +1,4 @@
-﻿using csly.whiley.models;
+﻿using csly.whiley.whileparsergeneric.models;
 using csly.whileLang.model;
 
 

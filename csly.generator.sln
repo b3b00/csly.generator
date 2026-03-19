@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jsonparser", "src\samples\j
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sourceGenerationTester", "src\samples\sourceGenerationTester\sourceGenerationTester.csproj", "{3FB79701-DE59-45DA-9809-9AD7FE2D1009}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "manyParser", "src\samples\manyParser\manyParser.csproj", "{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,18 @@ Global
 		{3FB79701-DE59-45DA-9809-9AD7FE2D1009}.Release|x64.Build.0 = Release|Any CPU
 		{3FB79701-DE59-45DA-9809-9AD7FE2D1009}.Release|x86.ActiveCfg = Release|Any CPU
 		{3FB79701-DE59-45DA-9809-9AD7FE2D1009}.Release|x86.Build.0 = Release|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Debug|x64.Build.0 = Debug|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Debug|x86.Build.0 = Debug|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Release|x64.Build.0 = Release|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Release|x86.ActiveCfg = Release|Any CPU
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +189,7 @@ Global
 		{848A9BF4-474F-43CC-9EC4-60212BC7A9FB} = {D1B4CF99-7947-DD6C-81D0-5B5B3989814C}
 		{6A4832E6-C4A2-405A-B0E1-7E7C379F79BB} = {D1B4CF99-7947-DD6C-81D0-5B5B3989814C}
 		{3FB79701-DE59-45DA-9809-9AD7FE2D1009} = {D1B4CF99-7947-DD6C-81D0-5B5B3989814C}
+		{E1660FFF-E7E6-4AC7-8A49-BAB5AC6CC073} = {D1B4CF99-7947-DD6C-81D0-5B5B3989814C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E2588E6B-02A4-483A-8F34-4F260717E632}

@@ -1,4 +1,4 @@
-﻿using csly.jsonparser.models;
+﻿using csly.jsonparser.jsonparser.models;
 using jsonparser.JsonModel;
 
 namespace json;

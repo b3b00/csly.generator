@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using csly.whileLang.compiler;
 using Sigil;
-using csly.whiley.models;
+using csly.whiley.whileparsergeneric.models;
 
 namespace csly.whileLang.model;
 

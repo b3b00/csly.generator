@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace <#NAMESPACE#>;
+namespace <#NS#>;
 
 public enum <#PARSER#>NonTerminal {
     <#NONTERMINALS#>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using csly.<#ASSEMBLY#>.models;
+using csly.<#ASSEMBLY#>.<#PARSER_NS#>.models;
 
-namespace <#NAMESPACE#>;
+namespace <#NAMESPACE#>.<#PARSER_NS#>;
 
     public interface ISubLexer
     {

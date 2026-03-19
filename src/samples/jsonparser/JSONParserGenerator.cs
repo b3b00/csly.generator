@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.Design.Serialization;
-using csly.jsonparser.models;
+using csly.jsonparser.jsonparser.models;
 using jsonparser.JsonModel;
 
 namespace jsonparser.JsonModel

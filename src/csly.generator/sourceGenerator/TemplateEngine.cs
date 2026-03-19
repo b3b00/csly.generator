@@ -24,6 +24,7 @@ public class TemplateEngine
     private const string OUTPUT_PLACEHOLDER = "<#OUTPUT#>";
     private const string NAME_PLACEHOLDER = "<#NAME#>";
     private const string NAMESPACE_PLACEHOLDER = "<#NAMESPACE#>";
+    private const string PARSER_NAMESPACE_PLACEHOLDER = "<#PARSER_NS#>";
 
     public TemplateEngine(string lexerName, string parserName, string outputType, string nameSpace)
     {
@@ -75,6 +76,7 @@ public class TemplateEngine
             template = Substitute(template, PARSER_PLACEHOLDER, _parserName);
             template = Substitute(template, OUTPUT_PLACEHOLDER, _outputType);
             template = Substitute(template, NAMESPACE_PLACEHOLDER, _namespace);
+            template = Substitute(template, PARSER_NAMESPACE_PLACEHOLDER, _parserName.ToLower());
             if (name != null)
             {
                 template = Substitute(template, NAME_PLACEHOLDER, name);
