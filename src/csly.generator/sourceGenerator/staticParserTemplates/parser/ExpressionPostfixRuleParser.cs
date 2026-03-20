@@ -18,7 +18,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseRule_<#HEAD#>_<#INDEX#>(Lis
 
     if (r1.IsError)
     {                
-        var leftTree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>() { r0.Root },
+        var leftTree = new SyntaxNode<<#LEXER#>, <#OUTPUT#>>("<#HEAD#>", new List<ISyntaxNode<<#LEXER#>, <#OUTPUT#>>>(1) { r0.Root },
         "<#HEAD#>_<#INDEX#>");
         leftTree.ExpressionAffix = Affix.<#AFFIX#>;
         leftTree.Precedence = <#PRECEDENCE#>;

@@ -1,6 +1,6 @@
 ﻿using jsonparser.JsonModel;
 
-namespace jsonbench.csly.JsonModel
+namespace benchgenerator.csly.JsonModel
 {
     public class JValue : JSon
     {

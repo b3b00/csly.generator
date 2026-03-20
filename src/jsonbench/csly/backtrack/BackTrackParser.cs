@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using csly.backtrack.backtrackparser.models;
+﻿using sly.lexer;
+using sly.parser.generator;
+
+namespace benchgenerator.csly.backtrack;
 
 
-namespace backtrack;
-
-[ParserGenerator]
-
-public partial class BackTrack : AbstractParserGenerator<BackTrackToken, BackTrackParser, string>
-{
-
-}
 
 public enum BackTrackToken
 {
-[Lexeme(GenericToken.KeyWord, "IF")]
+    [Lexeme(GenericToken.KeyWord, "IF")]
     [Lexeme(GenericToken.KeyWord, "if")]
     IF = 1,
 

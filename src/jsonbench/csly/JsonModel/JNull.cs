@@ -1,6 +1,6 @@
-﻿namespace jsonbench.csly.JsonModel
+﻿namespace benchgenerator.csly.JsonModel
 {
-    public class JNull : jsonbench.csly.JsonModel.JSon
+    public class JNull : JSon
     {
         public override bool IsNull => true;
     }

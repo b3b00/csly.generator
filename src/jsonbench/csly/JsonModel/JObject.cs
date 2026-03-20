@@ -1,19 +1,19 @@
-﻿namespace jsonbench.csly.JsonModel
+﻿namespace benchgenerator.csly.JsonModel
 {
-    public class JObject : jsonbench.csly.JsonModel.JSon
+    public class JObject : JSon
     {
-        public JObject(string key, jsonbench.csly.JsonModel.JSon value)
+        public JObject(string key, JSon value)
         {
-            Values = new Dictionary<string, jsonbench.csly.JsonModel.JSon>();
+            Values = new Dictionary<string, JSon>();
             Values[key] = value;
         }
 
         public JObject()
         {
-            Values = new Dictionary<string, jsonbench.csly.JsonModel.JSon>();
+            Values = new Dictionary<string, JSon>();
         }
 
-        public JObject(Dictionary<string, jsonbench.csly.JsonModel.JSon> dic)
+        public JObject(Dictionary<string, JSon> dic)
         {
             Values = dic;
         }
@@ -22,11 +22,11 @@
 
         public override bool IsList => true;
 
-        private Dictionary<string, jsonbench.csly.JsonModel.JSon> Values { get; }
+        private Dictionary<string, JSon> Values { get; }
 
         public int Count => Values.Count;
 
-        public jsonbench.csly.JsonModel.JSon this[string key]
+        public JSon this[string key]
         {
             get => Values[key];
             set => Values[key] = value;

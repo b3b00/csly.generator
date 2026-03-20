@@ -275,8 +275,8 @@ public class Token<T> where T:struct, Enum
             var result = Value;
             if (StringDelimiter != (char) 0)
             {
-                if (result.StartsWith(StringDelimiter.ToString())) result = result.Substring(1);
-                if (result.EndsWith(StringDelimiter.ToString())) result = result.Substring(0, result.Length - 1);
+                if (result.Length > 0 && result[0] == StringDelimiter) result = result.Substring(1);
+                if (result.Length > 0 && result[result.Length - 1] == StringDelimiter) result = result.Substring(0, result.Length - 1);
             }
 
             return result;

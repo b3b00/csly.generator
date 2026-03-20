@@ -10,3 +10,4 @@
 **/msbuild.binlog
 **/nupkg/*
 **/lcov.info
+**/BenchmarkDotNet.Artifacts/*

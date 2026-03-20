@@ -381,7 +381,7 @@ Log("Generating FSM for mode " + mode);
 
             var endingTransition = state.IsEnd ?
                 @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
-        var memory = new ReadOnlyMemory<char>(sliced.ToArray());
+        var memory = _sourceMemory.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
         _currentMatch = {(targetState.IsExplicitEnd ? explicitMatch : match)};"
             :
             "";
@@ -415,8 +415,7 @@ Log("Generating FSM for mode " + mode);
 _currentMatch.MultiLineCommentEndDelimiter = ""{state.MultiLineCommentEndString}"";" :
                       "";
         var ending = state.IsEnd ?
-            @$"    var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
-        var memory = new ReadOnlyMemory<char>(sliced.ToArray());
+            @$"    var memory = _sourceMemory.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
         _currentMatch = {(state.IsExplicitEnd ? explicitMatch : match)} ;
         {comment}"
         :

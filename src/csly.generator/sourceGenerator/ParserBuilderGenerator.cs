@@ -331,8 +331,8 @@ public class ParserBuilderGenerator
             additional: new Dictionary<string, string>()
             {
                 {"CHOICECALLLIST", callsBuilder.ToString() },
-                {"CHOICE_COUNT", (choiceClause.Choices.Count - 1).ToString() },
-                {"EXPECTEDTOKENS", expected}
+                {"EXPECTEDTOKENS", expected},
+                {"CHOICE_COUNT", choiceClause.Choices.Count.ToString()}
             });
         builder.AppendLine(content).AppendLine();
     }

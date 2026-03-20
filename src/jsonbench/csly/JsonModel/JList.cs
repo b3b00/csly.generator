@@ -1,38 +1,38 @@
-﻿namespace jsonbench.csly.JsonModel
+﻿namespace benchgenerator.csly.JsonModel
 {
-    public class JList : jsonbench.csly.JsonModel.JSon
+    public class JList : JSon
 
     {
         public JList()
         {
-            Items = new List<jsonbench.csly.JsonModel.JSon>();
+            Items = new List<JSon>();
         }
 
-        public JList(List<jsonbench.csly.JsonModel.JSon> lst)
+        public JList(List<JSon> lst)
         {
             Items = lst;
         }
 
 
-        public JList(jsonbench.csly.JsonModel.JSon item)
+        public JList(JSon item)
         {
-            Items = new List<jsonbench.csly.JsonModel.JSon>();
+            Items = new List<JSon>();
             Items.Add(item);
         }
 
         public override bool IsList => true;
 
-        public List<jsonbench.csly.JsonModel.JSon> Items { get; }
+        public List<JSon> Items { get; }
 
         public int Count => Items.Count;
 
-        public jsonbench.csly.JsonModel.JSon this[int index]
+        public JSon this[int index]
         {
             get => Items[index];
             set => Items[index] = value;
         }
 
-        public void Add(jsonbench.csly.JsonModel.JSon item)
+        public void Add(JSon item)
         {
             Items.Add(item);
         }
@@ -42,7 +42,7 @@
             Items.AddRange(items.Items);
         }
 
-        public void AddRange(List<jsonbench.csly.JsonModel.JSon> items)
+        public void AddRange(List<JSon> items)
         {
             Items.AddRange(items);
         }

@@ -1,4 +1,4 @@
-﻿namespace jsonbench.csly.JsonModel
+﻿namespace benchgenerator.csly.JsonModel
 {
     public abstract class JSon
     {

@@ -8,8 +8,7 @@
         {
             // end of source reached and we are in a final state
             // generate token from _currentState
-            var sliced = source.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
-            var memory = new ReadOnlyMemory<char>(sliced.ToArray());
+            var memory = _sourceMemory.Slice(_startPosition.Index, _currentPosition.Index - _startPosition.Index);
             _currentMatch = new FsmMatch<<#LEXER#>>(_stateTokens[newState<#STATE#>], memory, _startPosition)
             {
                 IsPop = false,
@@ -36,7 +35,7 @@
         _currentState = 0;
         
         
-        _currentPosition = ConsumeComments(token, source.ToArray());
+        _currentPosition = ConsumeComments(token, _sourceMemory);
         
         
         AddToken(token);
@@ -66,7 +65,7 @@
             var token = factory(match<#STATE#>);
             
             
-            _currentPosition = ConsumeComments(token, source.ToArray());
+            _currentPosition = ConsumeComments(token, _sourceMemory);
             
             
             AddToken(token);

@@ -20,6 +20,8 @@ public class <#LEXER#>_FsmLexer_<#MODE#> : ISubLexer
 
     private LexerPosition _currentPosition { get; set; }
 
+    private ReadOnlyMemory<char> _sourceMemory;
+
     private LexerPosition _startPosition { get; set; }
 
     private char GetChar(ReadOnlySpan<char> source, LexerPosition position)
@@ -317,8 +319,9 @@ private Factory _defaultFactory;
 
 public (LexerResult<<#LEXER#>> Result, LexerPosition NewPosition, bool isPop, string PushTarget) Scan(ReadOnlySpan<char> source, LexerPosition position) {
         _currentPosition = position;
-_startPosition = position.Clone();
-List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
+        _startPosition = position.Clone();
+        _sourceMemory = new ReadOnlyMemory<char>(source.ToArray());
+        List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
 
 
         void AddToken(Token <<#LEXER#>> token) {
@@ -363,7 +366,7 @@ List <Token<<#LEXER#>>> tokens = new List<Token<<#LEXER#>>>();
             }
             var token = factory(_lastSuccessMatch);
 
-            _currentPosition = ConsumeComments(token, source.ToArray());
+            _currentPosition = ConsumeComments(token, _sourceMemory);  
             
             AddToken(token);
             _lastSuccessMatch = null;

@@ -12,11 +12,11 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseChoice_<#NAME#>(List<Token<
 
     
 
-        var expectedTokens = new List<LeadingToken<<#LEXER#>>>() { <#EXPECTEDTOKENS#> };
+        var expectedTokens = new List<LeadingToken<<#LEXER#>>>(<#CHOICE_COUNT#>) { <#EXPECTEDTOKENS#> };
 
         result.IsError = true;
-    var allExpected = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>() { new UnexpectedTokenSyntaxError<<#LEXER#>>(tokens[position],"en", expectedTokens) };
-    var accumulatedErrors = results.SelectMany(x => x.Errors != null && x.Errors.Count > 0? x.GetErrors().ToList() : new List<UnexpectedTokenSyntaxError<<#LEXER#>>>()).ToList();
+    var allExpected = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>(1) { new UnexpectedTokenSyntaxError<<#LEXER#>>(tokens[position],"en", expectedTokens) };
+    var accumulatedErrors = results.SelectMany(x => x.Errors != null && x.Errors.Count > 0? x.GetErrors().ToList() : Enumerable.Empty<UnexpectedTokenSyntaxError<<#LEXER#>>>()).ToList();
     //result.AddErrors(results.SelectMany(x => x.Errors != null && x.Errors.Count > 0? x.GetErrors() : allExpected).ToList());
     allExpected.AddRange(accumulatedErrors);
     result.AddErrors(allExpected);
