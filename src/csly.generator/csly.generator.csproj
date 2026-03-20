@@ -9,8 +9,8 @@
     <Nullable>enable</Nullable>
     <PackageProjectUrl>https://github.com/b3b00/csly.generator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/b3b00/csly.generator</RepositoryUrl>
-    <version>0.9.5</version>
-    <PackageVersion>0.9.5</PackageVersion>
+    <version>0.9.6</version>
+    <PackageVersion>0.9.6</PackageVersion>
     <LangVersion>latest</LangVersion>
     
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
