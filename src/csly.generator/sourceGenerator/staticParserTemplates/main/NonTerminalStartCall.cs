@@ -14,6 +14,6 @@ case "<#NAME#>": {
     }
     else
     {
-        return new ParseResult<<#LEXER#>, string>(result<#NAME#>.GetParseErrors());
+        return new ParseResult<<#LEXER#>, <#OUTPUT#>>(result<#NAME#>.GetParseErrors());
     }
 }
