@@ -1,6 +1,52 @@
 
 #region helpers
 
+
+private static bool AnyLeadingMatches(LeadingToken<<#LEXER#>>[] leadings, Token<<#LEXER#>> token)
+{
+    for (int i = 0; i < leadings.Length; i++)
+    {
+        if (leadings[i].Match(token))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+private static List<UnexpectedTokenSyntaxError<<#LEXER#>>> AccumulateErrors(List<SyntaxParseResult<<#LEXER#>, string>> results, int estimatedCapacity = 4)
+{
+    var accumulatedErrors = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>(estimatedCapacity);
+    for (int i = 0; i < results.Count; i++)
+    {
+        if (results[i].Errors != null && results[i].Errors.Count > 0)
+        {
+            var errors = results[i].GetErrors();
+            for (int j = 0; j < errors.Count; j++)
+            {
+                accumulatedErrors.Add(errors[j]);
+            }
+        }
+    }
+    return accumulatedErrors;
+}
+
+private static SyntaxParseResult<<#LEXER#>, string> FindBestOkResult(List<SyntaxParseResult<<#LEXER#>, string>> results)
+{
+    SyntaxParseResult<<#LEXER#>, string> best = null;
+    int maxPosition = -1;
+    for (int i = 0; i < results.Count; i++)
+    {
+        if (results[i].IsOk && results[i].EndingPosition > maxPosition)
+        {
+            maxPosition = results[i].EndingPosition;
+            best = results[i];
+        }
+    }
+    return best;
+}
+
+
 public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> parseTerminal(List<Token<<#LEXER#>>> tokens, <#LEXER#> expected, int position,
         bool discarded = false)
     {

@@ -19,7 +19,14 @@ public class TokenChannel<IN>  where IN : struct, Enum
     public TokenChannel(List<Token<IN>> tokens, int channelId)
     {
         Tokens = tokens;
-        _notNullOrEosTokens = tokens.Where(x => x != null && !x.IsEOS).ToList();
+        _notNullOrEosTokens = new List<Token<IN>>(tokens.Count);
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i] != null && !tokens[i].IsEOS)
+            {
+                _notNullOrEosTokens.Add(tokens[i]);
+            }
+        }
         ChannelId = channelId;
     }
 

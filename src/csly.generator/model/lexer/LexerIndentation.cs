@@ -11,14 +11,39 @@ public class LexerIndentation
 
     public int CurrentLevel => _currentLevel;
 
-    public string Current => _indentations.Any() && _currentLevel < _indentations.Count && _currentLevel >= 0 ? _indentations[_currentLevel] : "";
+    public string Current
+    {
+        get
+        {
+            if (_indentations.Count > 0 && _currentLevel < _indentations.Count && _currentLevel >= 0)
+            {
+                return _indentations[_currentLevel];
+            }
+            return "";
+        }
+    }
 
     private void DoIndent(string shift)
     {
         if (!_indentations.Contains(shift))
         {
             _indentations.Add(shift);
-            _indentations = _indentations.OrderBy(x => x.Length).ToList();
+            // Sort by length using insertion sort
+            var sorted = new List<string>(_indentations.Count);
+            foreach (var indent in _indentations)
+            {
+                int insertIndex = sorted.Count;
+                for (int i = 0; i < sorted.Count; i++)
+                {
+                    if (indent.Length < sorted[i].Length)
+                    {
+                        insertIndex = i;
+                        break;
+                    }
+                }
+                sorted.Insert(insertIndex, indent);
+            }
+            _indentations = sorted;
         }
 
         _currentLevel ++;
@@ -30,7 +55,7 @@ public class LexerIndentation
     }
     public (bool isIndent, LexerIndentationType type) Indent(string shift)
     {
-        if (!_indentations.Any())
+        if (_indentations.Count == 0)
         {
             if (shift.Length > 0)
             {
@@ -72,7 +97,14 @@ public class LexerIndentation
         // indent case : shift must match all previous indentations
         if (shift.Length > _indentations[_indentations.Count-1].Length)
         {
-            return !_indentations.All(x => shift.StartsWith(x));
+            for (int i = 0; i < _indentations.Count; i++)
+            {
+                if (!shift.StartsWith(_indentations[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         if (shift.Length == 0)
@@ -85,10 +117,15 @@ public class LexerIndentation
 
     public LexerIndentation Clone()
     {
+        var clonedIndentations = new List<string>(_indentations.Count);
+        for (int i = 0; i < _indentations.Count; i++)
+        {
+            clonedIndentations.Add(_indentations[i]);
+        }
         return new LexerIndentation()
         {
             _currentLevel = _currentLevel,
-            _indentations = _indentations.Select(x => x).ToList()
+            _indentations = clonedIndentations
         };
     }
         

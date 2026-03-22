@@ -53,7 +53,7 @@ public class <#PARSER#>Main
         }
         else
         {
-            return new ParseResult<<#LEXER#>, <#OUTPUT#>>(result.Errors.Cast<ParseError>().ToList());
+            return new ParseResult<<#LEXER#>, string>(result.GetParseErrors());
         }
     }
     

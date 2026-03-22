@@ -26,9 +26,32 @@ public class TokenChannels<IN> : IEnumerable<Token<IN>>  where IN : struct, Enum
     
     public List<Token<IN>> AllTokens => _allTokens;
 
-    public IEnumerable<Token<IN>> GetAllExceptWhiteSpaces() => _allTokens.Where(x => !x.IsWhiteSpace);
+    public IEnumerable<Token<IN>> GetAllExceptWhiteSpaces()
+    {
+        var result = new List<Token<IN>>(_allTokens.Count);
+        for (int i = 0; i < _allTokens.Count; i++)
+        {
+            if (!_allTokens[i].IsWhiteSpace)
+            {
+                result.Add(_allTokens[i]);
+            }
+        }
+        return result;
+    }
     
-    public List<Token<IN>> MainTokens() => GetChannel(Channels.Main).Tokens.Where(x => x != null).ToList();
+    public List<Token<IN>> MainTokens()
+    {
+        var mainChannel = GetChannel(Channels.Main).Tokens;
+        var result = new List<Token<IN>>(mainChannel.Count);
+        for (int i = 0; i < mainChannel.Count; i++)
+        {
+            if (mainChannel[i] != null)
+            {
+                result.Add(mainChannel[i]);
+            }
+        }
+        return result;
+    }
      
     
 

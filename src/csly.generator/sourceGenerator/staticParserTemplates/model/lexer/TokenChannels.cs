@@ -51,7 +51,25 @@ public class TokenChannels<IN> : IEnumerable<Token<IN>>  where IN : struct, Enum
 
     public IEnumerable<TokenChannel<IN>> GetChannels()
     {
-        return _tokenChannels.Values.OrderBy(x => x.ChannelId);
+        var channels = new List<TokenChannel<IN>>(_tokenChannels.Count);
+        foreach (var kvp in _tokenChannels)
+        {
+            channels.Add(kvp.Value);
+        }
+        // Sort by ChannelId
+        for (int i = 0; i < channels.Count - 1; i++)
+        {
+            for (int j = i + 1; j < channels.Count; j++)
+            {
+                if (channels[j].ChannelId < channels[i].ChannelId)
+                {
+                    var temp = channels[i];
+                    channels[i] = channels[j];
+                    channels[j] = temp;
+                }
+            }
+        }
+        return channels;
     }
     
     public TokenChannel<IN> GetChannel(int i)
@@ -76,7 +94,17 @@ public class TokenChannels<IN> : IEnumerable<Token<IN>>  where IN : struct, Enum
     {
         token.TokenChannels = this;
         TokenChannel<IN> channel = null;
-        var mx = _tokenChannels?.Values != null && _tokenChannels.Values.Any() ?  _tokenChannels.Values.Max(x => x.Count) : 0;
+        int mx = 0;
+        if (_tokenChannels?.Values != null && _tokenChannels.Count > 0)
+        {
+            foreach (var ch in _tokenChannels.Values)
+            {
+                if (ch.Count > mx)
+                {
+                    mx = ch.Count;
+                }
+            }
+        }
         
         if (!TryGet(token.Channel, out channel))
         {
@@ -84,7 +112,7 @@ public class TokenChannels<IN> : IEnumerable<Token<IN>>  where IN : struct, Enum
             
             channel = new TokenChannel<IN>(token.Channel);
             int shift = 0;
-            if (_tokenChannels.Values.Any())
+            if (_tokenChannels.Count > 0)
             {
                 shift = mx;
             }
@@ -128,7 +156,13 @@ public class TokenChannels<IN> : IEnumerable<Token<IN>>  where IN : struct, Enum
     [ExcludeFromCodeCoverage]
     public override string ToString()
     {
-        return string.Join("\n", _tokenChannels.Values.Select(x => x.ToString()).ToArray());
+        var strings = new string[_tokenChannels.Count];
+        int idx = 0;
+        foreach (var channel in _tokenChannels.Values)
+        {
+            strings[idx++] = channel.ToString();
+        }
+        return string.Join("\n", strings);
     }
 
     public void PreCompute()

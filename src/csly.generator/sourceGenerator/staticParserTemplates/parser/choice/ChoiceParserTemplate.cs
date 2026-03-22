@@ -6,7 +6,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseChoice_<#NAME#>(List<Token<
     var result = new SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>();
         var token = tokens[position];
 
-    var results = new List<SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>>();
+    var results = new List<SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>>(2);
 
     <#CHOICECALLLIST#>        
 
@@ -16,7 +16,7 @@ public SyntaxParseResult<<#LEXER#>, <#OUTPUT#>> ParseChoice_<#NAME#>(List<Token<
 
         result.IsError = true;
     var allExpected = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>(1) { new UnexpectedTokenSyntaxError<<#LEXER#>>(tokens[position],"en", expectedTokens) };
-    var accumulatedErrors = results.SelectMany(x => x.Errors != null && x.Errors.Count > 0? x.GetErrors().ToList() : Enumerable.Empty<UnexpectedTokenSyntaxError<<#LEXER#>>>()).ToList();
+    var accumulatedErrors = AccumulateErrors(results, <#CHOICE_COUNT#>); 
     //result.AddErrors(results.SelectMany(x => x.Errors != null && x.Errors.Count > 0? x.GetErrors() : allExpected).ToList());
     allExpected.AddRange(accumulatedErrors);
     result.AddErrors(allExpected);

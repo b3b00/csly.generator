@@ -238,7 +238,7 @@ public class ParserBuilderGenerator
         if (_ruleParsers.TryGetValue(nonTerminalClause.Name, out var rules))
         {
             StringBuilder calls = new();
-
+            
             var allLeaders = rules.SelectMany(r => r.Leaders)
                     .Distinct().ToList()
                     .Select(leaderToString);
@@ -268,6 +268,8 @@ public class ParserBuilderGenerator
                 additional: new Dictionary<string, string>()
                 {
                 {"CALLS", calls.ToString()},
+                {"RULES_COUNT", rules.Count().ToString()},
+                {"EXPECTED_COUNT",allLeaders.Count().ToString()},
                 {"EXPECTEDTOKENS",expecting }
                 });
             builder.AppendLine(content).AppendLine();
