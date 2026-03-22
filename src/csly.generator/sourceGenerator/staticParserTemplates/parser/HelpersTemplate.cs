@@ -14,7 +14,7 @@ private static bool AnyLeadingMatches(LeadingToken<<#LEXER#>>[] leadings, Token<
     return false;
 }
 
-private static List<UnexpectedTokenSyntaxError<<#LEXER#>>> AccumulateErrors(List<SyntaxParseResult<<#LEXER#>, string>> results, int estimatedCapacity = 4)
+private static List<UnexpectedTokenSyntaxError<<#LEXER#>>> AccumulateErrors(List<SyntaxParseResult<<#LEXER#>, <#OUTPUT#>>> results, int estimatedCapacity = 4)
 {
     var accumulatedErrors = new List<UnexpectedTokenSyntaxError<<#LEXER#>>>(estimatedCapacity);
     for (int i = 0; i < results.Count; i++)
