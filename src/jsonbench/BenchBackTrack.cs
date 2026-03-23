@@ -37,7 +37,9 @@ public class BenchBackTrack
         }
         else
         {
-            throw new Exception($"could not build csly backtrack parser {string.Join(", ",r.Errors.Select(x => x.Message))}"); 
+            var message = $"could not build csly backtrack parser {string.Join(", ", r.Errors.Select(x => x.Message))}";
+            Console.WriteLine(message);
+            throw new Exception(message); 
         }
     }
 

@@ -5,11 +5,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PublishAot>true</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
-      <PackageReference Include="csly.generator" Version="0.9.5" />
+      <PackageReference Include="csly.generator" Version="0.9.6" />
       <PackageReference Include="sly" Version="3.7.7" />
     </ItemGroup>
 

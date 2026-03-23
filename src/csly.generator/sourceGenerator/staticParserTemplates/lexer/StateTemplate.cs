@@ -1,7 +1,6 @@
 ﻿public (bool ok, int newState, FsmMatch<<#LEXER#>> match, bool isGoingEnd) scanState_<#STATE_ID#>(LexerPosition position, ReadOnlySpan<char> source) {
     bool isEnd = <#IS_END#>;
     
-    //Console.WriteLine($"In state <#STATE_ID#> of mode {Name} at position {position.Index} char '{ch}' (isEnd={isEnd})");
     <#TRANSITIONS#>
     
     if (isEnd) {

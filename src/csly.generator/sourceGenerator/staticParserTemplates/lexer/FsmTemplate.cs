@@ -325,7 +325,6 @@ public (LexerResult<<#LEXER#>> Result, LexerPosition NewPosition, bool isPop, st
 
 
         void AddToken(Token <<#LEXER#>> token) {
-            //Console.WriteLine($"[<#MODE#>] {token}");
             _lastSuccessMatch = null;
             _currentMatch = null;
             tokens.Add(token);

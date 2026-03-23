@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Diagnostics;
+using backtrack;
+using backtrack.backtrackparser;
 using backtrackbench;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Loggers;
@@ -15,6 +17,23 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        // BackTrackParser instance =  new BackTrackParser();
+        // var generatedParser = new BackTrackParserMain(instance);
+        // var source = "funA(funB(C == 2));";
+        // var r = generatedParser.Parse(source);
+        // if (r.IsOk)
+        // {
+        //     Console.WriteLine(r.Result);
+        // }
+        // else
+        // {
+        //     foreach (var error in r.Errors)  
+        //     {
+        //         Console.WriteLine(error.ErrorMessage);
+        //     }
+        // }
+        
+        
         BenchThisBackTrack();
         //BenchThisJson();
 

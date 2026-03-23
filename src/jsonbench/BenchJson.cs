@@ -44,7 +44,18 @@ public class BenchJson
     [Benchmark]
     public void Generator()
     {
-        generatedParser.Parse(json);
+        var r = generatedParser.Parse(json);
+        if (r.IsOk)
+        {
+            Console.WriteLine(r.Result);
+        }
+        else 
+        {
+            foreach (var error in r.Errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
+        }
     }
 
     [Benchmark(Baseline = true)]
