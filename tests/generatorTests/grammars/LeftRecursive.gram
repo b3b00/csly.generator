@@ -1,0 +1,34 @@
+using System;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.attributes;
+
+namespace LeftRecTest;
+
+[ParserGenerator]
+public partial class Grammar : AbstractParserGenerator<LeftRecToken, LeftRecParser, int>
+{
+}
+
+public enum LeftRecToken
+{
+    [Lexeme(GenericToken.Int)]
+    INT = 1,
+    [Sugar("+")]
+    PLUS = 2,
+    [Sugar("*")]
+    MUL = 3,
+    [Sugar("(")]
+    LPAREN = 4,
+    [Sugar(")")]
+    RPAREN = 5,
+}
+
+[ParserRoot("expression")]
+public class LeftRecParser
+{
+    [Production("expression : expression PLUS expression")]
+    public int Add(int left, Token<LeftRecToken> op, int right) => left + right;
+
+    [Production("expression : INT")]
+    public int Int(Token<LeftRecToken> t) => t.IntValue;
+}

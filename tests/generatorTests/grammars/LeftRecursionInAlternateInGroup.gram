@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.attributes;
+
+namespace LeftRecursiveZeroOrMoreTest;
+
+[ParserGenerator]
+public partial class Grammar : AbstractParserGenerator<OptionTestToken, LeftRecWithChoiceInGroup, string>
+{
+}
+
+ public enum OptionTestToken
+    {
+        [Keyword("a")] a = 1
+    }
+
+[ParserRoot("leftrec")]
+public class LeftRecWithChoiceInGroup
+{
+    [Production("leftrec: ([leftrec | right])")]
+    public string leftrec(Group<OptionTestToken, string> opt)
+    {
+        return "";
+    }
+
+    [Production("right : a")]
+    public string right(Token<OptionTestToken> a)
+    {
+        return a.Value;
+    }
+}

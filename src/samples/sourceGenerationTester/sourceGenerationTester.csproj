@@ -19,7 +19,8 @@
     <ItemGroup>
       <!-- <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" /> -->
 
-      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" />
+<!--      <ProjectReference Include="..\..\csly.generator\csly.generator.csproj" />-->
+        <PackageReference Include="csly.generator" Version="0.9.6" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>

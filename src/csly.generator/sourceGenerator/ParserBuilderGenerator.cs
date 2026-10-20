@@ -57,6 +57,17 @@ public class ParserBuilderGenerator
 
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model.Rules;
+
+        // Fail completely if left recursion is detected, before ComputeLeaders()
+        // would recurse infinitely on left-recursive grammars.
+        var (leftRecursionFound, recursions) = LeftRecursionChecker.CheckLeftRecursion(_staticParserBuilder.Model);
+        if (leftRecursionFound)
+        {
+            throw new LeftRecursionException(
+                $"Left recursion detected in parser {name} : " +
+                string.Join("; ", recursions.Select(r => string.Join(" > ", r))));
+        }
+
         _visitor2Generator = new Visitor2Generator(_lexerName, _parserName, _outputType, classDeclarationSyntax.GetNameSpace()+"."+name.ToLower(), _templateEngine, _staticParserBuilder.Model.Rules);
 
         ExpressionRulesGenerator expressionRulesGenerator = new();

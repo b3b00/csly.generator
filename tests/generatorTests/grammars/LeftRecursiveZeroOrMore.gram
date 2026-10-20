@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.attributes;
+
+namespace LeftRecursiveZeroOrMoreTest;
+
+[ParserGenerator]
+public partial class Grammar : AbstractParserGenerator<LeftRecursiveZeroOrMoreToken, LeftRecursiveZeroOrMoreParser, int>
+{
+}
+
+public enum LeftRecursiveZeroOrMoreToken
+{
+    [Lexeme(GenericToken.Int)]
+    INT = 1,
+    [Sugar("b")]
+    B = 2,
+    [Sugar("c")]
+    C = 3,
+}
+
+[ParserRoot("expression")]
+public class LeftRecursiveZeroOrMoreParser
+{
+    [Production("expression : expression* B")]
+    public int Star(List<int> left, Token<LeftRecursiveZeroOrMoreToken> b) => left.Count;
+
+    [Production("expression : INT")]
+    public int Int(Token<LeftRecursiveZeroOrMoreToken> t) => t.IntValue;
+}

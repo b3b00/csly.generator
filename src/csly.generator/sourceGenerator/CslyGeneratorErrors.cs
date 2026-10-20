@@ -13,4 +13,6 @@ public static class CslyGeneratorErrors
     public const string PARSER_GENERATION_FAILED = "CSLY0005";
 
     public const string NO_PARSER_GENERATOR_FOUND = "CSLY0006";
+
+    public const string LEFT_RECURSION_DETECTED = "CSLY0007";
 }

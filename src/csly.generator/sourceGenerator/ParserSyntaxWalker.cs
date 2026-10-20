@@ -36,7 +36,9 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         {
             VisitMethodDeclaration(method);
         }
-        _staticParserBuilder.ComputeLeaders();
+        // ComputeLeaders() is called in ParserBuilderGenerator.GenerateParser after the
+        // left-recursion check, so it must NOT be called here (it would recurse infinitely
+        // on left-recursive grammars before the check can run).
     }
 
     public override void VisitAttribute(AttributeSyntax node)

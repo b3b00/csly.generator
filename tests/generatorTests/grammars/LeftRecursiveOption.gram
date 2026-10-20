@@ -1,0 +1,30 @@
+using System;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.attributes;
+
+namespace LeftRecursiveOptionTest;
+
+[ParserGenerator]
+public partial class Grammar : AbstractParserGenerator<LeftRecursiveOptionToken, LeftRecursiveOptionParser, int>
+{
+}
+
+public enum LeftRecursiveOptionToken
+{
+    [Lexeme(GenericToken.Int)]
+    INT = 1,
+    [Sugar("a")]
+    A = 2,
+    [Sugar("b")]
+    B = 3,
+}
+
+[ParserRoot("expression")]
+public class LeftRecursiveOptionParser
+{
+    [Production("expression : expression? A")]
+    public int Opt(int? left, Token<LeftRecursiveOptionToken> a) => left ?? 0;
+
+    [Production("expression : INT")]
+    public int Int(Token<LeftRecursiveOptionToken> t) => t.IntValue;
+}

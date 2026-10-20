@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\csly.generator\csly.generator.csproj" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\..\src\csly.generator\csly.generator.csproj" />
     <ProjectReference Include="..\..\src\samples\backtrack\backtrack.csproj" />
     <ProjectReference Include="..\..\src\samples\indentedWhile\indentedWhile.csproj" />
     <ProjectReference Include="..\..\src\samples\jsonparser\jsonparser.csproj" />
@@ -38,6 +39,10 @@
     <ProjectReference Include="..\..\src\samples\dummy\dummy.csproj" />
     <ProjectReference Include="..\..\src\samples\XML\XML.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="grammars\*.gram" />
+  </ItemGroup>
+
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>

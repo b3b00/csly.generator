@@ -1,0 +1,37 @@
+using System;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.attributes;
+
+namespace IndirectLeftRecTest;
+
+[ParserGenerator]
+public partial class Grammar : AbstractParserGenerator<IndirectLeftRecToken, IndirectLeftRecParser, int>
+{
+}
+
+public enum IndirectLeftRecToken
+{
+    [Lexeme(GenericToken.Int)]
+    INT = 1,
+    [Sugar("+")]
+    PLUS = 2,
+    [Sugar("*")]
+    MUL = 3,
+    [Sugar("(")]
+    LPAREN = 4,
+    [Sugar(")")]
+    RPAREN = 5,
+}
+
+[ParserRoot("expression")]
+public class IndirectLeftRecParser
+{
+    [Production("expression : term")]
+    public int Expression(int t) => t;
+
+    [Production("term : expression MUL expression")]
+    public int Mul(int left, Token<IndirectLeftRecToken> op, int right) => left * right;
+
+    [Production("term : INT")]
+    public int Int(Token<IndirectLeftRecToken> t) => t.IntValue;
+}

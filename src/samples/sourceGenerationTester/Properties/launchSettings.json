@@ -43,6 +43,10 @@
     "many generation": {
       "commandName": "Project",
       "commandLineArgs": "many c:/tmp/generation/many"
+    },
+    "bench generation": {
+      "commandName": "Project",
+      "commandLineArgs": "exprbench c:/tmp/generation/exprbench"
     }
     
   }
