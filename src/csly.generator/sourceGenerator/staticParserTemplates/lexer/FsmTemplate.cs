@@ -113,11 +113,14 @@ private Factory _defaultFactory;
         }
 
         char current = source[index + i];
-        while (i < source.Length && (current == ' ' || current == '\t'))
+        while (i < (source.Length - index) && (current == ' ' || current == '\t'))
         {
             indentations.Add(current);
             i++;
-            current = source[index + i];
+            if (index + i < source.Length)
+            {
+                current = source[index + i];
+            }
         }
 
         return indentations;
@@ -130,6 +133,34 @@ private Factory _defaultFactory;
             {
                 var shifts = GetIndentations(source, lexerPosition.Index);
                 string currentShift = string.Join("", shifts);
+                
+                // Blank line (only whitespace until newline/EOS): no indent change
+                int afterIndent = lexerPosition.Index + currentShift.Length;
+                bool isBlankLine = afterIndent >= source.Length
+                                   || source[afterIndent] == '\n'
+                                   || source[afterIndent] == '\r';
+
+                if (isBlankLine)
+                {
+                    var position = lexerPosition.Clone();
+                    position.IsPush = false;
+                    position.IsPop = false;
+                    position.Mode = null;
+                    position.Index += currentShift.Length;
+                    position.Column += currentShift.Length;
+
+                    var indent = new Token<<#LEXER#>>
+                    {
+                        IsIndent = false,
+                        IsUnIndent = false,
+                        IsNoIndent = true,
+                        Position = position
+                    };
+                    return indent;
+                }
+                
+                
+                
                 lexerPosition.Indentation = lexerPosition.Indentation ?? new LexerIndentation();
                 var indentation = lexerPosition.Indentation.Indent(currentShift);
                 switch (indentation.type)

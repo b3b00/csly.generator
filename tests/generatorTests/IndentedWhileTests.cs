@@ -276,6 +276,34 @@ while true do
             Check.That(seqBlock).CountIs(1);
             Check.That(seqBlock.Get(0)).IsInstanceOf<SkipStatement>();
         }
+        
+        
+        [Fact]
+        public void TestInfiniteWhileWithTrailingWhiteLine()
+        {
+            var parser = BuildParser();
+            var program = @"
+# infinite loop
+while true do
+    skip
+    ";
+            var result = parser.Parse(program);
+            Check.That(result.IsOk).IsTrue();
+            Check.That(result.Result).IsNotNull();
+            
+            Check.That(result.Result).IsInstanceOf<SequenceStatement>();
+            var seq = result.Result as SequenceStatement;
+            Check.That(seq.Get(0)).IsInstanceOf<WhileStatement>();
+            var whil = seq.Get(0) as WhileStatement;
+            var cond = whil.Condition;
+            Check.That(cond).IsInstanceOf<BoolConstant>();
+            Check.That((cond as BoolConstant).Value).IsTrue();
+            var s = whil.BlockStmt;
+            Check.That(whil.BlockStmt).IsInstanceOf<SequenceStatement>();
+            var seqBlock = whil.BlockStmt as SequenceStatement;
+            Check.That(seqBlock).CountIs(1);
+            Check.That(seqBlock.Get(0)).IsInstanceOf<SkipStatement>();
+        }
 
         [Fact]
         public void TestPrintBoolExpression()

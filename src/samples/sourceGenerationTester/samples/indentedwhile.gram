@@ -1,9 +1,6 @@
-﻿
-using csly.indented.whileLang;
-using csly.indented.whileLang.model;
-using csly.indentedwhile.models;
-namespace csly.indentedwhile;
+﻿namespace csly.indentedwhile;
 
+using csly.whileLang.model;
 
 [ParserGenerator]
 public partial class IndentedWhileTrack : AbstractParserGenerator<IndentedWhileTokenGeneric, IndentedWhileParserGeneric,WhileAST>
