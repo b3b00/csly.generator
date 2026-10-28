@@ -2,12 +2,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
-using System.Xml.Linq;
+
 
 namespace csly.generator.sourceGenerator;
 
@@ -47,29 +44,16 @@ public class CslyParserGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        Dictionary<ClassDeclarationSyntax, (string lexerType, string parserType)> _lexerAndParserTypes = new();
-
-        // Filter classes annotated with the [Report] attribute. Only filtered Syntax Nodes can trigger code generation.
-        var provider = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                (s, _) => s is ClassDeclarationSyntax,
-                (ctx, _) => GetClassDeclarationForSourceGen(ctx))
-            .Where(t => t.parserGeneratorAttributeFound)
-            .Select((t, _) =>
-            {
-                _lexerAndParserTypes[t.classDeclarationSyntax] = (t.lexerType, t.parserType);
-                return t.classDeclarationSyntax;
-            });
-
         var provider2 = context.SyntaxProvider.CreateSyntaxProvider(
             (s, _) => s is ClassDeclarationSyntax || s is EnumDeclarationSyntax,
             ((ctx, _) => ctx.Node));
-
 
         // Generate the source code.
         context.RegisterSourceOutput(context.CompilationProvider.Combine(provider2.Collect()),
             ((ctx, t) => GenerateCode(ctx, t.Left, t.Right)));
     }
+
+    
 
 
     public List<string> GetUsings(SyntaxNode syntaxNode)
