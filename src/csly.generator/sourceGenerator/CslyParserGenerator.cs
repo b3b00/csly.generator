@@ -296,6 +296,20 @@ public class CslyParserGenerator : IIncrementalGenerator
                 message));
             return;
         }
+        catch (ManyContextTypesException e)
+        {
+            var message = e.Message;
+            context.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    CslyGeneratorErrors.TOO_MANY_CONTEXT_TYPES,
+                    "Too many context types",
+                    "Too many context types in parser {0} : {1}",
+                    "csly",
+                    DiagnosticSeverity.Error,
+                    true), generator.GeneratorClass.GetLocation(), generator.ParserClass.Identifier.ToString(),
+                message));
+            return;
+        }
         catch (Exception e)
         {
             context.ReportDiagnostic(Diagnostic.Create(

@@ -92,6 +92,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         {
             if (attribute.Name.ToString() == "Operation")
             {
+                
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);
                 ;
 
@@ -108,6 +109,15 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Infix")
             {
+                int parametersCount = node.ParameterList.Parameters.Count;
+                if (parametersCount > 3)
+                {
+                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextType = (contextParam as ParameterSyntax).Type.ToString();
+                    _staticParserBuilder.Model.SetContextType(contextType);
+                    
+                    Console.WriteLine($"TODO : get context type => {contextType}");
+                }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
                 string associativityArg = args[1].TrimQuotes().Replace("Associativity.", "");
@@ -118,6 +128,15 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Left")
             {
+                int parametersCount = node.ParameterList.Parameters.Count;
+                if (parametersCount > 3)
+                {
+                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextType = (contextParam as ParameterSyntax).Type.ToString();
+                    _staticParserBuilder.Model.SetContextType(contextType);
+                    
+                    Console.WriteLine($"TODO : get context type => {contextType}");
+                }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
                 int precedence = int.Parse(args[1]);
@@ -126,6 +145,15 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Right")
             {
+                int parametersCount = node.ParameterList.Parameters.Count;
+                if (parametersCount > 3)
+                {
+                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextType = (contextParam as ParameterSyntax).Type.ToString();
+                    _staticParserBuilder.Model.SetContextType(contextType);
+                    
+                    Console.WriteLine($"TODO : get context type => {contextType}");
+                }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
                 int precedence = int.Parse(args[1]);
@@ -134,6 +162,15 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Prefix")
             {
+                int parametersCount = node.ParameterList.Parameters.Count;
+                if (parametersCount > 2)
+                {
+                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextType = (contextParam as ParameterSyntax).Type.ToString();
+                    _staticParserBuilder.Model.SetContextType(contextType);
+                    
+                    Console.WriteLine($"TODO : get context type => {contextType}");
+                }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
                 string associativityArg = args[1].TrimQuotes().Replace("Associativity.", "");
@@ -144,6 +181,16 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Postfix")
             {
+                int parametersCount = node.ParameterList.Parameters.Count;
+                if (parametersCount > 2)
+                {
+                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextType = (contextParam as ParameterSyntax).Type.ToString();
+                    _staticParserBuilder.Model.SetContextType(contextType);
+                    
+                    Console.WriteLine($"TODO : get context type => {contextType}");
+                }
+                
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
                 string associativityArg = args[1].TrimQuotes().Replace("Associativity.", "");

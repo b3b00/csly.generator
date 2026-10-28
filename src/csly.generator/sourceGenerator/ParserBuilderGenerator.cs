@@ -60,6 +60,11 @@ public class ParserBuilderGenerator
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model.Rules;
 
+        if (_staticParserBuilder.Model.ContextTypes.Count > 1)
+        {
+            throw new ManyContextTypesException($"{classDeclarationSyntax.Identifier.ToString()} has more than one context type : {string.Join(", ",_staticParserBuilder.Model.ContextTypes)}");
+        }    
+        
         // Fail completely if left recursion is detected, before ComputeLeaders()
         // would recurse infinitely on left-recursive grammars.
         var (leftRecursionFound, recursions) = LeftRecursionChecker.CheckLeftRecursion(_staticParserBuilder.Model);
