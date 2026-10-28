@@ -1,0 +1,118 @@
+using csly.expr.exprparser.models;
+
+namespace generatorTests;
+
+public enum ExprToken
+{
+    [Int] INT = 1,
+
+    [Sugar("+")] PLUS = 2,
+
+    [Sugar("-")] MINUS = 3,
+
+    [Sugar("*")] MULT = 4,
+
+    [Sugar("/")] DIVIDE = 5,
+
+    [Sugar("+l")] LEFTPLUS = 6,
+    [Sugar("-l")] LEFTMINUS = 7,
+
+    [Sugar("*l")] LEFTMULT = 8,
+    [Sugar("/l")] LEFTDIVIDE = 9,
+
+
+    [Sugar("(")] LEFTPAREN = 10,
+    [Sugar(")")] RIGHTPAREN = 11,
+    
+    [AlphaId] ID = 12
+
+}
+
+
+
+[ParserRoot("expression")]
+public class ExprParser
+{
+    
+    [Production("expression : ExprParser_expressions")]
+    public int expression(int expr, Dictionary<string, int> context) => expr;
+    
+
+    // Expressions are right associative
+
+    [Right("PLUS",10)]
+    [Right("MINUS",10)]
+    public int Term(int left, Token<ExprToken> oper, int right, Dictionary<string, int> context)
+    {
+        return oper.TokenID switch
+        {
+            ExprToken.PLUS => left + right,
+            ExprToken.MINUS => left - right,
+            _ => throw new Exception("Unknown operator")
+        };
+    }
+
+    [Right("MULT",20)]
+    [Right("DIVIDE",20)]
+    public int Factor(int left, Token<ExprToken> oper, int right, Dictionary<string, int> context) 
+    {
+        return oper.TokenID switch
+        {
+            ExprToken.MULT => left * right,
+            ExprToken.DIVIDE => left / right,
+            _ => throw new Exception("Unknown operator")
+        };
+    }
+
+    // expressions are left associative
+
+    [Left("LEFTPLUS",10)]
+    [Left("LEFTMINUS",10)]
+    public int LeftTerm(int left, Token<ExprToken> oper, int right, Dictionary<string, object> context)
+    {
+        return oper.TokenID switch
+        {
+            ExprToken.LEFTPLUS => left + right,
+            ExprToken.LEFTMINUS => left - right,
+            _ => throw new Exception("Unknown operator")
+        };
+    }
+
+    [Left("LEFTMULT",20)]
+    [Left("LEFTDIVIDE",20)]
+    public int LeftFactor(int left, Token<ExprToken> oper, int right, Dictionary<string, int> context) 
+    {
+        return oper.TokenID switch
+        {
+            ExprToken.LEFTMULT => left * right,
+            ExprToken.LEFTDIVIDE => left / right,
+            _ => throw new Exception("Unknown operator")
+        };
+    }
+
+    [Operand]
+    [Production("intOperand : INT")]
+    public int IntOperand(Token<ExprToken> intToken, Dictionary<string, double> context) => intToken.IntValue;
+
+    [Operand]
+    [Production("groupOperand : LEFTPAREN[d] expression RIGHTPAREN[d]")]
+    public int GroupOperand(int expr, Dictionary<string, int> context) => expr;
+    
+    [Operand]
+    [Production("variableOperand : ID")]
+    public int VariableOperand(Token<ExprToken> idToken, Dictionary<string, int> context) {    
+        if (context.ContainsKey(idToken.Value))
+        {
+            return context[idToken.Value];
+        }
+        throw new Exception($"Unknown variable {idToken.Value} ! mind the context");
+    }
+    
+
+}
+
+[ParserGenerator]
+public partial class Expr : AbstractParserGenerator<ExprToken,ExprParser,int>
+{
+    
+}

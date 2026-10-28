@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using csly.generator.sourceGenerator;
+using NFluent;
 using Xunit;
 
 namespace generatorTests;
@@ -96,5 +97,18 @@ public class GenerationFromResourceTests
         Assert.False(HasLeftRecursionError(result));
         Assert.NotEmpty(result.GeneratedTrees);
         Assert.True(result.GeneratedTrees.Any(t => t.FilePath.EndsWith(".g.cs")));
+    }
+
+    [Fact]
+    public void TestContextTypeError()
+    {
+        var source = GetEmbeddedGrammar("contextTypeError");
+        var result = GenerateSource(source, "ExprParser");
+         var contextError= result.Diagnostics.FirstOrDefault(d => d.Id == CslyGeneratorErrors.TOO_MANY_CONTEXT_TYPES);
+         Assert.NotNull(contextError);
+         string message = contextError.GetMessage();
+         Check.That(message).Contains("Dictionary<string, object>");
+         Check.That(message).Contains("Dictionary<string, int>");
+         Check.That(message).Contains("Dictionary<string, double>");
     }
 }
