@@ -15,7 +15,7 @@ public class TemplateEngine
     
     private readonly string _parserName;
 
-    private readonly string _visitorContextType;
+    private string _visitorContextType;
     
     private readonly string _outputType;
 
@@ -28,6 +28,9 @@ public class TemplateEngine
     private const string NAMESPACE_PLACEHOLDER = "<#NAMESPACE#>";
     private const string PARSER_NAMESPACE_PLACEHOLDER = "<#PARSER_NS#>";
     private const string VISITOR_CONTEXT_PLACEHOLDER = "<#CONTEXT#>";
+    private const string VISITOR_CONTEXT_ARG_PLACEHOLDER = "<#CONTEXT_ARG#>";
+    
+    public bool HasvisitorContext => !string.IsNullOrEmpty(_visitorContextType);
 
     public TemplateEngine(string lexerName, string parserName, string outputType, string nameSpace, string visitorContextType)
     {
@@ -38,6 +41,11 @@ public class TemplateEngine
         _visitorContextType = visitorContextType;
 //_resourceFileSystem =  new EmbeddedResourceFileSystem(typeof(TemplateEngine).Assembly);
 }
+
+    public void SetVisitorContextType(string visitorContextType)
+    {
+        _visitorContextType = visitorContextType;
+    }
 
     
     private const string regex = @"^csly\.generator\.sourceGenerator\.staticParserTemplates\.(parser\.manies|parser\.option|parser\.choice|lexer|parser|model|visitor|main)\.(.*)\.cs$";
@@ -82,6 +90,7 @@ public class TemplateEngine
             template = Substitute(template, NAMESPACE_PLACEHOLDER, _namespace);
             template = Substitute(template, PARSER_NAMESPACE_PLACEHOLDER, _parserName.ToLower());
             template = Substitute(template, VISITOR_CONTEXT_PLACEHOLDER, string.IsNullOrEmpty(_visitorContextType) ? "" :$" , {_visitorContextType} context");
+            template = Substitute(template, VISITOR_CONTEXT_ARG_PLACEHOLDER, string.IsNullOrEmpty(_visitorContextType) ? "" :" , context");
             //template = Substitute(template,  _parserName.ToLower());
             if (name != null)
             {

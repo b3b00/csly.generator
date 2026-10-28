@@ -59,6 +59,7 @@ namespace csly.ebnf.builder
         private readonly string _lexerName;
         private readonly string _parserName;
         private readonly string _outputType;
+        private string _contextType;
 
         private readonly List<Rule> _rules  = new List<Rule>();
         private readonly List<Operation> _operations  = new List<Operation>();
@@ -74,11 +75,18 @@ namespace csly.ebnf.builder
         public string ParserName => _parserName;
         public string OutputType => _outputType;
 
+        public string ContextType => _contextType;
+
         public ParserModel( string parserName , string lexerName , string outputType )
         {
             _parserName = parserName;
             _lexerName = lexerName;
             _outputType = outputType;
+        }
+
+        public void SetContextType(string contextType)
+        {
+            _contextType = contextType;
         }
 
         public void AddRule(Rule rule)

@@ -158,6 +158,18 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                 var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
                 
                 var rule = _staticParserBuilder.Parse(ruleString, node.Identifier.Text);
+                
+                int clauseCount = rule.Clauses.Count;
+                int parametersCount = node.ParameterList.Parameters.Count;
+                if (parametersCount > clauseCount)
+                {
+                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextType = (contextParam as ParameterSyntax).Type.ToString();
+                    _staticParserBuilder.Model.SetContextType(contextType);
+                    
+                    Console.WriteLine($"TODO : get context type => {contextType}");
+                }
+                
                 for (int i = 0; i < rule.Clauses.Count; i++)
                 {
                     var clause = rule.Clauses[i];

@@ -15,7 +15,7 @@ private Token<<#LEXER#>> VisitTerminal(SyntaxNode<<#LEXER#>,<#OUTPUT#>> node, in
     }
 
 private <#OUTPUT#> VisitNonTerminal(SyntaxNode<<#LEXER#>,<#OUTPUT#>> node, int childIndex <#CONTEXT#>) {
-            return Dispatch(node.Children[childIndex] as SyntaxNode <<#LEXER#>,<#OUTPUT#>>);
+            return Dispatch(node.Children[childIndex] as SyntaxNode <<#LEXER#>,<#OUTPUT#>><#CONTEXT_ARG#>);
     }
 
 
@@ -27,7 +27,7 @@ private <#OUTPUT#> VisitNonTerminal(SyntaxNode<<#LEXER#>,<#OUTPUT#>> node, int c
     var manyNode = node.Children[childIndex] as SyntaxNode<<#LEXER#>, <#OUTPUT#>>;
     for (int i = 0; i < manyNode.Children.Count; i++)
     {
-        results.Add(Dispatch(manyNode.Children[i] as SyntaxNode<<#LEXER#>, <#OUTPUT#>>));
+        results.Add(Dispatch(manyNode.Children[i] as SyntaxNode<<#LEXER#>, <#OUTPUT#>><#CONTEXT_ARG#>));
     }
     return results;
 }
@@ -58,7 +58,7 @@ private Group<<#LEXER#>, <#OUTPUT#>> VisitGroup(SyntaxNode<<#LEXER#>, <#OUTPUT#>
         }
         else if (subNode is SyntaxNode <<#LEXER#>, <#OUTPUT#>> child)
         {
-            group.Add(subNode.Name, Dispatch(child));
+            group.Add(subNode.Name, Dispatch(child<#CONTEXT_ARG#>));
             continue;
         }
     }
@@ -72,7 +72,7 @@ private List<Group<<#LEXER#>, <#OUTPUT#>>> VisitManyGroup(SyntaxNode<<#LEXER#>, 
     var manyNode = node.Children[childIndex] as SyntaxNode <<#LEXER#>, <#OUTPUT#>>;
     for (int i = 0; i < manyNode.Children.Count; i++)
     {
-        var grp = VisitGroup(manyNode, i);
+        var grp = VisitGroup(manyNode, i<#CONTEXT_ARG#>);
         results.Add(grp);
     }
     return results;
@@ -86,7 +86,7 @@ private ValueOption<Group<<#LEXER#>, <#OUTPUT#>>> VisitOptionalGroup(SyntaxNode<
         return new ValueOption<Group<<#LEXER#>, <#OUTPUT#>>>();
     }
 
-    var value = VisitGroup(childNode, 0);
+    var value = VisitGroup(childNode, 0<#CONTEXT_ARG#>);
     return new ValueOption<Group<<#LEXER#>, <#OUTPUT#>>>(value);
 }
 
@@ -111,7 +111,7 @@ private ValueOption<<#OUTPUT#>> VisitOptionalNonTerminal(SyntaxNode<<#LEXER#>, <
         return new ValueOption<<#OUTPUT#>>();
     }
 
-    var value = Dispatch(childNode.Children[0] as SyntaxNode <<#LEXER#>, <#OUTPUT#>>);
+    var value = Dispatch(childNode.Children[0] as SyntaxNode <<#LEXER#>, <#OUTPUT#>><#CONTEXT_ARG#>);
     return new ValueOption<<#OUTPUT#>>(value);
 }
 
@@ -120,7 +120,7 @@ public <#OUTPUT#> Visit(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node <#CONTEXT#>)
         var squasher = new Squasher<<#LEXER#>, <#OUTPUT#>>();
         node = squasher.Squash(node);
         node = squasher.FixAssoc(node);
-        return Dispatch(node);
+        return Dispatch(node<#CONTEXT_ARG#>);
     }
 
     private <#OUTPUT#> Dispatch(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node <#CONTEXT#>)

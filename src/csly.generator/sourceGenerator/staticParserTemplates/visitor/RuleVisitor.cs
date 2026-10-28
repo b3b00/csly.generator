@@ -4,6 +4,6 @@
         <#COMPUTE_ARGS#>
 
 
-        return _instance.<#METHOD#>(<#ARGS#>);
+        return _instance.<#METHOD#>(<#ARGS#><#CONTEXT_ARG#>);
     
 }

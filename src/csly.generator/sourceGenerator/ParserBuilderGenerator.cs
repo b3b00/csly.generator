@@ -69,7 +69,8 @@ public class ParserBuilderGenerator
                 $"Left recursion detected in parser {name} : " +
                 string.Join("; ", recursions.Select(r => string.Join(" > ", r))));
         }
-
+        _templateEngine.SetVisitorContextType(_staticParserBuilder.Model.ContextType);
+        
         _visitor2Generator = new Visitor2Generator(_lexerName, _parserName, _outputType, classDeclarationSyntax.GetNameSpace()+"."+name.ToLower(), _templateEngine, _staticParserBuilder.Model.Rules);
 
         ExpressionRulesGenerator expressionRulesGenerator = new();
@@ -77,7 +78,7 @@ public class ParserBuilderGenerator
         _staticParserBuilder.ComputeLeaders();
 
         var nameSpace = classDeclarationSyntax.GetNameSpace()+"."+classDeclarationSyntax.Identifier.ToString().ToLower();
-        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOptions.StartingNonTerminal,nameSpace);
+        var staticParser = GenerateStaticParser(_staticParserBuilder.Model.Rules, _staticParserBuilder.ParserOptions.StartingNonTerminal,nameSpace, _staticParserBuilder.Model.ContextType);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(staticParser);
         var root = syntaxTree.GetRoot();
@@ -113,7 +114,7 @@ public class ParserBuilderGenerator
         return root;
     }
 
-    private string GenerateStaticParser(List<Rule> rules, string startingNonTerminal, string ns)
+    private string GenerateStaticParser(List<Rule> rules, string startingNonTerminal, string ns, string contextType)
     {
         StringBuilder builder = new();
         StringBuilder visitors = new StringBuilder();
