@@ -14,6 +14,7 @@ public class ParserGeneratorTriplet
     private readonly ClassDeclarationSyntax _parserClass;
     private readonly EnumDeclarationSyntax _lexerEnum;
     private readonly string _nameSpace;
+    private readonly string _visitorContextType = null;
 
 
     public ClassDeclarationSyntax GeneratorClass => _generatorClass;
@@ -23,6 +24,8 @@ public class ParserGeneratorTriplet
     public EnumDeclarationSyntax LexerEnum => _lexerEnum;
 
     public string NameSpace => _nameSpace;
+    
+    public string VisitorContextType => _visitorContextType;
 
     private string _outputType;
     public string OutputType => _outputType;
@@ -214,7 +217,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
 
         ;
-        TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
+        TemplateEngine templateEngine = new TemplateEngine("", "", "", "", "");
         var models = templateEngine.GetAllTemplateNamesForFolder("model");
         foreach (var model in models)
         {
@@ -250,7 +253,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
         ParserBuilderGenerator parserBuilderGenerator =
             new ParserBuilderGenerator(lexerName, generator.ParserClass.Identifier.ToString(), generator.OutputType,
-                thisParserBaseNameSpace, lexerGenerator.Tokens);
+                thisParserBaseNameSpace, generator.VisitorContextType, lexerGenerator.Tokens);
         try
         {
             var staticParser = parserBuilderGenerator.GenerateParser(generator.ParserClass);
@@ -338,8 +341,9 @@ public class CslyParserGenerator : IIncrementalGenerator
                 context.AddSource($"FSM_{lexerName}_{sublexer.mode}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));
             }
 
+            // TODO : get visitor context type from somewhere
             templateEngine = new TemplateEngine(lexerName, generator.ParserClass.Identifier.ToString(),
-                generator.OutputType, ns);
+                generator.OutputType, ns, generator.VisitorContextType);
             var iSubLexer = templateEngine.ApplyTemplate("ISubLexerTemplate", additional: new Dictionary<string, string>
             {
                 { "ASSEMBLY", assemblyName },
@@ -407,7 +411,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         {
             string thisParserBaseNameSpace =
                 $"csly.{assemblyName}.{generator.ParserClass.Identifier.ToString().ToLower()}";
-            TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
+            TemplateEngine templateEngine = new TemplateEngine("", "", "", "", "");
 
             GenerateCodeForGenerator(generator, declarationsByName, context, compilation);
         }

@@ -17,6 +17,7 @@ public class ParserBuilderGenerator
     private readonly List<string> _lexerGeneratorTokens;
     private readonly string _namespace;
     private readonly TemplateEngine _templateEngine;
+    private readonly string _visitorContextType;
 
     private Dictionary<string, TerminalClause> _terminalParsers = new();
     private Dictionary<string, NonTerminalClause> _nonTerminalParsers = new();
@@ -34,14 +35,15 @@ public class ParserBuilderGenerator
     private List<Rule> _rules = new();
 
 
-    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, string ns, List<string> lexerGeneratorTokens)
+    public ParserBuilderGenerator(string lexerName, string parserName, string outputType, string ns, string visitorContextType, List<string> lexerGeneratorTokens)
     {
         _lexerName = lexerName;
         _parserName = parserName;
         _outputType = outputType;
         _namespace = ns;
         _lexerGeneratorTokens = lexerGeneratorTokens;
-        _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns);
+        _visitorContextType = visitorContextType;
+        _templateEngine = new TemplateEngine(_lexerName, _parserName, _outputType, ns, _visitorContextType);
         
     }
 
