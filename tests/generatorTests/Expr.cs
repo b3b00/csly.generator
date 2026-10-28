@@ -25,6 +25,8 @@ public enum ExprToken
 
     [Sugar("(")] LEFTPAREN = 10,
     [Sugar(")")] RIGHTPAREN = 11,
+    
+    [AlphaId] ID = 12
 
 }
 
@@ -33,14 +35,14 @@ public class ExprParser
 {
     
     [Production("expression : ExprParser_expressions")]
-    public int expression(int expr) => expr;
+    public int expression(int expr, Dictionary<string, int> content) => expr;
     
 
     // Expressions are right associative
 
     [Right("PLUS",10)]
     [Right("MINUS",10)]
-    public int Term(int left, Token<ExprToken> oper, int right)
+    public int Term(int left, Token<ExprToken> oper, int right, Dictionary<string, int> content)
     {
         return oper.TokenID switch
         {
@@ -52,7 +54,7 @@ public class ExprParser
 
     [Right("MULT",20)]
     [Right("DIVIDE",20)]
-    public int Factor(int left, Token<ExprToken> oper, int right) 
+    public int Factor(int left, Token<ExprToken> oper, int right, Dictionary<string, int> content) 
     {
         return oper.TokenID switch
         {
@@ -66,7 +68,7 @@ public class ExprParser
 
     [Left("LEFTPLUS",10)]
     [Left("LEFTMINUS",10)]
-    public int LeftTerm(int left, Token<ExprToken> oper, int right)
+    public int LeftTerm(int left, Token<ExprToken> oper, int right, Dictionary<string, int> content)
     {
         return oper.TokenID switch
         {
@@ -78,7 +80,7 @@ public class ExprParser
 
     [Left("LEFTMULT",20)]
     [Left("LEFTDIVIDE",20)]
-    public int LeftFactor(int left, Token<ExprToken> oper, int right) 
+    public int LeftFactor(int left, Token<ExprToken> oper, int right, Dictionary<string, int> content) 
     {
         return oper.TokenID switch
         {
@@ -90,13 +92,23 @@ public class ExprParser
 
     [Operand]
     [Production("intOperand : INT")]
-    public int IntOperand(Token<ExprToken> intToken) => intToken.IntValue;
+    public int IntOperand(Token<ExprToken> intToken, Dictionary<string, int> content) => intToken.IntValue;
 
     [Operand]
     [Production("groupOperand : LEFTPAREN[d] expression RIGHTPAREN[d]")]
-    public int GroupOperand(int expr) => expr;
+    public int GroupOperand(int expr, Dictionary<string, int> content) => expr;
     
 
+    [Operand]
+    [Production("variableOperand : ID")]
+    public int VariableOperand(Token<ExprToken> idToken, Dictionary<string, int> context) {    
+        if (context.ContainsKey(idToken.Value))
+        {
+            return context[idToken.Value];
+        }
+        throw new Exception($"Unknown variable {idToken.Value} ! mind the context");
+    }
+    
 }
 
 [ParserGenerator]

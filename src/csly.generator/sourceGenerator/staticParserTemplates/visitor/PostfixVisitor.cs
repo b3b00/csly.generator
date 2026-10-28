@@ -1,6 +1,6 @@
-﻿private <#OUTPUT#> Visit<#NAME#>_<#INDEX#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+﻿private <#OUTPUT#> Visit<#NAME#>_<#INDEX#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node <#CONTEXT#>)
 {
-    var arg0 = Dispatch(node.Children[0] as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+    var arg0 = Dispatch(node.Children[0] as SyntaxNode<<#LEXER#>, <#OUTPUT#>><#CONTEXT_ARG#>);
     if (node.Children.Count == 1)
     {
         return arg0;

@@ -18,7 +18,7 @@
     },
     "expr generation": {
       "commandName": "Project",
-      "commandLineArgs": "expr c:/tmp/generation_expr"
+      "commandLineArgs": "expr c:/tmp/generation_expr_context"
     },
     "backtrack generation": {
       "commandName": "Project",

@@ -23,7 +23,7 @@ public class <#PARSER#>Main
         _useMemoization = useMemoization;
     }
 
-    public ParseResult<<#LEXER#>, <#OUTPUT#>> Parse(string source)
+    public ParseResult<<#LEXER#>, <#OUTPUT#>> Parse(string source<#CONTEXT#>)
     {
         // lexing
         <#LEXER#>_MainLexer scanner = new <#LEXER#>_MainLexer();
@@ -48,7 +48,7 @@ public class <#PARSER#>Main
             }
             // visiting
             var visitor = new <#PARSER#>Visitor2(_instance);
-            var output = visitor.Visit(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+            var output = visitor.Visit(result.Root as SyntaxNode<<#LEXER#>, <#OUTPUT#>><#CONTEXT_ARG#>);
             return new ParseResult<<#LEXER#>, <#OUTPUT#>>(output, result.Root);
         }
         else
@@ -57,12 +57,12 @@ public class <#PARSER#>Main
         }
     }
     
-    public ParseResult<<#LEXER#>, <#OUTPUT#>> ParseFrom(string source, <#PARSER#>NonTerminal nonTerminal)
+    public ParseResult<<#LEXER#>, <#OUTPUT#>> ParseFrom(string source, <#PARSER#>NonTerminal nonTerminal<#CONTEXT#>)
     {
-        return ParseFrom(source, nonTerminal.ToString().Substring(1));
+        return ParseFrom(source, nonTerminal.ToString().Substring(1)<#CONTEXT_ARG#>);
     }
 
-    public ParseResult<<#LEXER#>, <#OUTPUT#>> ParseFrom(string source, string nonTerminal)
+    public ParseResult<<#LEXER#>, <#OUTPUT#>> ParseFrom(string source, string nonTerminal<#CONTEXT#>)
     {
         // lexing
         <#LEXER#>_MainLexer scanner = new <#LEXER#>_MainLexer();

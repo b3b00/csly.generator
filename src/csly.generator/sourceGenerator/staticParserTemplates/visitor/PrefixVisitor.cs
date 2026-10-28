@@ -1,9 +1,9 @@
-﻿private <#OUTPUT#> Visit<#NAME#>_<#INDEX#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+﻿private <#OUTPUT#> Visit<#NAME#>_<#INDEX#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node <#CONTEXT#>)
 {
     if (node.Children.Count == 2)
     {
         Token<<#LEXER#>> arg0 = (node.Children[0] as SyntaxLeaf<<#LEXER#>, <#OUTPUT#>>).Token;
-        var arg1 = Dispatch(node.Children[1] as SyntaxNode<<#LEXER#>, <#OUTPUT#>>);
+        var arg1 = Dispatch(node.Children[1] as SyntaxNode<<#LEXER#>, <#OUTPUT#>><#CONTEXT_ARG#>);
 
        <#RETURN#>
     }

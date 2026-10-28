@@ -1,4 +1,4 @@
-﻿    public <#CLAUSE_OUTPUT#> VisitOption_<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node)
+﻿    public <#CLAUSE_OUTPUT#> VisitOption_<#NAME#>(SyntaxNode<<#LEXER#>, <#OUTPUT#>> node <#CONTEXT#>)
 {
                 if (node.Children.Count == 0)
     {
@@ -8,6 +8,6 @@
                 else
     {        
             <#VISITOR#>
-            return new <#CLAUSE_OUTPUT#>(arg0);
+            return new <#CLAUSE_OUTPUT#>(arg0<#CONTEXT_ARG#>);
     }
 }

@@ -9,7 +9,7 @@ case "<#NAME#>": {
         }
         // visiting
         var visitor = new <#PARSER#>Visitor2(_instance);
-        var output = visitor.Visit(result<#NAME#>.Root as SyntaxNode <<#LEXER#>, <#OUTPUT#>>);
+        var output = visitor.Visit(result<#NAME#>.Root as SyntaxNode <<#LEXER#>, <#OUTPUT#>><#CONTEXT_ARG#>);
         return new ParseResult <<#LEXER#>, <#OUTPUT#>>(output, result<#NAME#>.Root);
     }
     else

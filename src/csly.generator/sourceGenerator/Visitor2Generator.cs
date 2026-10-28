@@ -14,6 +14,7 @@ namespace csly.generator.sourceGenerator
 
         private readonly string _lexerName;
         private readonly string _parserName;
+        private readonly string _context;
         private readonly string _outputType;
         private readonly List<string> _lexerGeneratorTokens;
         private readonly string _namespace;
@@ -28,6 +29,8 @@ namespace csly.generator.sourceGenerator
             _namespace = ns;
             _templateEngine = templateEngine;
             _rules = rules;
+            _context = templateEngine.HasvisitorContext ? ", context" : "";
+            
         }
 
         public string GenerateVisitor()
@@ -47,7 +50,7 @@ namespace csly.generator.sourceGenerator
                     {
                         int index = r.IsExpressionRule ? 0 : i;
                         var prefixCase = $@"case ""{rulesByHead.Key}_{i}"":
-                    return Visit{rulesByHead.Key}_{index}(node);";
+                    return Visit{rulesByHead.Key}_{index}(node{_context});";
                         dispatchers.AppendLine(prefixCase);
                     }                    
                 }
@@ -138,7 +141,7 @@ namespace csly.generator.sourceGenerator
 
                 if (clause is TerminalClause || clause is ChoiceClause choice && choice.IsTerminalChoice)
                 {
-                    compute.AppendLine($"var arg{i} = VisitTerminal(node,{i});");
+                    compute.AppendLine($"var arg{i} = VisitTerminal(node,{i}{_context});");
                 }
                 else if (clause is ManyClause many)
                 {
@@ -146,55 +149,55 @@ namespace csly.generator.sourceGenerator
                     {
                         if (!nt.IsGroup)
                         {
-                            compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i}{_context});");
                         }
                         else
                         {
-                            compute.AppendLine($"var arg{i} = VisitManyGroup(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitManyGroup(node,{i}{_context});");
                         }
                     }
                     else if (many.manyClause is TerminalClause t)
                     {
-                        compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i});");
+                        compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i}{_context});");
                     }
                     else if (many.manyClause is ChoiceClause c)
                     {
                         if (c.IsNonTerminalChoice)
                         {
-                            compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitManyNonTerminal(node,{i}{_context});");
                         }
                         else if (c.IsTerminalChoice)
                         {
-                            compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitManyTerminal(node,{i}{_context});");
                         }
                     }
                 }
                 else if (clause is GroupClause)
                 {
-                    compute.AppendLine($"var arg{i} = VisitGroup(node, {i});");
+                    compute.AppendLine($"var arg{i} = VisitGroup(node, {i}{_context});");
                 }                
                 else if (clause is OptionClause option)
                         {
                     if (option.Clause is TerminalClause)
                     {
-                        compute.AppendLine($"var arg{i} = VisitOptionalTerminal(node,{i});");
+                        compute.AppendLine($"var arg{i} = VisitOptionalTerminal(node,{i}{_context});");
                     }
                     else if (option.Clause is NonTerminalClause nt)
                     {
                         if (!nt.IsGroup)
                         {
-                            compute.AppendLine($"var arg{i} = VisitOptionalNonTerminal(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitOptionalNonTerminal(node,{i}{_context});");
                         }
                         else
                         {
-                            compute.AppendLine($"var arg{i} = VisitOptionalGroup(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitOptionalGroup(node,{i}{_context});");
                         }
                     }
 
                         }
                         else
                         {
-                            compute.AppendLine($"var arg{i} = VisitNonTerminal(node,{i});");
+                            compute.AppendLine($"var arg{i} = VisitNonTerminal(node,{i}{_context});");
                         }
             }
 
@@ -225,7 +228,7 @@ namespace csly.generator.sourceGenerator
                         {
                             returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1, arg2);    
+    return _instance.{methodName}(arg0, arg1, arg2{_context});    
 }}");
                         }
                     }
@@ -242,7 +245,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                 {
                     returnBuilder.AppendLine(@$" case <#LEXER#>.{terminalClause.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1, arg2);    
+    return _instance.{methodName}(arg0, arg1, arg2{_context});    
 }}");
                 }
             }
@@ -277,7 +280,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                         {
                             returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1);
+    return _instance.{methodName}(arg0, arg1{_context});
 }}");
                         }
                     }
@@ -292,7 +295,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
             {
                 if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
                 {
-                    returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1);");
+                    returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1{_context});");
                 }
             }
 
@@ -325,7 +328,7 @@ throw new NotImplementedException($""Operator {{arg1.TokenID}} not implemented f
                         {
                             returnBuilder.AppendLine(@$" case {_lexerName}.{terminalChoice.Name} :
 {{
-    return _instance.{methodName}(arg0, arg1);
+    return _instance.{methodName}(arg0, arg1{_context});
 }}");
                         }
                     }
@@ -340,7 +343,7 @@ throw new NotImplementedException($""Operator {{arg0.TokenID}} not implemented f
             {
                 if (rule.TokenToVisitorMethodName.TryGetValue(terminalClause.Name, out var methodName))
                 {
-                    returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1);");
+                    returnBuilder.AppendLine(@$"return _instance.{methodName}(arg0, arg1{_context});");
                 }
             }
 

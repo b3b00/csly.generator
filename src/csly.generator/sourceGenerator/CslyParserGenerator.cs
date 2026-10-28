@@ -2,12 +2,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
-using System.Xml.Linq;
+
 
 namespace csly.generator.sourceGenerator;
 
@@ -17,6 +14,7 @@ public class ParserGeneratorTriplet
     private readonly ClassDeclarationSyntax _parserClass;
     private readonly EnumDeclarationSyntax _lexerEnum;
     private readonly string _nameSpace;
+    private readonly string _visitorContextType = null;
 
 
     public ClassDeclarationSyntax GeneratorClass => _generatorClass;
@@ -26,6 +24,8 @@ public class ParserGeneratorTriplet
     public EnumDeclarationSyntax LexerEnum => _lexerEnum;
 
     public string NameSpace => _nameSpace;
+    
+    public string VisitorContextType => _visitorContextType;
 
     private string _outputType;
     public string OutputType => _outputType;
@@ -47,29 +47,16 @@ public class CslyParserGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        Dictionary<ClassDeclarationSyntax, (string lexerType, string parserType)> _lexerAndParserTypes = new();
-
-        // Filter classes annotated with the [Report] attribute. Only filtered Syntax Nodes can trigger code generation.
-        var provider = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                (s, _) => s is ClassDeclarationSyntax,
-                (ctx, _) => GetClassDeclarationForSourceGen(ctx))
-            .Where(t => t.parserGeneratorAttributeFound)
-            .Select((t, _) =>
-            {
-                _lexerAndParserTypes[t.classDeclarationSyntax] = (t.lexerType, t.parserType);
-                return t.classDeclarationSyntax;
-            });
-
         var provider2 = context.SyntaxProvider.CreateSyntaxProvider(
             (s, _) => s is ClassDeclarationSyntax || s is EnumDeclarationSyntax,
             ((ctx, _) => ctx.Node));
-
 
         // Generate the source code.
         context.RegisterSourceOutput(context.CompilationProvider.Combine(provider2.Collect()),
             ((ctx, t) => GenerateCode(ctx, t.Left, t.Right)));
     }
+
+    
 
 
     public List<string> GetUsings(SyntaxNode syntaxNode)
@@ -230,7 +217,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         StaticLexerBuilder staticLexerBuilder = new StaticLexerBuilder(lexerName, ns);
 
         ;
-        TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
+        TemplateEngine templateEngine = new TemplateEngine("", "", "", "", "");
         var models = templateEngine.GetAllTemplateNamesForFolder("model");
         foreach (var model in models)
         {
@@ -266,7 +253,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
         ParserBuilderGenerator parserBuilderGenerator =
             new ParserBuilderGenerator(lexerName, generator.ParserClass.Identifier.ToString(), generator.OutputType,
-                thisParserBaseNameSpace, lexerGenerator.Tokens);
+                thisParserBaseNameSpace, generator.VisitorContextType, lexerGenerator.Tokens);
         try
         {
             var staticParser = parserBuilderGenerator.GenerateParser(generator.ParserClass);
@@ -303,6 +290,20 @@ public class CslyParserGenerator : IIncrementalGenerator
                     CslyGeneratorErrors.LEFT_RECURSION_DETECTED,
                     "Left recursion detected",
                     "Left recursion detected in parser {0} : {1}",
+                    "csly",
+                    DiagnosticSeverity.Error,
+                    true), generator.GeneratorClass.GetLocation(), generator.ParserClass.Identifier.ToString(),
+                message));
+            return;
+        }
+        catch (ManyContextTypesException e)
+        {
+            var message = e.Message;
+            context.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    CslyGeneratorErrors.TOO_MANY_CONTEXT_TYPES,
+                    "Too many context types",
+                    "Too many context types in parser {0} : {1}",
                     "csly",
                     DiagnosticSeverity.Error,
                     true), generator.GeneratorClass.GetLocation(), generator.ParserClass.Identifier.ToString(),
@@ -354,8 +355,9 @@ public class CslyParserGenerator : IIncrementalGenerator
                 context.AddSource($"FSM_{lexerName}_{sublexer.mode}.g.cs", SourceText.From(fsmDumpCode, Encoding.UTF8));
             }
 
+            // TODO : get visitor context type from somewhere
             templateEngine = new TemplateEngine(lexerName, generator.ParserClass.Identifier.ToString(),
-                generator.OutputType, ns);
+                generator.OutputType, ns, generator.VisitorContextType);
             var iSubLexer = templateEngine.ApplyTemplate("ISubLexerTemplate", additional: new Dictionary<string, string>
             {
                 { "ASSEMBLY", assemblyName },
@@ -423,7 +425,7 @@ public class CslyParserGenerator : IIncrementalGenerator
         {
             string thisParserBaseNameSpace =
                 $"csly.{assemblyName}.{generator.ParserClass.Identifier.ToString().ToLower()}";
-            TemplateEngine templateEngine = new TemplateEngine("", "", "", "");
+            TemplateEngine templateEngine = new TemplateEngine("", "", "", "", "");
 
             GenerateCodeForGenerator(generator, declarationsByName, context, compilation);
         }

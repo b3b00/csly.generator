@@ -12,7 +12,7 @@ public class ExprTests
     {
         ExprParser instance = new ExprParser();
         ExprParserMain main = new ExprParserMain(instance);
-        var result = main.Parse("3 + 5 - 2 * 4 + 10 / 2");
+        var result = main.Parse("3 + 5 - 2 * 4 + 10 / 2", new Dictionary<string, int>());
         //all operations are right associative so result is 3 + (5 - (2 * (4 + (10 / 2)))) = -5
         int expected = (3 + (5 - ((2 * 4) + (10 / 2))));
         Check.That(result.IsOk).IsTrue();
@@ -24,7 +24,7 @@ public class ExprTests
     {
         ExprParser instance = new ExprParser();
         ExprParserMain main = new ExprParserMain(instance);
-        var result = main.Parse("3 +l 5 -l 2 *l 4 +l 10 /l 2");
+        var result = main.Parse("3 +l 5 -l 2 *l 4 +l 10 /l 2", new Dictionary<string, int>());
         //all operations are left associative so result is (((3 + 5) - 2) * 4) + 10) / 2 = 10
         int expected = ((3 + 5) - ((2 * 4) + (10 / 2)));
         Check.That(result.IsOk).IsTrue();
@@ -36,7 +36,7 @@ public class ExprTests
     {
         ExprParser instance = new ExprParser();
         ExprParserMain main = new ExprParserMain(instance);
-        var result = main.Parse("( 3 + 5 ) * ( 10 - 2 )");
+        var result = main.Parse("( 3 + 5 ) * ( 10 - 2 )", new Dictionary<string, int>());
         //grouped operations (3 + 5) * (10 - 2) = 64
         int expected = (3 + 5) * (10 - 2);
         Check.That(result.IsOk).IsTrue();
@@ -49,7 +49,7 @@ public class ExprTests
     {
         ExprParser instance = new ExprParser();
         ExprParserMain main = new ExprParserMain(instance);
-        var result = main.Parse("42");
+        var result = main.Parse("42", new Dictionary<string, int>());
         int expected = 42;
         Check.That(result.IsOk).IsTrue();
         Check.That(result.Result).IsEqualTo(expected);
@@ -61,7 +61,7 @@ public class ExprTests
     {
         ExprParser instance = new ExprParser();
         ExprParserMain main = new ExprParserMain(instance);
-        var result = main.Parse("1(1");
+        var result = main.Parse("1(1", new Dictionary<string, int>());
         
         Check.That(result.IsError).IsTrue();
         var errors = result.Errors;
@@ -80,6 +80,16 @@ public class ExprTests
         Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTMINUS);
         Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTMULT);
         Check.That(expectedTokens.Select(x => x.TokenId)).Contains(ExprToken.LEFTDIVIDE);
+    }
+
+    [Fact]
+    public void TestContext()
+    {
+        ExprParser instance = new ExprParser();
+        ExprParserMain main = new ExprParserMain(instance);
+        var result = main.Parse("a +b * c", new Dictionary<string, int>() {{"a",1}, {"b",2}, {"c",3}});
+        Check.That(result.IsOk).IsTrue();
+        Check.That(result.Result).IsEqualTo(7);
     }
 
 

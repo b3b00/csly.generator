@@ -28,7 +28,7 @@ internal class LexerBuilderGenerator
         Dictionary<string, SyntaxNode> declarationsByName)
     {
         string name = enumDeclarationSyntax.Identifier.ToString();
-        _templateEngine = new TemplateEngine(name, parserName, "", _staticLexerBuilder.NameSpace);
+        _templateEngine = new TemplateEngine(name, parserName, "", _staticLexerBuilder.NameSpace, null);
 
         LexerSyntaxWalker walker = new(name, declarationsByName, this, _staticLexerBuilder);
         walker.Visit(enumDeclarationSyntax);
