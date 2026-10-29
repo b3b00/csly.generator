@@ -26,7 +26,8 @@ public partial class ParserSyntaxWalker
         var semanticModel = compilation.GetSemanticModel(methodSyntax.SyntaxTree);
         if (semanticModel.GetDeclaredSymbol(methodSyntax) is not IMethodSymbol methodSymbol) return;
 
-        var realClauses = rule.Clauses.Where(clause => !(clause is TerminalClause terminal && terminal.Discarded)).ToList();
+        var realClauses = rule.Clauses.Where(clause => !((clause is TerminalClause terminal && terminal.Discarded))
+        && !(clause is ChoiceClause choice && choice.IsDiscarded)).ToList();
         int paramIndex = 0;
         foreach (var paramSymbol in methodSymbol.Parameters)
         {
@@ -35,11 +36,12 @@ public partial class ParserSyntaxWalker
                 // the context case
                 break;
             }
-            var expectedTypeSymbol = GetExpectedType(paramSymbol, compilation, rule, paramIndex);
+            var expectedType = GetExpectedType(realClauses[paramIndex]);
 
-            if (expectedTypeSymbol != null)
+            if (expectedType != null)
             {
-                if (!SymbolEqualityComparer.Default.Equals(paramSymbol.Type, expectedTypeSymbol))
+                if (paramSymbol.Type.ToDisplayString() != expectedType)
+                //if (!SymbolEqualityComparer.Default.Equals(paramSymbol.Type, expectedTypeSymbol))
                 {
                     var syntaxRef = methodSyntax.ParameterList.Parameters
                         .FirstOrDefault(p => p.Identifier.Text == paramSymbol.Name)?
@@ -50,7 +52,7 @@ public partial class ParserSyntaxWalker
                         syntaxRef,
                         paramSymbol.Name,
                         paramSymbol.Type.ToDisplayString(),
-                        expectedTypeSymbol.ToDisplayString()));
+                        expectedType));
                 }
             }
             paramIndex++;
@@ -77,46 +79,49 @@ public partial class ParserSyntaxWalker
         { "object", "System.Object" },
         { "void", "System.Void" }
     };
-    
-    private ITypeSymbol? GetExpectedType(IParameterSymbol parameter, Compilation compilation, Rule rule, int paramIndex)
+
+
+    private string GetExpectedType(IClause clause)
     {
-        
-        var realClauses = rule.Clauses.Where(clause => !(clause is TerminalClause terminal && terminal.Discarded)).ToList();
-        var clause  = realClauses[paramIndex];
-        Console.WriteLine($"checking #{paramIndex} >{parameter.ToString()}< against clause >{clause.GetType().ToString()}< for rule [{rule.Dump(false)}]");
-        // Example convention: Put your custom rules here
         switch (clause)
         {
             case TerminalClause:
             {
-                ITypeSymbol lexerType = compilation.GetTypeByMetadataName(_lexerName);
-                var token =  compilation.GetTypeByMetadataName("Token`1");
-                if (token != null && lexerType != null)
-                {
-                    ITypeSymbol tokenOfLexer = token.Construct(lexerType);
-                    return tokenOfLexer;
-                }
-
-                break;
+                return $"Token<{_lexerName}>";
             } 
             case NonTerminalClause:
             {
-                ITypeSymbol outputType = compilation.GetTypeByMetadataName(_outputType);
-                if (outputType == null)
-                {
-                    if (KeywordToMetadataName.TryGetValue(_outputType, out var metadataName))
-                    outputType = compilation.GetTypeByMetadataName(metadataName);
-                }
-
-                return outputType;
-            } 
+                return _outputType;
+            }
+            case ChoiceClause choice when choice.IsNonTerminalChoice:
+            {
+                return _outputType;
+            }
+            case ChoiceClause choice when choice.IsTerminalChoice:
+            {
+                return _lexerName;
+            }
+            case ManyClause many:
+            {
+                var expected = GetExpectedType(many.manyClause);
+                return $"List<{expected}>";
+            }
+            case GroupClause group:
+            {
+                return $"Group<{_lexerName},{_outputType}>";
+            }
+            case OptionClause option:
+            {
+                var expected =  GetExpectedType(option.Clause);
+                return $"ValueOption<{expected}>";
+            }
             default:
             {
                 return null;
             }
         }
-
-        return null;
-
     }
+    
+    
 }
+
