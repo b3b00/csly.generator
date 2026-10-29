@@ -142,8 +142,15 @@ namespace ebnf.grammar
 
         public string Dump()
         {
-            return $"Rule: {NonTerminalName} : {string.Join(" ",Clauses.Select(x => x.Dump()))} subrule:{IsSubRule}, bypass:{IsByPassRule}, expression: {IsExpressionRule} ";
+            return Dump(true);
+        }
+        
+        public string Dump(bool withDetail)
+        {
+            string detail = withDetail ? $"subrule:{IsSubRule}, bypass:{IsByPassRule}, expression: {IsExpressionRule}" : "";
+            return $"Rule: {NonTerminalName} : {string.Join(" ",Clauses.Select(x => x.Dump()))} {detail}";
 
         }
     }
+    
 }

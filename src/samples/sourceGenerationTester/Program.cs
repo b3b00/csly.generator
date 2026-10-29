@@ -49,7 +49,6 @@ public  class Program
 
         var generatedDir = Path.Combine(where, "generated");
         Directory.CreateDirectory(generatedDir);
-        Console.WriteLine($"writing {who.Capitalize()}.cs");
         File.WriteAllText(Path.Combine(where,"generated", $"{who.Capitalize()}.cs"), parser);
 
         foreach (var file in contents)
@@ -77,7 +76,6 @@ public  class Program
             {
                 Directory.CreateDirectory(fi.DirectoryName);
             }
-            Console.WriteLine($"writing {fileName}.cs");
             File.WriteAllText(fileName, PrettyPrint(file.Value));
         }
 

@@ -76,7 +76,7 @@ internal class LexerBuilderGenerator
 
     private void Log(string message)
     {
-        Console.WriteLine($"[LexerBuilderGenerator] {message}");
+        //Console.WriteLine($"[LexerBuilderGenerator] {message}");
     }
 
     public Dictionary<string, Fsm> GenerateFsms()

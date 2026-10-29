@@ -1,18 +1,30 @@
 using System.Linq;
 using csly.ebnf.builder;
 using ebnf.grammar;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.generator.sourceGenerator;
 
-public class ParserSyntaxWalker : CslySyntaxWalker
+public partial class ParserSyntaxWalker : CslySyntaxWalker
 {
     
-    StaticParserBuilder _staticParserBuilder;
+    private StaticParserBuilder _staticParserBuilder;
+    private Compilation _compilation;
+    private SourceProductionContext _productionContext;
+    private string _parserName;
+    private string _lexerName;
+    private string _outputType;
+    
 
-    public ParserSyntaxWalker(string parserName, string lexerName, string outputType, StaticParserBuilder staticParserBuilder)
+    public ParserSyntaxWalker(string parserName, string lexerName, string outputType, StaticParserBuilder staticParserBuilder, Compilation compilation,  SourceProductionContext productionContext)
     {
+        _parserName = parserName;
+        _lexerName = lexerName;
+        _outputType = outputType;
         _staticParserBuilder = staticParserBuilder;
+        _compilation = compilation;
+        _productionContext = productionContext;
     }
 
 
@@ -75,14 +87,14 @@ public class ParserSyntaxWalker : CslySyntaxWalker
         return method.AttributeLists.SelectMany(x => x.Attributes).Any(x => x.Name.ToString() == "Operand");
     }
     
-    public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+    public override void VisitMethodDeclaration(MethodDeclarationSyntax methodDeclarationSyntax)
     {
-        string methodName = node.Identifier.ToString();
-        var attributes = node.AttributeLists
+        string methodName = methodDeclarationSyntax.Identifier.ToString();
+        var attributes = methodDeclarationSyntax.AttributeLists
             .SelectMany(x => x.Attributes)
             .Where(x => x.Name.ToString() != "Operand" && x.Name.ToString() != "NodeName").ToList();
         
-        var nodeNames = node.AttributeLists
+        var nodeNames = methodDeclarationSyntax.AttributeLists
             .SelectMany(x => x.Attributes)
             .Where(x => x.Name.ToString() == "NodeName")
             .ToList();
@@ -109,14 +121,12 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Infix")
             {
-                int parametersCount = node.ParameterList.Parameters.Count;
+                int parametersCount = methodDeclarationSyntax.ParameterList.Parameters.Count;
                 if (parametersCount > 3)
                 {
-                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextParam = methodDeclarationSyntax.ParameterList.Parameters.Last();
                     var contextType = (contextParam as ParameterSyntax).Type.ToString();
                     _staticParserBuilder.Model.SetContextType(contextType);
-                    
-                    Console.WriteLine($"TODO : get context type => {contextType}");
                 }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
@@ -128,14 +138,12 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Left")
             {
-                int parametersCount = node.ParameterList.Parameters.Count;
+                int parametersCount = methodDeclarationSyntax.ParameterList.Parameters.Count;
                 if (parametersCount > 3)
                 {
-                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextParam = methodDeclarationSyntax.ParameterList.Parameters.Last();
                     var contextType = (contextParam as ParameterSyntax).Type.ToString();
                     _staticParserBuilder.Model.SetContextType(contextType);
-                    
-                    Console.WriteLine($"TODO : get context type => {contextType}");
                 }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
@@ -145,14 +153,12 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Right")
             {
-                int parametersCount = node.ParameterList.Parameters.Count;
+                int parametersCount = methodDeclarationSyntax.ParameterList.Parameters.Count;
                 if (parametersCount > 3)
                 {
-                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextParam = methodDeclarationSyntax.ParameterList.Parameters.Last();
                     var contextType = (contextParam as ParameterSyntax).Type.ToString();
                     _staticParserBuilder.Model.SetContextType(contextType);
-                    
-                    Console.WriteLine($"TODO : get context type => {contextType}");
                 }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
@@ -162,14 +168,12 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Prefix")
             {
-                int parametersCount = node.ParameterList.Parameters.Count;
+                int parametersCount = methodDeclarationSyntax.ParameterList.Parameters.Count;
                 if (parametersCount > 2)
                 {
-                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextParam = methodDeclarationSyntax.ParameterList.Parameters.Last();
                     var contextType = (contextParam as ParameterSyntax).Type.ToString();
                     _staticParserBuilder.Model.SetContextType(contextType);
-                    
-                    Console.WriteLine($"TODO : get context type => {contextType}");
                 }
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
                 string tokenName = args[0].TrimQuotes();
@@ -181,14 +185,12 @@ public class ParserSyntaxWalker : CslySyntaxWalker
             }
             if (attribute.Name.ToString() == "Postfix")
             {
-                int parametersCount = node.ParameterList.Parameters.Count;
+                int parametersCount = methodDeclarationSyntax.ParameterList.Parameters.Count;
                 if (parametersCount > 2)
                 {
-                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextParam = methodDeclarationSyntax.ParameterList.Parameters.Last();
                     var contextType = (contextParam as ParameterSyntax).Type.ToString();
                     _staticParserBuilder.Model.SetContextType(contextType);
-                    
-                    Console.WriteLine($"TODO : get context type => {contextType}");
                 }
                 
                 var args = GetAttributeArgsAsStringArray(attribute, skip: 0);                
@@ -204,18 +206,20 @@ public class ParserSyntaxWalker : CslySyntaxWalker
 
                 var ruleString = GetAttributeArgs(attribute, withLeadingComma: false);
                 
-                var rule = _staticParserBuilder.Parse(ruleString, node.Identifier.Text);
+                var rule = _staticParserBuilder.Parse(ruleString, methodDeclarationSyntax);
                 
                 int clauseCount = rule.Clauses.Count;
-                int parametersCount = node.ParameterList.Parameters.Count;
+                int parametersCount = methodDeclarationSyntax.ParameterList.Parameters.Count;
                 if (parametersCount > clauseCount)
                 {
-                    var contextParam = node.ParameterList.Parameters.Last();
+                    var contextParam = methodDeclarationSyntax.ParameterList.Parameters.Last();
                     var contextType = (contextParam as ParameterSyntax).Type.ToString();
                     _staticParserBuilder.Model.SetContextType(contextType);
-                    
-                    Console.WriteLine($"TODO : get context type => {contextType}");
                 }
+                
+                // TODO call RuleParameterValidator
+                ExecuteMethodParamValidation(_productionContext,_compilation,methodDeclarationSyntax, rule);
+                
                 
                 for (int i = 0; i < rule.Clauses.Count; i++)
                 {
@@ -261,7 +265,7 @@ public class ParserSyntaxWalker : CslySyntaxWalker
                     }
                 }
                 _staticParserBuilder.Model.AddRule(rule);
-                if (IsOperand(node))
+                if (IsOperand(methodDeclarationSyntax))
                 {
                     _staticParserBuilder.Model.AddOperand(new Operand(rule));
                 }
