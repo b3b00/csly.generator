@@ -13,7 +13,11 @@ public partial class ParserSyntaxWalker
     public void ExecuteMethodParamValidation(SourceProductionContext context, Compilation compilation,
         MethodDeclarationSyntax methodSyntax, Rule rule)
     {
-        
+        var format = new SymbolDisplayFormat(
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly, // Omits namespaces completely
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes
+        );
         
         var diagnosticDescriptor = new DiagnosticDescriptor(
             id: "VAL002",
@@ -40,8 +44,8 @@ public partial class ParserSyntaxWalker
 
             if (expectedType != null)
             {
-                if (paramSymbol.Type.ToDisplayString() != expectedType)
-                //if (!SymbolEqualityComparer.Default.Equals(paramSymbol.Type, expectedTypeSymbol))
+                string actualType = paramSymbol.Type.ToDisplayString(format); 
+                if (actualType != expectedType)
                 {
                     var syntaxRef = methodSyntax.ParameterList.Parameters
                         .FirstOrDefault(p => p.Identifier.Text == paramSymbol.Name)?
