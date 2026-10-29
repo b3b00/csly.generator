@@ -17,4 +17,6 @@ public static class CslyGeneratorErrors
     public const string LEFT_RECURSION_DETECTED = "CSLY0007";
     
     public const string TOO_MANY_CONTEXT_TYPES = "CSLY0008";
+    
+    public const string PARAMETER_TYPE_ERROR = "CSLY0009";
 }

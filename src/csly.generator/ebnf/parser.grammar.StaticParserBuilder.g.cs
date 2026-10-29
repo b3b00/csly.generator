@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.ebnf.builder
 {
@@ -135,8 +136,9 @@ namespace csly.ebnf.builder
         }
 
 
-        public Rule Parse(string ruleString, string methodName)
+        public Rule Parse(string ruleString,  MethodDeclarationSyntax method)
         {
+            string methodName = method.Identifier.Text;
             if (ruleString != null)
             {                
                 ruleString = ruleString.Substring(1, ruleString.Length - 2);

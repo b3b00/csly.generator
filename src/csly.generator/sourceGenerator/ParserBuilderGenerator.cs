@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
 
 namespace csly.generator.sourceGenerator;
 
@@ -50,12 +51,12 @@ public class ParserBuilderGenerator
     public List<TerminalClause> GetExplicitTokens() => _staticParserBuilder.GetExplicitTokens();
 
     #region generate parser
-    public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax)
+    public string GenerateParser(ClassDeclarationSyntax classDeclarationSyntax, Compilation compilation, SourceProductionContext sourceProductionContext)
     {
         string name = classDeclarationSyntax.Identifier.ToString();
         _staticParserBuilder = new StaticParserBuilder(_lexerGeneratorTokens, name, _lexerName, _outputType);
 
-        ParserSyntaxWalker walker = new(name, _lexerName, _outputType, _staticParserBuilder);
+        ParserSyntaxWalker walker = new(name, _lexerName, _outputType, _staticParserBuilder, compilation, sourceProductionContext);
 
         walker.Visit(classDeclarationSyntax);
         _rules = _staticParserBuilder.Model.Rules;
@@ -67,6 +68,7 @@ public class ParserBuilderGenerator
         
         // Fail completely if left recursion is detected, before ComputeLeaders()
         // would recurse infinitely on left-recursive grammars.
+        // Left recursion check happens before ComputeLeaders() to avoid infinite recursion.
         var (leftRecursionFound, recursions) = LeftRecursionChecker.CheckLeftRecursion(_staticParserBuilder.Model);
         if (leftRecursionFound)
         {
@@ -74,6 +76,7 @@ public class ParserBuilderGenerator
                 $"Left recursion detected in parser {name} : " +
                 string.Join("; ", recursions.Select(r => string.Join(" > ", r))));
         }
+
         _templateEngine.SetVisitorContextType(_staticParserBuilder.Model.ContextType);
         
         _visitor2Generator = new Visitor2Generator(_lexerName, _parserName, _outputType, classDeclarationSyntax.GetNameSpace()+"."+name.ToLower(), _templateEngine, _staticParserBuilder.Model.Rules);

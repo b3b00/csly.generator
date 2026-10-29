@@ -53,13 +53,19 @@ public class CslyParserGenerator : IIncrementalGenerator
 
         // Generate the source code.
         context.RegisterSourceOutput(context.CompilationProvider.Combine(provider2.Collect()),
-            ((ctx, t) => GenerateCode(ctx, t.Left, t.Right)));
+            ((ctx, source) => GenerateCode(ctx, source.Left, source.Right)));
+        
+        // 2. Chained Parameter Validator Pipeline
+        var methodDeclarations = context.SyntaxProvider.CreateSyntaxProvider(
+            predicate: static (s, _) => s is MethodDeclarationSyntax m && m.ParameterList.Parameters.Count > 0,
+            transform: static (ctx, _) => (MethodDeclarationSyntax)ctx.Node);
+        
     }
 
     
+// --- Chained Parameter Validation Logic ---
 
-
-    public List<string> GetUsings(SyntaxNode syntaxNode)
+public List<string> GetUsings(SyntaxNode syntaxNode)
     {
         if (syntaxNode != null)
         {
@@ -192,7 +198,7 @@ public class CslyParserGenerator : IIncrementalGenerator
 
     private void GenerateCodeForGenerator(ParserGeneratorTriplet generator,
         Dictionary<string, SyntaxNode> declarationsByName, SourceProductionContext context,
-        Compilation compilation)
+        Compilation compilation, SourceProductionContext sourceProductionContext)
     {
         string ns = generator.GeneratorClass.GetNameSpace();
         string lexerName = generator.LexerEnum.Identifier.ToString();
@@ -256,7 +262,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                 thisParserBaseNameSpace, generator.VisitorContextType, lexerGenerator.Tokens);
         try
         {
-            var staticParser = parserBuilderGenerator.GenerateParser(generator.ParserClass);
+            var staticParser = parserBuilderGenerator.GenerateParser(generator.ParserClass, compilation, sourceProductionContext);
 
             string parserCode = $@"
 
@@ -415,10 +421,10 @@ public class CslyParserGenerator : IIncrementalGenerator
     }
 
 
-    private void GenerateCode(SourceProductionContext context, Compilation compilation,
+    private void GenerateCode(SourceProductionContext sourceProductionContext, Compilation compilation, 
         ImmutableArray<SyntaxNode> declarations)
     {
-        var generators = GetClassDeclarationsForSourceGen(context, compilation, declarations);
+        var generators = GetClassDeclarationsForSourceGen(sourceProductionContext, compilation, declarations);
         var assemblyName = compilation.AssemblyName;
         var declarationsByName = declarations.ToDictionary(x => GetName(x));
         foreach (var generator in generators)
@@ -427,7 +433,7 @@ public class CslyParserGenerator : IIncrementalGenerator
                 $"csly.{assemblyName}.{generator.ParserClass.Identifier.ToString().ToLower()}";
             TemplateEngine templateEngine = new TemplateEngine("", "", "", "", "");
 
-            GenerateCodeForGenerator(generator, declarationsByName, context, compilation);
+            GenerateCodeForGenerator(generator, declarationsByName, sourceProductionContext, compilation, sourceProductionContext);
         }
     }
 
@@ -495,7 +501,6 @@ public class CslyParserGenerator : IIncrementalGenerator
                 string name = attributeSyntax.Name.ToString();
                 if (name == "ParserGenerator")
                 {
-                    Console.WriteLine($"  Found ParserGenerator attribute :)");
                     if (classDeclarationSyntax?.BaseList?.Types != null)
                     {
                         var abstractParser =
@@ -505,8 +510,6 @@ public class CslyParserGenerator : IIncrementalGenerator
                         if (abstractParser != null)
                         {
                             var args = (abstractParser.Type as GenericNameSyntax)?.TypeArgumentList?.Arguments;
-                            Console.WriteLine(
-                                $"  Found AbstractParserGenerator base class :) with {args.Value.Count} : <{string.Join(", ", args.Value.Select(x => x.ToString()))}>");
 
                             if (args != null && args.HasValue && args.Value.Count == 3)
                             {
