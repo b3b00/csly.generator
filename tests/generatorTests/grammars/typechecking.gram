@@ -1,0 +1,83 @@
+using System;
+using csly.generator.model.lexer;
+using csly.generator.model.parser.attributes;
+
+namespace TypeCheck;
+
+
+[ParserGenerator]
+
+public partial class TesterMain : AbstractParserGenerator<ABCToken, DummyParser, string>
+{
+
+}
+
+
+[ParserRoot("root")]
+public class DummyParser
+{
+    [Production("root : nullable B? C")]
+    public string Root(string nullable, Token<ABCToken> b, Token<ABCToken> c)
+    {
+        return $"a={nullable} b={(b.IsEmpty?"<none>":b.Value)} c={c.Value}";
+    }
+
+    [Production("nullable: A?")]
+    public string Nullable(Token<ABCToken> a)
+    {
+        return a.IsEmpty ? "<none>" : a.Value.ToString();
+    }
+
+    [Production("many-group : ( A B )*")]
+    public string ManyGroups(Token<ABCToken> a, Token<ABCToken> b)
+    {
+        return string.Empty;
+    }
+
+    [Production("many-terminal : A*")]
+    public string ManyTerminals(string test)
+    {
+        return string.Empty;
+    }
+    
+    [Production("many-non-terminal : nullable*")]
+    public string ManyNonTerminals(string test)
+    {
+        return string.Empty;
+    }
+
+    [Production("option : nullable?")]
+    public string Option(string a)
+    {
+        return string.Empty;
+    }
+
+    [Production("terminal-choice : [A|B]")]
+    public string TerminalChoice(object a)
+    {
+        return string.Empty;
+    }
+
+    [Production("non-terminal-choice : [option|terminal-choice]")]
+    public string NonTerminalChoice(object a)
+    {
+        return string.Empty;
+    }
+    
+
+}
+    
+public enum ABCToken
+{
+    [AlphaId]
+    ID, 
+    
+    [Keyword("A")]
+    A,
+    [Keyword("B")]
+    B,
+    [Keyword("C")]
+    C,  
+}
+
+

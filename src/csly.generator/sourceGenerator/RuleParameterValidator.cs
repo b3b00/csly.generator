@@ -6,21 +6,59 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace csly.generator.sourceGenerator;
 
+public static class TypeSymbolExtensions
+{
+    public static string ToSimpleDisplayString(this ITypeSymbol typeSymbol)
+    {
+        // Handle special types to return C# keywords (string, int, bool, etc.)
+        if (typeSymbol.SpecialType != SpecialType.None)
+        {
+            return typeSymbol.SpecialType switch
+            {
+                SpecialType.System_Boolean => "bool",
+                SpecialType.System_Byte => "byte",
+                SpecialType.System_SByte => "sbyte",
+                SpecialType.System_Int16 => "short",
+                SpecialType.System_UInt16 => "ushort",
+                SpecialType.System_Int32 => "int",
+                SpecialType.System_UInt32 => "uint",
+                SpecialType.System_Int64 => "long",
+                SpecialType.System_UInt64 => "ulong",
+                SpecialType.System_Char => "char",
+                SpecialType.System_Single => "float",
+                SpecialType.System_Double => "double",
+                SpecialType.System_Decimal => "decimal",
+                SpecialType.System_String => "string",
+                SpecialType.System_Object => "object",
+                SpecialType.System_Void => "void",
+                _ => typeSymbol.Name
+            };
+        }
+
+        // Handle generic types recursively
+        if (typeSymbol is INamedTypeSymbol namedType && namedType.IsGenericType)
+        {
+            var typeName = namedType.Name;
+            var typeArgs = string.Join(", ", namedType.TypeArguments.Select(t => t.ToSimpleDisplayString()));
+            return $"{typeName}<{typeArgs}>";
+        }
+
+        return typeSymbol.Name;
+    }
+}
+
 public partial class ParserSyntaxWalker
 {
+    
     
     
     public void ExecuteMethodParamValidation(SourceProductionContext context, Compilation compilation,
         MethodDeclarationSyntax methodSyntax, Rule rule)
     {
-        var format = new SymbolDisplayFormat(
-            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly, // Omits namespaces completely
-            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes
-        );
+     
         
         var diagnosticDescriptor = new DiagnosticDescriptor(
-            id: "VAL002",
+            id: CslyGeneratorErrors.PARAMETER_TYPE_ERROR,
             title: "Parameter Type Mismatch",
             messageFormat: "Parameter '{0}' has type '{1}', but convention expects type '{2}'",
             category: "TypeChecking",
@@ -44,8 +82,8 @@ public partial class ParserSyntaxWalker
 
             if (expectedType != null)
             {
-                string actualType = paramSymbol.Type.ToDisplayString(format); 
-                if (actualType != expectedType)
+                string actualType = paramSymbol.Type.ToSimpleDisplayString(); 
+                if (actualType.Replace(" ","") != expectedType.Replace(" ",""))
                 {
                     var syntaxRef = methodSyntax.ParameterList.Parameters
                         .FirstOrDefault(p => p.Identifier.Text == paramSymbol.Name)?
@@ -63,35 +101,15 @@ public partial class ParserSyntaxWalker
         }
     }
 
-    
-    private static readonly Dictionary<string, string> KeywordToMetadataName = new()
-    {
-        { "int", "System.Int32" },
-        { "long", "System.Int64" },
-        { "short", "System.Int16" },
-        { "byte", "System.Byte" },
-        { "sbyte", "System.SByte" },
-        { "uint", "System.UInt32" },
-        { "ulong", "System.UInt64" },
-        { "ushort", "System.UInt16" },
-        { "float", "System.Single" },
-        { "double", "System.Double" },
-        { "decimal", "System.Decimal" },
-        { "bool", "System.Boolean" },
-        { "char", "System.Char" },
-        { "string", "System.String" },
-        { "object", "System.Object" },
-        { "void", "System.Void" }
-    };
-
-
     private string GetExpectedType(IClause clause)
     {
+        string token = $"Token<{_lexerName}>";
+        
         switch (clause)
         {
             case TerminalClause:
             {
-                return $"Token<{_lexerName}>";
+                return token;
             } 
             case NonTerminalClause:
             {
@@ -103,7 +121,7 @@ public partial class ParserSyntaxWalker
             }
             case ChoiceClause choice when choice.IsTerminalChoice:
             {
-                return _lexerName;
+                return token;
             }
             case ManyClause many:
             {
@@ -116,6 +134,10 @@ public partial class ParserSyntaxWalker
             }
             case OptionClause option:
             {
+                if (option.Clause is TerminalClause)
+                {
+                    return token;
+                }
                 var expected =  GetExpectedType(option.Clause);
                 return $"ValueOption<{expected}>";
             }

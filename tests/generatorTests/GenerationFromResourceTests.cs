@@ -10,6 +10,26 @@ using Xunit;
 
 namespace generatorTests;
 
+
+public static class DiagnosticExtensions
+{
+    public static (int line, int column) GetPosition(this Diagnostic diagnostic)
+    {
+        var span = diagnostic.Location.GetLineSpan();
+
+        var line = span.StartLinePosition.Line + 1;
+        var column = span.StartLinePosition.Character + 1;
+
+        return (line, column);
+    }
+
+    public static string GetPositionedMessage(this Diagnostic diagnostic)
+    {
+        var position = diagnostic.GetPosition();
+        return $"{position.line}:{position.column} {diagnostic.GetMessage()}";
+    }
+}
+
 public class GenerationFromResourceTests
 {
     private static readonly Assembly CslyGeneratorAssembly =
@@ -110,5 +130,26 @@ public class GenerationFromResourceTests
          Check.That(message).Contains("Dictionary<string, object>");
          Check.That(message).Contains("Dictionary<string, int>");
          Check.That(message).Contains("Dictionary<string, double>");
+    }
+    
+    [Fact]
+    public void TestTypeCheckErrors()
+    {
+        var source = GetEmbeddedGrammar("typechecking");
+        var result = GenerateSource(source, "DummyParser");
+        var contextErrors= result.Diagnostics.Where(d => d.Id == CslyGeneratorErrors.PARAMETER_TYPE_ERROR).ToList();
+        Check.That(contextErrors).Not.IsNullOrEmpty();
+        Check.That(contextErrors).CountIs(6);
+        var errors = contextErrors.Select(x => x.GetPositionedMessage()).ToList();
+        
+        Check.That(errors).Contains("32:30 Parameter 'a' has type 'csly.generator.model.lexer.Token<TypeCheck.ABCToken>', but convention expects type 'List<Group<ABCToken,string>>'");
+        Check.That(errors).Contains("38:33 Parameter 'test' has type 'string', but convention expects type 'List<Token<ABCToken>>'");
+        Check.That(errors).Contains("44:36 Parameter 'test' has type 'string', but convention expects type 'List<string>'");
+        Check.That(errors).Contains("50:26 Parameter 'a' has type 'string', but convention expects type 'ValueOption<string>'");
+        Check.That(errors).Contains("56:34 Parameter 'a' has type 'object', but convention expects type 'Token<ABCToken>'");
+        Check.That(errors).Contains("62:37 Parameter 'a' has type 'object', but convention expects type 'string'");
+        
+
+
     }
 }
