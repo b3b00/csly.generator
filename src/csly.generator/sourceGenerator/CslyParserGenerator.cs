@@ -492,7 +492,6 @@ public List<string> GetUsings(SyntaxNode syntaxNode)
         GetClassDeclaration(
             ClassDeclarationSyntax classDeclarationSyntax)
     {
-        Console.WriteLine($"Analyzing class {classDeclarationSyntax.Identifier.Text}");
         // Go through all attributes of the class.
         foreach (AttributeListSyntax attributeListSyntax in classDeclarationSyntax.AttributeLists)
         {

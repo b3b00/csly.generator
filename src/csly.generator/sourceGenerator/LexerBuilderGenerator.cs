@@ -74,11 +74,6 @@ internal class LexerBuilderGenerator
         _assemblyName = assemblyName;
     }
 
-    private void Log(string message)
-    {
-        //Console.WriteLine($"[LexerBuilderGenerator] {message}");
-    }
-
     public Dictionary<string, Fsm> GenerateFsms()
     {
         Dictionary<string, Fsm> fsms = new Dictionary<string, Fsm>();
@@ -107,7 +102,6 @@ internal class LexerBuilderGenerator
         foreach (var mode in modes)
         {
             var lexemsInMode = _staticLexerBuilder.Lexemes.Where(lexem => lexem.Modes.Contains(mode)).ToList();
-Log("Generating FSM for mode " + mode);
             var subFsm = GenerateFSM(lexemsInMode);
             subFsm.Lexemes = lexemsInMode;
 
@@ -123,7 +117,6 @@ Log("Generating FSM for mode " + mode);
         Fsm fsm = new();
         foreach (var lexem in lexemsInMode)
         {
-            Log("\nProcessing lexeme: " + lexem.Type + " -> " + lexem.Name);
             fsm.GoTo(startState);
             switch (lexem.Type)
             {               

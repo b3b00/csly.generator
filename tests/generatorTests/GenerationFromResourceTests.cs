@@ -148,8 +148,24 @@ public class GenerationFromResourceTests
         Check.That(errors).Contains("50:26 Parameter 'a' has type 'string', but convention expects type 'ValueOption<string>'");
         Check.That(errors).Contains("56:34 Parameter 'a' has type 'object', but convention expects type 'Token<ABCToken>'");
         Check.That(errors).Contains("62:37 Parameter 'a' has type 'object', but convention expects type 'string'");
-        
 
-
+    }
+    
+    [Fact]
+    public void TestTemplateGrammar()
+    {
+        var source = GetEmbeddedGrammar("template");
+        var result = GenerateSource(source, "TemplateParser");
+        Check.That(result.GeneratedTrees).Not.IsNullOrEmpty();
+        Check.That(result.Diagnostics).IsEmpty();
+    }
+    
+    [Fact]
+    public void TestIndentedWhileGrammar()
+    {
+        var source = GetEmbeddedGrammar("indentedwhile");
+        var result = GenerateSource(source, "IndentedWhileParserGeneric");
+        Check.That(result.GeneratedTrees).Not.IsNullOrEmpty();
+        Check.That(result.Diagnostics).IsEmpty();
     }
 }

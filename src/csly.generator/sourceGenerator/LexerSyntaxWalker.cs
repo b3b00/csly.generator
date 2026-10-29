@@ -43,45 +43,6 @@ internal class LexerSyntaxWalker : CslySyntaxWalker
         return null;
     }
 
-    protected string GetAttributeArgsForLexemekeyWord(AttributeSyntax attribute, int skip = 0, bool withLeadingComma = true)
-    {
-
-        if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
-        {
-            var arguments = attribute.ArgumentList.Arguments.Skip(skip).ToList();
-
-            var firstArg = arguments[0];
-            bool isFirstArgChannel = false;
-            string firstArgColonName = firstArg?.NameColon?.Name?.ToString();
-            string channel = null;
-            string tokens = "";
-            var firstArgAsLiteral = firstArg?.Expression as LiteralExpressionSyntax;
-            if (firstArg != null && (firstArgColonName == "channel" || (firstArgAsLiteral == null || firstArgAsLiteral.Kind() != SyntaxKind.StringLiteralExpression)))
-            {
-                isFirstArgChannel = true;
-                channel = firstArg.Expression.ToString();
-            }
-            var tokenArgs = arguments.Skip(isFirstArgChannel ? 1 : 0).ToList();
-            if (tokenArgs.Count == 1)
-            {
-                tokens = tokenArgs.ElementAt(0).Expression.ToString();
-            }
-
-            if (tokenArgs.Count > 1)
-            {
-                tokens = "new [] { " + string.Join(",", tokenArgs.Select(t => t.ToString()).ToList()) + " }";
-            }
-
-            string args = $", {tokens} ";
-            if (isFirstArgChannel)
-            {
-                args += $",{channel} ";
-            }
-            return args;
-        }
-        return string.Empty;
-    }
-
 
     private string GetMethodForIdentifier(MemberAccessExpressionSyntax identifier)
     {
