@@ -1,5 +1,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/b3b00/csly.generator/badge.svg?branch=main)](https://coveralls.io/github/b3b00/csly.generator?branch=main)
 [![Build](https://github.com/b3b00/csly.generator/actions/workflows/build.yml/badge.svg)](https://github.com/b3b00/csly.generator/actions/workflows/build.yml)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator?ref=badge_shield)
 
 
 
@@ -169,3 +170,7 @@ Here is the list of missing features :
 Error reporting is also still a work in progress.        
 
    
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator?ref=badge_large)
