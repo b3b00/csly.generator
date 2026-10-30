@@ -1,6 +1,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/b3b00/csly.generator/badge.svg?branch=main)](https://coveralls.io/github/b3b00/csly.generator?branch=main)
 [![Build](https://github.com/b3b00/csly.generator/actions/workflows/build.yml/badge.svg)](https://github.com/b3b00/csly.generator/actions/workflows/build.yml)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator?ref=badge_shield)
+
 
 
 
