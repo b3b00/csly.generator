@@ -1,3 +1,14 @@
+[![Coverage Status](https://coveralls.io/repos/github/b3b00/csly/badge.svg?branch=dev&kill_cache=1)](https://coveralls.io/github/b3b00/csly.generator?branch=main)
+[![Build](https://github.com/b3b00/csly/actions/workflows/dotnetcore.yml/badge.svg)](https://github.com/b3b00/csly.generator/actions/workflows/dotnetcore.yml)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator?ref=badge_shield)
+
+
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=dev&repo=89719340)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/b3b00/sly/blob/dev/LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/sly.svg?kill_cache=1)](https://www.nuget.org/packages/sly)
+
 ## Goal
 
 csly.generator aims at clone [CSLY](https://github.com/b3b00/csly) features using C# source generators.
