@@ -3,7 +3,7 @@
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fb3b00%2Fcsly.generator?ref=badge_shield)
 
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/b3b00/sly/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/b3b00/csly/blob/main/LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/csly.generator.svg?kill_cache=1)](https://www.nuget.org/packages/csly.generator)
 
 ## Goal
